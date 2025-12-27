@@ -1,12 +1,15 @@
 import * as t from './types';
 import * as c from './constants';
 import * as u from './constants/musicUtils';
+import * as cu from './commonUtils';
 
-const getNaturalNoteParams = (noteName: t.noteName): t.naturalNoteParams => {
-  const naturalNoteParams = c.naturalNotesParams.find(({ tone }) => tone === noteName[0]);
-  if (naturalNoteParams == null) throw new Error(`Не найдена натуральная нота для ${noteName}`);
-  return naturalNoteParams;
-};
+const getNaturalNoteParams = (noteName: t.noteName): t.naturalNoteParams => cu.
+  find(c.naturalNotesParams, ({ tone }) => tone === noteName[0]);
+
+const applyModeShift: t.applyModeShift = (intervalPattern, modeShift) => intervalPattern
+  .map((_, i) => intervalPattern[(modeShift + i) % intervalPattern.length]);
+
+const removeDegrees: t.removeDegrees = (scale, degrees) => scale.filter((_, i) => !degrees.includes(i + 1));
 
 // строим по логике диатоники, даже если не диатоника
 const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
@@ -50,11 +53,6 @@ const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
 
   return scale;
 };
-
-const applyModeShift: t.applyModeShift = (intervalPattern, modeShift) => intervalPattern
-  .map((_, i) => intervalPattern[(modeShift + i) % intervalPattern.length]);
-
-const removeDegrees: t.removeDegrees = (scale, degrees) => scale.filter((e, i) => !degrees.includes(i + 1));
 
 export const resolveScale: t.resolveScale = (scaleBuildParams) => {
   const { tonic, modeShift, intervalPattern, removeDegrees: removingDegrees } = scaleBuildParams;
