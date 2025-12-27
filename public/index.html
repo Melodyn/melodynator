@@ -1,201 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="./favicon.ico" sizes="32x32" type="image/png">
-  <title>Melodynator</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-  <style>
-    td {
-      width: 30px;
-      height: 30px;
-    }
 
-    #keys tr:first-child {
-      height: 60px;
-    }
+  <!-- Primary SEO -->
+  <title>Melodynator: Калькулятор гамм и аккордов онлайн</title>
+  <meta name="description"
+    content="Мелодинатор — это обучающий музыкальный калькулятор для построения гамм, аккордов и ладов по интервальной схеме с наглядной визуализацией." />
+  <meta name="keywords" content="
+    калькулятор гамм,
+    калькулятор аккордов,
+    гаммы и аккорды онлайн,
+    музыкальная теория для начинающих,
+    построение гамм,
+    построение аккордов,
+    интервалы в музыке,
+    лады и гаммы,
+    scale calculator,
+    chord calculator
+  " />
 
-    #staff__notes>tbody td {
-      height: 18px;
-      font-size: 12px;
-      font-weight: bold;
-    }
+  <!-- Indexing -->
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://example.com/" />
 
-    #staff__notes>tbody>tr>td:last-child {
-      width: 120px;
-    }
-  </style>
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Калькулятор гамм и аккордов" />
+  <meta property="og:description"
+    content="Интерактивное изучение музыкальной теории: гаммы, аккорды и интервалы с визуализацией." />
+  <meta property="og:url" content="https://example.com/" />
+  <meta property="og:locale" content="ru_RU" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Калькулятор гамм и аккордов" />
+  <meta name="twitter:description" content="Наглядное построение гамм и аккордов для изучения музыкальной теории." />
+
+  <!-- Hreflang (задел под мультиязычность) -->
+  <link rel="alternate" hreflang="ru" href="https://example.com/" />
+  <link rel="alternate" hreflang="en" href="https://example.com/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://example.com/" />
+
 </head>
 
-<body data-bs-theme="light">
-  <div class="root container pt-5 p-0">
-    <div class="pb-5">
-      <form name="configurator">
+<body>
 
-        <div class="row">
-          <div class="col">
-            <label for="gamma" class="form-label">Тоника</label>
-            <select size="4" id="gamma" name="gamma" class="form-select" aria-label="Тоника">
-            </select>
-          </div>
+  <!-- Visible SEO content -->
+  <header>
+    <h1>Гаммы и аккорды онлайн</h1>
+    <p>
+      Обучающий музыкальный калькулятор для понимания гамм, аккордов и интервальных схем.
+    </p>
+  </header>
 
-          <div class="col">
-            <div class="pb-3">
-              <label for="scale" class="form-label">Интервалы (Р- полтора тона)</label>
-              <select size="2" id="scale" name="scale" class="form-select" aria-label="Интервалы">
-                <option selected value="major">мажор/восмелмажор ТТПТТТП</option>
-                <option value="minor">минор/нисмелминор ТПТТПТТ</option>
-                <option value="garmajor">гармажор ТТПТПРП</option>
-                <option value="melmajor">нисмелмажор ТТПТПТТ</option>
-                <option value="garminor">гарминор ТПТТПРП</option>
-                <option value="melminor">восмелминор ТПТТТТП</option>
-              </select>
-            </div>
+  <main>
 
-            <div class="form-check form-switch">
-              <label for="isChord" class="form-check-label">Аккорд</label>
-              <input type="checkbox" name="isChord" id="isChord" class="form-check-input" role="switch">
-            </div>
-          </div>
-        </div>
+    <section>
+      <h2>Музыкальная теория — наглядно</h2>
+      <p>
+        Сервис помогает изучать музыкальную теорию через визуализацию.
+        Выберите тонику, соберите интервальную схему и посмотрите,
+        как выглядят гаммы и аккорды на разных инструментах.
+      </p>
+    </section>
 
-      </form>
-    </div>
+    <section>
+      <h2>Что можно построить</h2>
+      <ul>
+        <li>Гаммы и лады</li>
+        <li>Аккорды и интервалы</li>
+        <li>Интервальные схемы (тон / полутон)</li>
+        <li>Ступени и структуры гамм</li>
+      </ul>
+    </section>
 
-    <div class="row pb-5 g-5 justify-content-center align-items-center">
-      <div class="col-auto">
-        <table id="string" class="table table-bordered align-middle text-center w-auto m-0 p-0">
-          <thead class="align-middle"></thead>
-          <tbody></tbody>
-          <tfoot></tfoot>
-        </table>
-      </div>
+    <section>
+      <h2>Для кого этот сервис</h2>
+      <p>
+        Инструмент создан для начинающих музыкантов и всех,
+        кто изучает основы музыкальной теории независимо от инструмента.
+      </p>
+    </section>
 
-      <div id="staff" class="col-auto">
-        <div class="row align-items-center">
-          <select id="staff__note" name="staffNote" class="w-auto form-select me-3" aria-label="Нота стана">
-          </select>
-          <table id="staff__notes" class="table table-borderless align-middle text-center w-auto m-0 p-0">
-            <tbody>
-              <tr class="bg-body-secondary">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-body-secondary">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-dark">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-dark">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-dark">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-dark">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-dark">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-body-secondary">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-white">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-              <tr class="bg-body-secondary">
-                <td class="bg-white p-0"></td>
-                <td class="bg-transparent p-0"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <section>
+      <h2>Поддержка инструментов</h2>
+      <p>
+        Визуализация доступна для клавишных и струнных инструментов
+        с возможностью настройки строя и количества струн.
+      </p>
+    </section>
 
-    <div class="row pb-5 justify-content-center">
-      <div class="col-auto">
-        <table id="keys" class="table table-borderless text-center w-auto m-0 p-0">
-          <tbody>
-            <tr>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
+  </main>
 
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-              <td class="bg-dark border"></td>
-              <td class="bg-light border"></td>
-            </tr>
-            <tr id="keys__notes">
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  <footer>
+    <p>
+      Интерактивная музыкальная теория • Гаммы • Аккорды • Интервалы
+    </p>
+  </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
-    crossorigin="anonymous"></script>
 </body>
 
 </html>

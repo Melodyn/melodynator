@@ -4,8 +4,10 @@
     "alwaysStrict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "outDir": "./dist/",
-    "target": "es5"
+    "target": "es2016"
   },
   "include": [
     "src/**/*",

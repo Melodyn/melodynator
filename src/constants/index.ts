@@ -1,52 +1,18 @@
 import * as t from '../types';
-import * as u from './utils';
 
-export const allNotes = u.generateAllNotes();
-export const fullNotes = allNotes.filter((note): note is t.fullNote => (note.tone.length === 1));
+// количество полутонов в октаве (pitch class modulo)
+export const OCTAVE_SIZE: 12 = 12;
+// максимальное смещение pitch class при нормализации (-6 … +6, как в кварто-квинтовом круге)
+export const MAX_PITCH_CLASS_OFFSET: 6 = 6;
+export const FLAT_SYMBOL: '♭' = '♭';
+export const SHARP_SYMBOL: '♯' = '♯';
 
-export const allNotesCount = allNotes.length;
-export const fullNotesCount = fullNotes.length;
-
-export const octaves = u.generateOctaves();
-
-export const scales: t.scales = Object.freeze({
-  [t.scaleName.major]: {
-    name: t.scaleName.major,
-    notePostfix: '',
-  },
-  [t.scaleName.garmajor]: {
-    name: t.scaleName.garmajor,
-    notePostfix: '',
-  },
-  [t.scaleName.melmajor]: {
-    name: t.scaleName.melmajor,
-    notePostfix: '',
-  },
-  [t.scaleName.minor]: {
-    name: t.scaleName.minor,
-    notePostfix: 'm',
-  },
-  [t.scaleName.garminor]: {
-    name: t.scaleName.garminor,
-    notePostfix: 'm',
-  },
-  [t.scaleName.melminor]: {
-    name: t.scaleName.melminor,
-    notePostfix: 'm',
-  },
-});
-
-export const defaultGammaSteps: t.gammaStepsByScales = {
-  [t.scaleName.major]: [2, 2, 1, 2, 2, 2, 1],
-  [t.scaleName.garmajor]: [2, 2, 1, 2, 1, 3, 1],
-  [t.scaleName.melmajor]: [2, 2, 1, 2, 1, 2, 2],
-  [t.scaleName.minor]: [2, 1, 2, 2, 1, 2, 2],
-  [t.scaleName.garminor]: [2, 1, 2, 2, 1, 3, 1],
-  [t.scaleName.melminor]: [2, 1, 2, 2, 2, 2, 1],
-};
-
-export const gammas = u.generateGammas();
-
-export const defaultChordSteps: t.chordSteps = [1, 3, 5];
-
-export const tunings = u.generateTunings(allNotes, octaves);
+export const naturalNotesParams: t.naturalNoteParams[] = [
+  { tone: 'C', octaveOrder: 1, hasFlat: false, hasSharp: true, naturalPitchClass: 0 },
+  { tone: 'D', octaveOrder: 2, hasFlat: true, hasSharp: true, naturalPitchClass: 2 },
+  { tone: 'E', octaveOrder: 3, hasFlat: true, hasSharp: false, naturalPitchClass: 4 },
+  { tone: 'F', octaveOrder: 4, hasFlat: false, hasSharp: true, naturalPitchClass: 5 },
+  { tone: 'G', octaveOrder: 5, hasFlat: true, hasSharp: true, naturalPitchClass: 7 },
+  { tone: 'A', octaveOrder: 6, hasFlat: true, hasSharp: true, naturalPitchClass: 9 },
+  { tone: 'B', octaveOrder: 7, hasFlat: true, hasSharp: false, naturalPitchClass: 11 },
+];
