@@ -8,11 +8,11 @@ export const FLAT_SYMBOL: '♭' = '♭';
 export const SHARP_SYMBOL: '♯' = '♯';
 
 export const naturalNotesParams: t.naturalNoteParams[] = [
-  { tone: 'C', octaveOrder: 1, hasFlat: false, hasSharp: true, naturalPitchClass: 0 },
-  { tone: 'D', octaveOrder: 2, hasFlat: true, hasSharp: true, naturalPitchClass: 2 },
-  { tone: 'E', octaveOrder: 3, hasFlat: true, hasSharp: false, naturalPitchClass: 4 },
-  { tone: 'F', octaveOrder: 4, hasFlat: false, hasSharp: true, naturalPitchClass: 5 },
-  { tone: 'G', octaveOrder: 5, hasFlat: true, hasSharp: true, naturalPitchClass: 7 },
-  { tone: 'A', octaveOrder: 6, hasFlat: true, hasSharp: true, naturalPitchClass: 9 },
-  { tone: 'B', octaveOrder: 7, hasFlat: true, hasSharp: false, naturalPitchClass: 11 },
+  { tone: 'C', degree: 1, naturalPitchClass: 0 },
+  { tone: 'D', degree: 2, naturalPitchClass: 2 },
+  { tone: 'E', degree: 3, naturalPitchClass: 4 },
+  { tone: 'F', degree: 4, naturalPitchClass: 5 },
+  { tone: 'G', degree: 5, naturalPitchClass: 7 },
+  { tone: 'A', degree: 6, naturalPitchClass: 9 },
+  { tone: 'B', degree: 7, naturalPitchClass: 11 },
 ];

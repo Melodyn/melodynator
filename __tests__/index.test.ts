@@ -23,30 +23,30 @@ describe('minor', () => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 1, 2, 2, 1, 2, 2],
-      removeDegrees: [],
+      degreesForRemove: [],
       modeShift: 0,
     });
-    expect(result.scale.join(' ')).toEqual(expected);
+    expect(result.scale.filter(({ note }) => note.length !== 0).map(({ note }) => note).join(' ')).toEqual(expected);
   });
 
   test.each(minor)('modeShift $tonic', ({ tonic, expected }) => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 1, 2, 2, 1, 2, 2],
-      removeDegrees: [],
+      degreesForRemove: [],
       modeShift: 1,
     });
-    expect(result.scale.join(' ')).not.toEqual(expected);
+    expect(result.scale.filter(({ note }) => note.length !== 0).map(({ note }) => note).join(' ')).not.toEqual(expected);
   });
 
-  test.each(minor)('removeDegrees $tonic', ({ tonic, expected }) => {
+  test.each(minor)('degreesForRemove $tonic', ({ tonic, expected }) => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 1, 2, 2, 1, 2, 2],
-      removeDegrees: [4],
+      degreesForRemove: [4],
       modeShift: 0,
     });
-    expect(result.scale.join(' ')).not.toEqual(expected);
+    expect(result.scale.filter(({ note }) => note.length !== 0).map(({ note }) => note).join(' ')).not.toEqual(expected);
   });
 });
 
@@ -71,29 +71,29 @@ describe('major', () => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-      removeDegrees: [],
+      degreesForRemove: [],
       modeShift: 0,
     });
-    expect(result.scale.join(' ')).toEqual(expected);
+    expect(result.scale.filter(({ note }) => note.length !== 0).map(({ note }) => note).join(' ')).toEqual(expected);
   });
 
   test.each(major)('modeShift $tonic', ({ tonic, expected }) => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-      removeDegrees: [],
+      degreesForRemove: [],
       modeShift: 1,
     });
-    expect(result.scale.join(' ')).not.toEqual(expected);
+    expect(result.scale.filter(({ note }) => note.length !== 0).map(({ note }) => note).join(' ')).not.toEqual(expected);
   });
 
-  test.each(major)('removeDegrees $tonic', ({ tonic, expected }) => {
+  test.each(major)('degreesForRemove $tonic', ({ tonic, expected }) => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-      removeDegrees: [4],
+      degreesForRemove: [4],
       modeShift: 0,
     });
-    expect(result.scale.join(' ')).not.toEqual(expected);
+    expect(result.scale.filter(({ note }) => note.length !== 0).map(({ note }) => note).join(' ')).not.toEqual(expected);
   });
 });
