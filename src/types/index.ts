@@ -1,6 +1,12 @@
 export type naturalNoteName = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
 export type noteName = naturalNoteName | 'C♯' | 'D♭' | 'D♯' | 'E♭' | 'F♯' | 'G♭' | 'G♯' | 'A♭' | 'A♯' | 'B♭';
 
+export type octaveParams = {
+  sinceNumber: number
+  color: `#${string}`
+  nameHelmholtz: string
+};
+
 export type naturalNoteParams = {
   tone: naturalNoteName
   degree: number
@@ -11,7 +17,7 @@ export type noteParams = {
   note: noteName | ''
   degree: number
   pitchClass: number
-}
+};
 
 export type intervalStep = 1 | 2;
 
@@ -28,7 +34,9 @@ export type resolvedScaleParams = scaleBuildParams & {
   scale: scaleNotes
   canModeShift: boolean
 };
-export type resolvedScale = scaleNotes;
+
+export type resolvedScale = resolvedScaleParams['scale'];
+
 export type intervalPattern = resolvedScaleParams['intervalPattern'];
 
 export type resolveScale = (scaleBuildParams: scaleBuildParams) => resolvedScaleParams;

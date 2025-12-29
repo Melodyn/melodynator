@@ -30,7 +30,7 @@ const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
   const tonicOffsetPC = calcOffsetPC(tonic);
   let currentPC: number = (tonicParams.naturalPitchClass + tonicOffsetPC) % c.OCTAVE_SIZE;
   let currentNaturalNoteIndex = tonicParams.degree - 1;
-  let currentDegree = tonicParams.degree;
+  let currentDegree = 1;
 
   const scale: t.noteParams[] = [{ note: tonic, pitchClass: currentPC, degree: currentDegree }];
 
@@ -42,6 +42,7 @@ const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
     const targetNaturalNoteIndex = (currentNaturalNoteIndex + 1) % c.naturalNotesParams.length;
     const targetNaturalNoteParams = c.naturalNotesParams[targetNaturalNoteIndex];
     const targetNPC = targetNaturalNoteParams.naturalPitchClass;
+    const targetDegree = currentDegree + 1;
 
     // смещение натуральной ноты до целевого pitch class
     const diff = targetPC - targetNPC;
@@ -61,12 +62,12 @@ const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
     scale.push({
       note: <t.noteName>`${targetNaturalNoteParams.tone}${accidental}`,
       pitchClass: targetPC,
-      degree: targetNaturalNoteParams.degree,
+      degree: targetDegree,
     });
 
     currentPC = targetPC;
     currentNaturalNoteIndex = targetNaturalNoteIndex;
-    currentDegree = targetNaturalNoteParams.degree;
+    currentDegree = targetDegree;
   }
 
   return scale;
@@ -101,41 +102,103 @@ export const resolveScale: t.resolveScale = ({
 };
 
 // --
-type calcNotesDistanceParams = { startNote: t.noteName, targetNote: t.noteName }
-type calcNotesDistance = (calcNotesDistanceParams: calcNotesDistanceParams) => number;
-const calcNotesDistance: calcNotesDistance = ({ startNote, targetNote }) => {
-  const startNoteNaturalParams = getNaturalNoteParams(startNote);
-  const startNoteOffsetPC = calcOffsetPC(startNote);
-  const startNotePC = (startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC) % c.OCTAVE_SIZE;
+type findNoteInScaleParams = {
+  note: t.noteName
+  scale: t.resolvedScale
+};
+type findNoteIndexInScale = (findNoteInScaleParams: findNoteInScaleParams) => number;
 
-  const targetNoteNaturalParams = getNaturalNoteParams(targetNote);
-  const targetNoteOffsetPC = calcOffsetPC(targetNote);
-  const targetNotePC = (targetNoteNaturalParams.naturalPitchClass + targetNoteOffsetPC) % c.OCTAVE_SIZE;
-
-  return targetNotePC - startNotePC;
+const findNoteIndexInScale: findNoteIndexInScale = ({ note, scale }) => {
+  const noteNaturalParams = getNaturalNoteParams(note);
+  const noteOffsetPC = calcOffsetPC(note);
+  const notePC = noteNaturalParams.naturalPitchClass + noteOffsetPC;
+  return cu.findIndex(scale, (note) => note.pitchClass === notePC);
 };
 
 // --
-type findNearestNoteInScaleParams = {
-  note: t.noteName,
-  scale: t.resolvedScaleParams['scale'],
-};
-type findNearestNoteInScale = (findNearestNoteInScaleParams: findNearestNoteInScaleParams) => t.noteParams;
 
-const findNearestNoteInScale: findNearestNoteInScale = ({ note, scale }) => {
-  const startNoteNaturalParams = getNaturalNoteParams(note);
-  const startNoteOffsetPC = calcOffsetPC(note);
-  const startNotePC = startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC;
-  const sortedScale = scale.slice(0, scale.length - 1).sort((a, b) => a.pitchClass > b.pitchClass ? 1 : -1);
-  return cu.find(sortedScale, (note) => note.pitchClass > startNotePC);
+type instrumentNoteParams = {
+  note: t.noteName
+  octave: number;
+};
+type instrumentParams = {
+  name: string
+  type: 'string' | 'piano'
+  startNotes: instrumentNoteParams[]
+  scale: t.resolvedScale
+};
+type scaleLayout = instrumentNoteParams[];
+type scaleLayouts = scaleLayout[];
+
+type mapScaleToLayout = (instrumentParams: instrumentParams) => scaleLayouts;
+
+const mapScaleToLayout: mapScaleToLayout = ({ startNotes, scale }) => {
+  return startNotes.map(({ note, octave }) => {
+    const firstNoteIndexInScale = findNoteIndexInScale({ note, scale });
+    const scaleLayout: scaleLayout = [];
+    let currentOctave = octave;
+    for (let step = 0; step <= c.OCTAVE_SIZE; step += 1) {
+      const currentNoteIndex = (firstNoteIndexInScale + step) % c.OCTAVE_SIZE;
+      const currentNote = scale[currentNoteIndex];
+      currentOctave = currentOctave + Number(step > 0 && currentNote.pitchClass === 0);
+      scaleLayout.push({ note: <t.noteName>currentNote.note, octave: currentOctave });
+    }
+    return scaleLayout;
+  });
 };
 
-console.log(findNearestNoteInScale({
-  note: 'E',
-  scale: resolveScale({
-    tonic: 'A',
-    intervalPattern: [2, 1, 2, 2, 1, 2, 2],
-    degreesForRemove: [],
-    modeShift: 0,
-  }).scale
-}));
+const { scale } = resolveScale({
+  tonic: 'C',
+  intervalPattern: [2, 2, 1, 2, 2, 2, 1],
+  degreesForRemove: [2, 4, 6, 7],
+  modeShift: 0,
+});
+
+// console.log(scale);
+// console.log(
+//   mapScaleToLayout({
+//     scale,
+//     startNotes: [
+//       { note: 'E', octave: 4 },
+//       { note: 'B', octave: 3 },
+//       { note: 'G', octave: 3 },
+//       { note: 'D', octave: 3 },
+//       { note: 'A', octave: 2 },
+//       { note: 'E', octave: 2 },
+//     ],
+//     name: 'guitar',
+//     type: 'string',
+//   })
+//     .map((scaleLayout) => scaleLayout.map(({ note }) => note.length > 0 ? `${note.length === 1 ? `${note} ` : note}` : '  ').join(' | '))
+//     .join('\n')
+// );
+console.log(
+  mapScaleToLayout({
+    scale,
+    startNotes: [
+      { note: 'G', octave: 3 },
+      { note: 'C', octave: 4 },
+      { note: 'E', octave: 4 },
+      { note: 'A', octave: 4 },
+    ],
+    name: 'ukulele',
+    type: 'string',
+  })
+    .map((scaleLayout) => scaleLayout.map(({ note }) => note.length > 0 ? `${note.length === 1 ? `${note} ` : note}` : '  ').join(' | '))
+    .join('\n')
+);
+
+// // -- наверное не нужно, т.к. можно смотреть pitchClass первой ноты в гамме
+// type calcNotesDistanceParams = { startNote: t.noteName, targetNote: t.noteName }
+// type calcNotesDistance = (calcNotesDistanceParams: calcNotesDistanceParams) => number;
+// const calcNotesDistance: calcNotesDistance = ({ startNote, targetNote }) => {
+//   const startNoteNaturalParams = getNaturalNoteParams(startNote);
+//   const startNoteOffsetPC = calcOffsetPC(startNote);
+//   const startNotePC = (startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC) % c.OCTAVE_SIZE;
+
+//   const targetNoteNaturalParams = getNaturalNoteParams(targetNote);
+//   const targetNoteOffsetPC = calcOffsetPC(targetNote);
+//   const targetNotePC = (targetNoteNaturalParams.naturalPitchClass + targetNoteOffsetPC) % c.OCTAVE_SIZE;
+
+//   return targetNotePC - startNotePC;
+// };
