@@ -1,5 +1,8 @@
 export type naturalNoteName = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
-export type noteName = naturalNoteName | 'C♯' | 'D♭' | 'D♯' | 'E♭' | 'F♯' | 'G♭' | 'G♯' | 'A♭' | 'A♯' | 'B♭';
+export type flatSymbol = '♭';
+export type sharpSymbol = '♯';
+export type accidental = flatSymbol | sharpSymbol | '';
+export type noteName = `${naturalNoteName}${accidental}`;
 
 export type octaveParams = {
   sinceNumber: number
@@ -8,41 +11,61 @@ export type octaveParams = {
 };
 
 export type naturalNoteParams = {
-  tone: naturalNoteName
+  note: naturalNoteName
   degree: number
   naturalPitchClass: number
 };
 
 export type noteParams = {
-  note: noteName | ''
+  note: noteName
   degree: number
   pitchClass: number
 };
 
-export type intervalStep = 1 | 2;
+export type intervalSize = 1 | 2;
+
+export type intervalPattern = intervalSize[];
 
 export type scaleBuildParams = {
   tonic: noteName
-  intervalPattern: intervalStep[]
-  degreesForRemove: number[]
+  intervalPattern: intervalPattern
   modeShift: number
 };
 
-export type scaleNotes = noteParams[];
+export type scale = noteParams[];
+export type scaleMap = Map<noteParams['pitchClass'], noteParams>;
+export type scaleToMap = (scale: scale) => scaleMap;
 
-export type resolvedScaleParams = scaleBuildParams & {
-  scale: scaleNotes
+export type resolvedScaleParams = {
+  scale: scale
+  intervalPattern: intervalPattern
   canModeShift: boolean
 };
 
-export type resolvedScale = resolvedScaleParams['scale'];
-
-export type intervalPattern = resolvedScaleParams['intervalPattern'];
-
 export type resolveScale = (scaleBuildParams: scaleBuildParams) => resolvedScaleParams;
 
-export type buildDiatonicScale = (scaleBuildParams: Pick<scaleBuildParams, 'tonic' | 'intervalPattern'>) => resolvedScale;
+export type buildDiatonicScale = (scaleBuildParams: Pick<scaleBuildParams, 'tonic' | 'intervalPattern'>) => scale;
 
 export type applyModeShift = (intervalPattern: intervalPattern, modeShift: scaleBuildParams['modeShift']) => intervalPattern;
 
-export type removeDegrees = (scale: resolvedScale, degreesForRemove: scaleBuildParams['degreesForRemove']) => resolvedScale;
+export type instrumentStartNoteParams = {
+  note: noteName
+  octave: number;
+};
+
+export type instrumentNoteParams = {
+  note: noteName | ''
+  octave: number;
+};
+
+export type instrumentParams = {
+  name: string
+  startNotes: instrumentStartNoteParams[]
+  scaleMap: scaleMap
+};
+
+export type scaleLayout = instrumentNoteParams[];
+
+export type scaleLayouts = scaleLayout[];
+
+export type mapScaleToLayout = (instrumentParams: instrumentParams) => scaleLayouts;

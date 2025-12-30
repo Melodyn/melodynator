@@ -3,16 +3,10 @@ import * as c from './constants';
 import * as cu from './commonUtils';
 
 const getNaturalNoteParams = (noteName: t.noteName): t.naturalNoteParams => cu.
-  find(c.naturalNotesParams, ({ tone }) => tone === noteName[0]);
+  find(c.naturalNotesParams, ({ note }) => note === noteName[0]);
 
 const applyModeShift: t.applyModeShift = (intervalPattern, modeShift) => intervalPattern
   .map((_, i) => intervalPattern[(modeShift + i) % intervalPattern.length]);
-
-const removeDegrees: t.removeDegrees = (scale, degrees) => scale.map(({ note, degree, pitchClass }) => ({
-  note: degrees.includes(degree) ? '' : note,
-  pitchClass,
-  degree,
-}));
 
 const checkCanModeShift = (intervalPattern: t.intervalPattern): boolean => cu.sum(intervalPattern) === c.OCTAVE_SIZE;
 
@@ -24,25 +18,21 @@ const calcOffsetPC = (note: t.noteName): -1 | 0 | 1 => {
 };
 
 // строим по логике диатоники, даже если не диатоника
-const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
-  const tonic = scaleBuildParams.tonic;
+const buildDiatonicScale: t.buildDiatonicScale = ({ tonic, intervalPattern }) => {
   const tonicParams = getNaturalNoteParams(tonic);
   const tonicOffsetPC = calcOffsetPC(tonic);
   let currentPC: number = (tonicParams.naturalPitchClass + tonicOffsetPC) % c.OCTAVE_SIZE;
   let currentNaturalNoteIndex = tonicParams.degree - 1;
   let currentDegree = 1;
 
-  const scale: t.noteParams[] = [{ note: tonic, pitchClass: currentPC, degree: currentDegree }];
+  const scale: t.noteParams[] = [{ note: tonic, degree: currentDegree, pitchClass: currentPC }];
 
-  for (const interval of scaleBuildParams.intervalPattern) {
-    if (interval === 2) {
-      scale.push({ note: '', pitchClass: (currentPC + 1) % c.OCTAVE_SIZE, degree: currentDegree });
-    }
-    const targetPC = (currentPC + interval) % c.OCTAVE_SIZE;
+  for (const interval of intervalPattern) {
     const targetNaturalNoteIndex = (currentNaturalNoteIndex + 1) % c.naturalNotesParams.length;
     const targetNaturalNoteParams = c.naturalNotesParams[targetNaturalNoteIndex];
-    const targetNPC = targetNaturalNoteParams.naturalPitchClass;
     const targetDegree = currentDegree + 1;
+    const targetNPC = targetNaturalNoteParams.naturalPitchClass;
+    const targetPC = (currentPC + interval) % c.OCTAVE_SIZE;
 
     // смещение натуральной ноты до целевого pitch class
     const diff = targetPC - targetNPC;
@@ -53,16 +43,17 @@ const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
     if (diff < -c.MAX_PITCH_CLASS_OFFSET) {
       pitchClassOffset = diff + c.OCTAVE_SIZE;
     }
-    let accidental = '';
+
+    let accidental: t.accidental = '';
     if (pitchClassOffset !== 0) {
-      accidental = (pitchClassOffset > 0 ? c.SHARP_SYMBOL : c.FLAT_SYMBOL)
+      accidental = <t.accidental>(pitchClassOffset > 0 ? c.SHARP_SYMBOL : c.FLAT_SYMBOL)
         .repeat(Math.abs(pitchClassOffset));
     }
 
     scale.push({
-      note: <t.noteName>`${targetNaturalNoteParams.tone}${accidental}`,
-      pitchClass: targetPC,
+      note: `${targetNaturalNoteParams.note}${accidental}`,
       degree: targetDegree,
+      pitchClass: targetPC,
     });
 
     currentPC = targetPC;
@@ -73,91 +64,64 @@ const buildDiatonicScale: t.buildDiatonicScale = (scaleBuildParams) => {
   return scale;
 };
 
-export const resolveScale: t.resolveScale = ({
-  tonic,
-  intervalPattern,
-  degreesForRemove = [],
-  modeShift = 0,
-}) => {
+export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modeShift }) => {
   const canModeShift = checkCanModeShift(intervalPattern);
   const shiftedIntervalPattern = (canModeShift && modeShift > 0)
     ? applyModeShift(intervalPattern, modeShift)
     : intervalPattern;
-
   const scale = buildDiatonicScale({ tonic, intervalPattern: shiftedIntervalPattern });
-  const scaleWithoutDegrees = (degreesForRemove.length === 0)
-    ? scale
-    : removeDegrees(scale, degreesForRemove);
 
   const resolvedScaleParams: t.resolvedScaleParams = {
-    tonic,
-    degreesForRemove,
+    scale,
     intervalPattern: shiftedIntervalPattern,
     canModeShift,
-    modeShift,
-    scale: scaleWithoutDegrees,
   };
 
   return resolvedScaleParams;
 };
 
-// --
-type findNoteInScaleParams = {
-  note: t.noteName
-  scale: t.resolvedScale
-};
-type findNoteIndexInScale = (findNoteInScaleParams: findNoteInScaleParams) => number;
+// отображение
 
-const findNoteIndexInScale: findNoteIndexInScale = ({ note, scale }) => {
-  const noteNaturalParams = getNaturalNoteParams(note);
-  const noteOffsetPC = calcOffsetPC(note);
-  const notePC = noteNaturalParams.naturalPitchClass + noteOffsetPC;
-  return cu.findIndex(scale, (note) => note.pitchClass === notePC);
-};
-
-// --
-
-type instrumentNoteParams = {
-  note: t.noteName
-  octave: number;
-};
-type instrumentParams = {
-  name: string
-  type: 'string' | 'piano'
-  startNotes: instrumentNoteParams[]
-  scale: t.resolvedScale
-};
-type scaleLayout = instrumentNoteParams[];
-type scaleLayouts = scaleLayout[];
-
-type mapScaleToLayout = (instrumentParams: instrumentParams) => scaleLayouts;
-
-const mapScaleToLayout: mapScaleToLayout = ({ startNotes, scale }) => {
-  return startNotes.map(({ note, octave }) => {
-    const firstNoteIndexInScale = findNoteIndexInScale({ note, scale });
-    const scaleLayout: scaleLayout = [];
-    let currentOctave = octave;
-    for (let step = 0; step <= c.OCTAVE_SIZE; step += 1) {
-      const currentNoteIndex = (firstNoteIndexInScale + step) % c.OCTAVE_SIZE;
-      const currentNote = scale[currentNoteIndex];
-      currentOctave = currentOctave + Number(step > 0 && currentNote.pitchClass === 0);
-      scaleLayout.push({ note: <t.noteName>currentNote.note, octave: currentOctave });
+const scaleToMap: t.scaleToMap = (scale) => scale
+  .reduce((m, n) => {
+    const { pitchClass } = n;
+    if (!m.has(pitchClass)) {
+      m.set(pitchClass, n);
     }
-    return scaleLayout;
-  });
-};
+    return m;
+  }, new Map());
 
-const { scale } = resolveScale({
-  tonic: 'C',
-  intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-  degreesForRemove: [2, 4, 6, 7],
-  modeShift: 0,
+
+const mapScaleToLayout: t.mapScaleToLayout = ({ startNotes, scaleMap }) => startNotes.map(({ note, octave }) => {
+  const scaleLayout: t.scaleLayout = [];
+  const startNoteNaturalParams = getNaturalNoteParams(note);
+  const startNoteOffsetPC = calcOffsetPC(note);
+  const startNotePC = startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC;
+  let currentOctave = octave;
+
+  for (let semitoneIndex = 0; semitoneIndex <= c.OCTAVE_SIZE; semitoneIndex += 1) {
+    const currentPC = (startNotePC + semitoneIndex) % c.OCTAVE_SIZE;
+    const scaleNoteParams = scaleMap.get(currentPC);
+    const currentNote = scaleNoteParams === undefined ? '' : scaleNoteParams.note;
+    currentOctave = currentOctave + Number(semitoneIndex > 0 && currentPC === 0);
+
+    scaleLayout.push({ note: currentNote, octave: currentOctave });
+  }
+  return scaleLayout;
 });
 
-// console.log(scale);
+// // использование
+
+// const { scale } = resolveScale({
+//   tonic: 'C',
+//   intervalPattern: [2, 2, 1, 2, 2, 2, 1],
+//   modeShift: 1,
+// });
+
+// const scaleMap = scaleToMap(scale);
 // console.log(
 //   mapScaleToLayout({
-//     scale,
+//     scaleMap,
 //     startNotes: [
 //       { note: 'E', octave: 4 },
 //       { note: 'B', octave: 3 },
@@ -166,39 +130,23 @@ const { scale } = resolveScale({
 //       { note: 'A', octave: 2 },
 //       { note: 'E', octave: 2 },
 //     ],
-//     name: 'guitar',
-//     type: 'string',
+//     name: 'Гитара',
 //   })
-//     .map((scaleLayout) => scaleLayout.map(({ note }) => note.length > 0 ? `${note.length === 1 ? `${note} ` : note}` : '  ').join(' | '))
+//     .map((scaleLayout) => scaleLayout.map(({ note }) => note.length > 0 ? `${note.length === 1 ? ` ${note} ` : ` ${note}`}` : '   ').join(' | '))
 //     .join('\n')
 // );
-console.log(
-  mapScaleToLayout({
-    scale,
-    startNotes: [
-      { note: 'G', octave: 3 },
-      { note: 'C', octave: 4 },
-      { note: 'E', octave: 4 },
-      { note: 'A', octave: 4 },
-    ],
-    name: 'ukulele',
-    type: 'string',
-  })
-    .map((scaleLayout) => scaleLayout.map(({ note }) => note.length > 0 ? `${note.length === 1 ? `${note} ` : note}` : '  ').join(' | '))
-    .join('\n')
-);
-
-// // -- наверное не нужно, т.к. можно смотреть pitchClass первой ноты в гамме
-// type calcNotesDistanceParams = { startNote: t.noteName, targetNote: t.noteName }
-// type calcNotesDistance = (calcNotesDistanceParams: calcNotesDistanceParams) => number;
-// const calcNotesDistance: calcNotesDistance = ({ startNote, targetNote }) => {
-//   const startNoteNaturalParams = getNaturalNoteParams(startNote);
-//   const startNoteOffsetPC = calcOffsetPC(startNote);
-//   const startNotePC = (startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC) % c.OCTAVE_SIZE;
-
-//   const targetNoteNaturalParams = getNaturalNoteParams(targetNote);
-//   const targetNoteOffsetPC = calcOffsetPC(targetNote);
-//   const targetNotePC = (targetNoteNaturalParams.naturalPitchClass + targetNoteOffsetPC) % c.OCTAVE_SIZE;
-
-//   return targetNotePC - startNotePC;
-// };
+// console.log('-'.repeat(61));
+// console.log(
+//   mapScaleToLayout({
+//     scaleMap,
+//     startNotes: [
+//       { note: 'A', octave: 4 },
+//       { note: 'E', octave: 4 },
+//       { note: 'C', octave: 4 },
+//       { note: 'G', octave: 4 },
+//     ],
+//     name: 'Укулеле',
+//   })
+//     .map((scaleLayout) => scaleLayout.map(({ note }) => note.length > 0 ? `${note.length === 1 ? ` ${note} ` : ` ${note}`}` : '   ').join(' | '))
+//     .join('\n')
+// );

@@ -4,17 +4,17 @@ import * as t from '../types';
 export const OCTAVE_SIZE: 12 = 12;
 // максимальное смещение pitch class при нормализации (-6 … +6, как в кварто-квинтовом круге)
 export const MAX_PITCH_CLASS_OFFSET: 6 = 6;
-export const FLAT_SYMBOL: '♭' = '♭';
-export const SHARP_SYMBOL: '♯' = '♯';
+export const FLAT_SYMBOL: t.flatSymbol = '♭';
+export const SHARP_SYMBOL: t.sharpSymbol = '♯';
 
 export const naturalNotesParams: t.naturalNoteParams[] = [
-  { tone: 'C', degree: 1, naturalPitchClass: 0 },
-  { tone: 'D', degree: 2, naturalPitchClass: 2 },
-  { tone: 'E', degree: 3, naturalPitchClass: 4 },
-  { tone: 'F', degree: 4, naturalPitchClass: 5 },
-  { tone: 'G', degree: 5, naturalPitchClass: 7 },
-  { tone: 'A', degree: 6, naturalPitchClass: 9 },
-  { tone: 'B', degree: 7, naturalPitchClass: 11 },
+  { note: 'C', degree: 1, naturalPitchClass: 0 },
+  { note: 'D', degree: 2, naturalPitchClass: 2 },
+  { note: 'E', degree: 3, naturalPitchClass: 4 },
+  { note: 'F', degree: 4, naturalPitchClass: 5 },
+  { note: 'G', degree: 5, naturalPitchClass: 7 },
+  { note: 'A', degree: 6, naturalPitchClass: 9 },
+  { note: 'B', degree: 7, naturalPitchClass: 11 },
 ];
 
 const octavesParams: t.octaveParams[] = [
