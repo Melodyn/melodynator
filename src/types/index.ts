@@ -22,7 +22,9 @@ export type noteParams = {
   pitchClass: number
 };
 
-export type intervalSize = 1 | 2;
+export type intervalSize = 1 | 2; // количество полутонов для построения интервала
+export type harmonicIntervalSize = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 11;
+export type functionalShift = number;
 
 export type intervalPattern = intervalSize[];
 
@@ -47,6 +49,10 @@ export type resolveScale = (scaleBuildParams: scaleBuildParams) => resolvedScale
 export type buildDiatonicScale = (scaleBuildParams: Pick<scaleBuildParams, 'tonic' | 'intervalPattern'>) => scale;
 
 export type applyModeShift = (intervalPattern: intervalPattern, modeShift: scaleBuildParams['modeShift']) => intervalPattern;
+
+export type applyFunctionalShift = (resolvedScaleParams: resolvedScaleParams, functionalShift: functionalShift) => resolvedScaleParams;
+
+export type applyHarmonicTransform = (resolvedScaleParams: resolvedScaleParams, harmonicIntervalSize: harmonicIntervalSize) => resolvedScaleParams;
 
 export type instrumentStartNoteParams = {
   note: noteName

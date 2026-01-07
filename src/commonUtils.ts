@@ -15,3 +15,5 @@ export const findIndex = <I>(arr: I[], callback: predicate<I>): number => {
   if (result !== -1) return result;
   throw new AppError('Отсутствует искомый элемент в массиве');
 };
+
+export const rotate = <I>(arr: I[], shift: number) => arr.map((_, i) => arr[(shift + i) % arr.length]);
