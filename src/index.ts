@@ -1,3 +1,6 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 import * as t from './types';
 import * as c from './constants';
 import * as cu from './commonUtils';
@@ -132,7 +135,7 @@ const applyHarmonicTransform: t.applyHarmonicTransform = (resolvedScaleParams, h
 
     throw new AppError(`${homeCenterNoteParams.note} не входит в гамму ${targetTonicInHomeScale.note}`);
   }
-  // если нет, ищем в нотах с именами левой (C#) и правой (Db) ноты
+  // если нет, ищем в нотах с именами повышенной (C#) и пониженной (Db) альтерации
 
   const chromaticUpperTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === targetTonicPC + 1);
   const chromaticUpperTonicName = alterAccidentalBySemitone(chromaticUpperTonicParams.note, 'down');
