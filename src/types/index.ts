@@ -6,7 +6,6 @@ export type noteName = `${naturalNoteName}${accidental}`;
 
 export type octaveParams = {
   sinceNumber: number
-  color: `#${string}`
   nameHelmholtz: string
 };
 

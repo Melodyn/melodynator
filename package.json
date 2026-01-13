@@ -19,11 +19,14 @@
   },
   "homepage": "https://github.com/Melodyn/melodynator#readme",
   "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
+    "sass": "^1.97.2",
     "ts-node": "^10.9.2",
     "vite": "^7.3.0",
     "vitest": "^4.0.16"
   },
   "dependencies": {
+    "@hawk.so/javascript": "^3.2.12",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.8"
   }

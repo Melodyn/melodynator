@@ -44,14 +44,13 @@
   <link rel="alternate" hreflang="ru" href="https://example.com/" />
   <link rel="alternate" hreflang="en" href="https://example.com/en/" />
   <link rel="alternate" hreflang="x-default" href="https://example.com/" />
-
 </head>
 
 <body data-bs-theme="light">
   <div class="root container pt-5 p-0">
     <!-- Visible SEO content -->
     <header>
-      <h1>Гаммы и аккорды онлайн</h1>
+      <h1 onclick="changeTheme()">Гаммы и аккорды онлайн</h1>
       <p>
         Обучающий музыкальный калькулятор для понимания гамм, аккордов и интервальных схем.
       </p>
@@ -94,6 +93,266 @@
         </p>
       </section>
 
+      <div class="row pb-5 justify-content-center">
+        <table class="table table-sm table-borderless align-middle text-center w-auto m-0 p-0">
+          <thead class="align-middle">
+            <tr class="height-30px fw-bold">
+              <td class="p-0 text-start">смещение</td>
+              <td class="p-0" colspan="3">тоника</td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0"></td>
+            </tr>
+          </thead>
+          <tbody class="align-middle">
+            <tr class="height-30px">
+              <td class="p-0 text-start">тональное</td>
+              <td class="p-0 width-30px">
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                  &#8592;
+                </button>
+              </td>
+              <td class="p-0 width-30px fw-bold">C</td>
+              <td class="p-0 width-30px"><button type="button"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                  &#8594;
+                </button>
+              </td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0"></td>
+            </tr>
+            <tr class="height-30px">
+              <td class="p-0 text-start">модальное</td>
+              <td class="p-0 width-30px">
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                  &#8592;
+                </button>
+              </td>
+              <td class="p-0 width-30px fw-bold">0</td>
+              <td class="p-0 width-30px">2</td>
+              <td class="p-0 width-30px">2</td>
+              <td class="p-0 width-30px">1</td>
+              <td class="p-0 width-30px">2</td>
+              <td class="p-0 width-30px">2</td>
+              <td class="p-0 width-30px">2</td>
+              <td class="p-0 width-30px">1</td>
+              <td class="p-0 text-start">
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                  &#8594;
+                </button>
+              </td>
+            </tr>
+            <tr class="height-30px">
+              <td class="p-0 text-start"><span class="pe-1">функциональное</span></td>
+              <td class="p-0 width-30px">
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                  &#8592;
+                </button>
+              </td>
+              <td class="p-0 width-30px fw-bold">C</td>
+              <td class="p-0 width-30px">D</td>
+              <td class="p-0 width-30px">E</td>
+              <td class="p-0 width-30px">F</td>
+              <td class="p-0 width-30px">G</td>
+              <td class="p-0 width-30px">A</td>
+              <td class="p-0 width-30px">B</td>
+              <td class="p-0 width-30px">C</td>
+              <td class="p-0 text-start">
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                  &#8594;
+                </button>
+              </td>
+            </tr>
+            <tr class="height-30px">
+              <td class="p-0 text-start">
+                <svg class="tooltip-configurator" data-bs-custom-class="tooltip-configurator" data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  data-bs-title="По клику на номер ступени она удаляется из готовой гаммы. Так можно оставить только ступени аккорда: 1, 3, 5"
+                  width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <path
+                    d="M12 13.25V12.3929C13.5188 12.3929 14.75 11.2416 14.75 9.82143C14.75 8.40127 13.5188 7.25 12 7.25C10.4812 7.25 9.25 8.40127 9.25 9.82143"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M12.01 16.5H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                ступени
+              </td>
+              <td class="p-0 width-30px text-secondary">&#9745;</td>
+              <td class="p-0 width-30px">1</td>
+              <td class="p-0 width-30px">2</td>
+              <td class="p-0 width-30px">3</td>
+              <td class="p-0 width-30px">4</td>
+              <td class="p-0 width-30px">5</td>
+              <td class="p-0 width-30px">6</td>
+              <td class="p-0 width-30px">7</td>
+              <td class="p-0 width-30px">8</td>
+              <td class="p-0"></td>
+            </tr>
+            <tr class="height-30px">
+              <td class="p-0 text-start">гармония</td>
+              <td class="p-0 width-30px">
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                  &#8592;
+                </button>
+              </td>
+              <td class="p-0 width-30px fw-bold">0</td>
+              <td class="p-0 width-30px">
+                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                  &#8594;
+                </button>
+              </td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row pb-5 justify-content-center">
+        <table class="table table-bordered align-middle text-center w-auto m-0 p-0">
+          <thead class="align-middle">
+            <tr class="height-30px">
+              <td class="p-0 text-secondary width-30px"></td>
+              <td class="p-0 text-secondary width-30px">0</td>
+              <td class="p-0 text-secondary width-30px">1</td>
+              <td class="p-0 text-secondary width-30px">2</td>
+              <td class="p-0 text-secondary width-30px">3</td>
+              <td class="p-0 text-secondary width-30px">4</td>
+              <td class="p-0 text-secondary width-30px">5</td>
+              <td class="p-0 text-secondary width-30px">6</td>
+              <td class="p-0 text-secondary width-30px">7</td>
+              <td class="p-0 text-secondary width-30px">8</td>
+              <td class="p-0 text-secondary width-30px">9</td>
+              <td class="p-0 text-secondary width-30px">10</td>
+              <td class="p-0 text-secondary width-30px">11</td>
+              <td class="p-0 text-secondary width-30px">12</td>
+            </tr>
+          </thead>
+          <tbody data-instrument="fretboard">
+            <tr class="height-30px" data-instrument="fretboard__string">
+              <td class="p-0 text-secondary width-30px" data-instrument="fretboard__string-number">1</td>
+              <td class="p-0 text-secondary width-30px position-relative" data-instrument="fretboard__string-note">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right">
+                  E
+                </button>
+              </td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="height-30px">
+              <td class="p-0 text-secondary width-30px"></td>
+              <td class="p-0 text-secondary width-30px">12</td>
+              <td class="p-0 text-secondary width-30px">13</td>
+              <td class="p-0 text-secondary width-30px">14</td>
+              <td class="p-0 text-secondary width-30px">15</td>
+              <td class="p-0 text-secondary width-30px">16</td>
+              <td class="p-0 text-secondary width-30px">17</td>
+              <td class="p-0 text-secondary width-30px">18</td>
+              <td class="p-0 text-secondary width-30px">19</td>
+              <td class="p-0 text-secondary width-30px">20</td>
+              <td class="p-0 text-secondary width-30px">21</td>
+              <td class="p-0 text-secondary width-30px">22</td>
+              <td class="p-0 text-secondary width-30px">23</td>
+              <td class="p-0 text-secondary width-30px">24</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="row pb-5 justify-content-center">
+        <div class="col-auto">
+          <table data-instrument="keyboard" class="table table-borderless text-center w-auto m-0 p-0">
+            <tbody>
+              <tr class="height-60px">
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+                <td class="bg-dark border width-30px"></td>
+                <td class="bg-light border width-30px"></td>
+              </tr>
+
+              <tr data-instrument="keyboard__notes">
+                <td class="p-0 width-30px">C</td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px">D</td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px">E</td>
+                <td class="p-0 width-30px">F</td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px">G</td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px">A</td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px">B</td>
+                <td class="p-0 width-30px">C</td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </main>
 
     <footer>
@@ -101,9 +360,51 @@
         Интерактивная музыкальная теория • Гаммы • Аккорды • Интервалы
       </p>
     </footer>
+
+    <template id="template-fretboard__set-string-params">
+      <form id="fretboard__set-string-params">
+        <div class="input-group input-group-sm">
+          <select id="fretboard__set-string-note" class="form-select" aria-label="Открытая нота">
+            <option value="E">E</option>
+            <option value="C#">C#</option>
+            <option value="Db">Db</option>
+            <option value="D">D</option>
+            <option value="Eb">Eb</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="F#">F#</option>
+            <option value="Gb">Gb</option>
+            <option value="G">G</option>
+            <option value="Ab">Ab</option>
+            <option value="A">A</option>
+            <option value="Bb">Bb</option>
+            <option value="B">B</option>
+          </select>
+          <select id="fretboard__set-note-octave" class="form-select w-50 mx-1" aria-label="Номер октавы">
+            <option value="0"> 0 / субконтроктава / E0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+          </select>
+          <button type="submit" class="btn btn-outline-primary btn-sm">✓</button>
+        </div>
+      </form>
+    </template>
   </div>
 
-  <script type="module" src="index.ts"></script>
+
+  <script type="module" src="frontend.ts"></script>
+  <script>
+    function changeTheme(dataAttr) {
+      const currentTheme = document.body.dataset.bsTheme;
+      document.body.dataset.bsTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    }
+  </script>
 </body>
 
 </html>

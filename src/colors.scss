@@ -1,0 +1,38 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+
+$theme-colors: map-merge($theme-colors,
+    ("octave-0": $teal-200,
+      "octave-1": $cyan-300,
+      "octave-2": $red-200,
+      "octave-3": $yellow-200,
+      "octave-4": $green-300,
+      "octave-5": $blue-300,
+      "octave-6": $purple-200,
+      "octave-7": $pink-300,
+      "octave-8": $orange-300,
+    ));
+
+@import "bootstrap/scss/bootstrap";
+
+.width-30px {
+  width: 30px;
+}
+
+.height-30px {
+  height: 30px;
+}
+
+.height-60px {
+  height: 60px;
+}
+
+.tooltip-configurator {
+  --bs-tooltip-max-width: 300px;
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+  }
+}
