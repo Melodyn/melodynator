@@ -112,12 +112,14 @@
             <tr class="height-30px">
               <td class="p-0 text-start">тональное</td>
               <td class="p-0 width-30px">
-                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                <button type="button" data-control="tonic" data-direction="down"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
-              <td class="p-0 width-30px fw-bold">C</td>
-              <td class="p-0 width-30px"><button type="button"
+              <td class="p-0 width-30px fw-bold" data-container="tonic"></td>
+              <td class="p-0 width-30px">
+                <button type="button" data-control="tonic" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
@@ -133,7 +135,8 @@
             <tr class="height-30px">
               <td class="p-0 text-start">модальное</td>
               <td class="p-0 width-30px">
-                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                <button type="button" data-control="modal" data-direction="down"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
@@ -146,7 +149,8 @@
               <td class="p-0 width-30px">2</td>
               <td class="p-0 width-30px">1</td>
               <td class="p-0 text-start">
-                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                <button type="button" data-control="modal" data-direction="up"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
               </td>
@@ -154,7 +158,8 @@
             <tr class="height-30px">
               <td class="p-0 text-start"><span class="pe-1">функциональное</span></td>
               <td class="p-0 width-30px">
-                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                <button type="button" data-control="functional" data-direction="down"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
@@ -167,7 +172,8 @@
               <td class="p-0 width-30px">B</td>
               <td class="p-0 width-30px">C</td>
               <td class="p-0 text-start">
-                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                <button type="button" data-control="functional" data-direction="up"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
               </td>
@@ -203,13 +209,15 @@
             <tr class="height-30px">
               <td class="p-0 text-start">гармония</td>
               <td class="p-0 width-30px">
-                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                <button type="button" data-control="harmonic" data-direction="down"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
-              <td class="p-0 width-30px fw-bold">0</td>
+              <td class="p-0 width-30px fw-bold" data-container="harmonic">0</td>
               <td class="p-0 width-30px">
-                <button type="button" class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                <button type="button" data-control="harmonic" data-direction="up"
+                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
               </td>

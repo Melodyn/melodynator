@@ -17,6 +17,8 @@ export const naturalNotesParams: t.naturalNoteParams[] = [
   { note: 'B', degree: 7, naturalPitchClass: 11 },
 ];
 
+export const allNotesNames: t.noteName[] = naturalNotesParams.flatMap<t.noteName>(({ note }) => [`${note}${FLAT_SYMBOL}`, note, `${note}${SHARP_SYMBOL}`]);
+
 const octavesParams: t.octaveParams[] = [
   { sinceNumber: 0, nameHelmholtz: 'N2', }, // субконтр_
   { sinceNumber: 1, nameHelmholtz: 'N1', }, // контр_
@@ -28,3 +30,4 @@ const octavesParams: t.octaveParams[] = [
   { sinceNumber: 7, nameHelmholtz: 'n4', }, // четвертая
   { sinceNumber: 8, nameHelmholtz: 'n5', }, // пятая
 ];
+

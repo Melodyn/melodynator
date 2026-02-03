@@ -17,3 +17,19 @@ export const findIndex = <I>(arr: I[], callback: predicate<I>): number => {
 };
 
 export const rotate = <I>(arr: I[], shift: number) => arr.map((_, i) => arr[(shift + i) % arr.length]);
+
+type qsFirstParameter = Parameters<typeof document.querySelector>[0];
+
+export const qs = <E extends Element>(
+  selector: qsFirstParameter,
+  on: Element | Document = document,
+): E => {
+  const element = on.querySelector<E>(selector);
+  if (element !== null) return element;
+  throw new Error(`Not found element by selector "${selector}"`);
+};
+
+export const qsa = <E extends Element>(
+  selector: qsFirstParameter,
+  on: Element | Document = document,
+): NodeListOf<E> => on.querySelectorAll<E>(selector);

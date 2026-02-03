@@ -27,7 +27,9 @@
   },
   "dependencies": {
     "@hawk.so/javascript": "^3.2.12",
+    "@nanostores/i18n": "^1.2.2",
     "@popperjs/core": "^2.11.8",
-    "bootstrap": "^5.3.8"
+    "bootstrap": "^5.3.8",
+    "nanostores": "^1.1.0"
   }
 }
