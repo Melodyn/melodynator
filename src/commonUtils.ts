@@ -1,4 +1,5 @@
-import { AppError } from "./constants/errors";
+import { AppError } from './constants/errors';
+import type * as t from './types';
 
 export const sum = (numbers: number[]): number => numbers.reduce((acc, num) => acc + num, 0);
 
@@ -18,10 +19,8 @@ export const findIndex = <I>(arr: I[], callback: predicate<I>): number => {
 
 export const rotate = <I>(arr: I[], shift: number) => arr.map((_, i) => arr[(shift + i) % arr.length]);
 
-type qsFirstParameter = Parameters<typeof document.querySelector>[0];
-
 export const qs = <E extends Element>(
-  selector: qsFirstParameter,
+  selector: t.querySelectorParam,
   on: Element | Document = document,
 ): E => {
   const element = on.querySelector<E>(selector);
@@ -30,6 +29,6 @@ export const qs = <E extends Element>(
 };
 
 export const qsa = <E extends Element>(
-  selector: qsFirstParameter,
+  selector: t.querySelectorParam,
   on: Element | Document = document,
 ): NodeListOf<E> => on.querySelectorAll<E>(selector);

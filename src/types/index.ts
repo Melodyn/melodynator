@@ -1,3 +1,5 @@
+import type { Atom, MapStore, ReadableAtom } from 'nanostores';
+
 export type naturalNoteName = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
 export type flatSymbol = '♭';
 export type sharpSymbol = '♯';
@@ -78,3 +80,30 @@ export type mapScaleToLayout = (instrumentParams: instrumentParams) => scaleLayo
 export type direction = 'up' | 'down';
 
 export type changer = (direction: direction) => void;
+
+export type directionControl = 'tonic' | 'modal' | 'functional' | 'harmonic';
+
+export type directionHandler = (control: directionControl, direction: direction) => void;
+
+export type querySelectorParam = Parameters<typeof document.querySelector>[0];
+
+export type store = {
+  stateScaleBuildParams: MapStore<scaleBuildParams>
+  stateHarmonicShift: Atom<number>
+  stateCurrentNoteChromaticIndex: ReadableAtom<number>
+  stateResolvedScaleParams: ReadableAtom<resolvedScaleParams>
+  changeTonic: changer
+  changeHarmonicShift: changer
+};
+
+export type domRefs = {
+  elTonicContainer: HTMLTableCellElement
+  elHarmonicContainer: HTMLTableCellElement
+  elFretboard: HTMLTableSectionElement
+  elFretboardStringTemplate: HTMLTableRowElement
+  elFretboardChangeStringNote: HTMLButtonElement
+  elFretboardNewStringNoteParamsTemplate: HTMLTemplateElement
+  elFretboardNewStringNoteParams: HTMLFormElement
+  elDirectionControllers: NodeListOf<HTMLButtonElement>
+  elTooltipTriggers: NodeListOf<Element>
+};
