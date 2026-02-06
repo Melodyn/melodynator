@@ -50,7 +50,7 @@
   <div class="root container pt-5 p-0">
     <!-- Visible SEO content -->
     <header>
-      <h1 onclick="changeTheme()">Гаммы и аккорды онлайн</h1>
+      <h1>Гаммы и аккорды онлайн</h1>
       <p>
         Обучающий музыкальный калькулятор для понимания гамм, аккордов и интервальных схем.
       </p>
@@ -112,14 +112,14 @@
             <tr class="height-30px">
               <td class="p-0 text-start">тональное</td>
               <td class="p-0 width-30px">
-                <button type="button" data-control="tonic" data-direction="down"
+                <button type="button" data-control="tonic-shift" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
               <td class="p-0 width-30px fw-bold" data-container="tonic"></td>
               <td class="p-0 width-30px">
-                <button type="button" data-control="tonic" data-direction="up"
+                <button type="button" data-control="tonic-shift" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
@@ -135,21 +135,21 @@
             <tr class="height-30px">
               <td class="p-0 text-start">модальное</td>
               <td class="p-0 width-30px">
-                <button type="button" data-control="modal" data-direction="down"
+                <button type="button" data-control="modal-shift" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
-              <td class="p-0 width-30px fw-bold">0</td>
-              <td class="p-0 width-30px">2</td>
-              <td class="p-0 width-30px">2</td>
-              <td class="p-0 width-30px">1</td>
-              <td class="p-0 width-30px">2</td>
-              <td class="p-0 width-30px">2</td>
-              <td class="p-0 width-30px">2</td>
-              <td class="p-0 width-30px">1</td>
+              <td class="p-0 width-30px fw-bold" data-container="interval-degree">0</td>
+              <td class="p-0 width-30px" data-container="interval-degree">2</td>
+              <td class="p-0 width-30px" data-container="interval-degree">2</td>
+              <td class="p-0 width-30px" data-container="interval-degree">1</td>
+              <td class="p-0 width-30px" data-container="interval-degree">2</td>
+              <td class="p-0 width-30px" data-container="interval-degree">2</td>
+              <td class="p-0 width-30px" data-container="interval-degree">2</td>
+              <td class="p-0 width-30px" data-container="interval-degree">1</td>
               <td class="p-0 text-start">
-                <button type="button" data-control="modal" data-direction="up"
+                <button type="button" data-control="modal-shift" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
@@ -158,7 +158,7 @@
             <tr class="height-30px">
               <td class="p-0 text-start"><span class="pe-1">функциональное</span></td>
               <td class="p-0 width-30px">
-                <button type="button" data-control="functional" data-direction="down"
+                <button type="button" data-control="functional-shift" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
@@ -172,7 +172,7 @@
               <td class="p-0 width-30px">B</td>
               <td class="p-0 width-30px">C</td>
               <td class="p-0 text-start">
-                <button type="button" data-control="functional" data-direction="up"
+                <button type="button" data-control="functional-shift" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
@@ -209,14 +209,14 @@
             <tr class="height-30px">
               <td class="p-0 text-start">гармония</td>
               <td class="p-0 width-30px">
-                <button type="button" data-control="harmonic" data-direction="down"
+                <button type="button" data-control="harmonic-transform" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
               <td class="p-0 width-30px fw-bold" data-container="harmonic">0</td>
               <td class="p-0 width-30px">
-                <button type="button" data-control="harmonic" data-direction="up"
+                <button type="button" data-control="harmonic-transform" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
@@ -299,6 +299,7 @@
       </div>
 
       <div class="row pb-5 justify-content-center">
+        <p class="pb-3 text-center text-danger" data-container="resolve-error"></p>
         <div class="col-auto">
           <table data-instrument="keyboard" class="table table-borderless text-center w-auto m-0 p-0">
             <tbody>
@@ -331,19 +332,19 @@
               </tr>
 
               <tr data-instrument="keyboard__notes">
-                <td class="p-0 width-30px">C</td>
                 <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px">D</td>
                 <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px">E</td>
-                <td class="p-0 width-30px">F</td>
                 <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px">G</td>
                 <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px">A</td>
                 <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px">B</td>
-                <td class="p-0 width-30px">C</td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
                 <td class="p-0 width-30px"></td>
                 <td class="p-0 width-30px"></td>
                 <td class="p-0 width-30px"></td>
@@ -362,6 +363,13 @@
       </div>
 
     </main>
+
+    <div class="d-flex justify-content-center pb-5">
+      <div class="form-check form-switch m-0">
+        <input class="form-check-input" type="checkbox" role="switch" id="themeSwitch" data-control="theme-toggle"
+          aria-label="Тема">
+      </div>
+    </div>
 
     <footer>
       <p>
@@ -407,12 +415,6 @@
 
 
   <script type="module" src="frontend.ts"></script>
-  <script>
-    function changeTheme(dataAttr) {
-      const currentTheme = document.body.dataset.bsTheme;
-      document.body.dataset.bsTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    }
-  </script>
 </body>
 
 </html>

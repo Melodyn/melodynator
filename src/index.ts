@@ -17,7 +17,7 @@ import { AppError } from './constants/errors';
 export const getNaturalNoteParams = (noteName: t.noteName): t.naturalNoteParams => cu.
   find(c.naturalNotesParams, ({ note }) => note === noteName[0]);
 
-export const applyModeShift: t.applyModeShift = (intervalPattern, modeShift) => cu.rotate(intervalPattern, modeShift);
+export const applyModalShift: t.applyModalShift = (intervalPattern, modalShift) => cu.rotate(intervalPattern, modalShift);
 
 export const checkCanModeShift = (intervalPattern: t.intervalPattern): boolean => cu.sum(intervalPattern) === c.OCTAVE_SIZE;
 
@@ -94,30 +94,31 @@ export const buildDiatonicScale: t.buildDiatonicScale = ({ tonic, intervalPatter
   return scale;
 };
 
-export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modeShift }) => {
-  const canModeShift = checkCanModeShift(intervalPattern);
-  const shiftedIntervalPattern = (canModeShift && modeShift > 0)
-    ? applyModeShift(intervalPattern, modeShift)
+export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modalShift }) => {
+  const canModalShift = checkCanModeShift(intervalPattern);
+  const shiftedIntervalPattern = (canModalShift && modalShift > 0)
+    ? applyModalShift(intervalPattern, modalShift)
     : intervalPattern;
   const scale = buildDiatonicScale({ tonic, intervalPattern: shiftedIntervalPattern });
 
   const resolvedScaleParams: t.resolvedScaleParams = {
     scale,
     intervalPattern: shiftedIntervalPattern,
-    canModeShift,
+    canModalShift,
+    error: '\u00A0',
   };
 
   return resolvedScaleParams;
 };
 
 export const applyFunctionalShift: t.applyFunctionalShift = (resolvedScaleParams, functionalShift) => {
-  if (!resolvedScaleParams.canModeShift || functionalShift === 0) return resolvedScaleParams;
+  if (!resolvedScaleParams.canModalShift || functionalShift === 0) return resolvedScaleParams;
 
   const newCenterNote: t.noteName = resolvedScaleParams.scale[functionalShift].note;
   return resolveScale({
     tonic: newCenterNote,
     intervalPattern: resolvedScaleParams.intervalPattern,
-    modeShift: functionalShift,
+    modalShift: functionalShift,
   });
 };
 
@@ -131,7 +132,7 @@ export const applyHarmonicTransform: t.applyHarmonicTransform = (resolvedScalePa
   const resolveScaleByTonic = (tonic: t.noteName) => resolveScale({
     tonic,
     intervalPattern: resolvedScaleParams.intervalPattern,
-    modeShift: 0,
+    modalShift: 0,
   });
 
   // нота содержится в текущей гамме?
@@ -143,7 +144,10 @@ export const applyHarmonicTransform: t.applyHarmonicTransform = (resolvedScalePa
       return applyFunctionalShift(targetResolvedScaleParams, homeCenterInTargetScale.degree - 1);
     }
 
-    throw new AppError(`${homeCenterNoteParams.note} не входит в гамму ${targetTonicInHomeScale.note}`);
+    return {
+      ...targetResolvedScaleParams,
+      error: `${homeCenterNoteParams.note} не входит в гамму ${targetTonicInHomeScale.note}`,
+    };
   }
   // если нет, ищем в нотах с именами повышенной (C#) и пониженной (Db) альтерации
 
@@ -165,5 +169,36 @@ export const applyHarmonicTransform: t.applyHarmonicTransform = (resolvedScalePa
     return applyFunctionalShift(chromaticLowerScaleParams, homeCenterInLowerTargetScale.degree - 1);
   }
 
-  throw new AppError(`${homeCenterNoteParams.note} не входит в гаммы ${chromaticLowerTonicName}/${chromaticUpperTonicName}`);
+  return {
+    ...chromaticLowerScaleParams,
+    error: `${homeCenterNoteParams.note} не входит в гаммы ${chromaticLowerTonicName}/${chromaticUpperTonicName}`,
+  };
 };
+
+export const scaleToMap: t.scaleToMap = (scale) => scale
+  .reduce((m, n) => {
+    const { pitchClass } = n;
+    if (!m.has(pitchClass)) {
+      m.set(pitchClass, n);
+    }
+    return m;
+  }, new Map());
+
+export const mapScaleToLayout: t.mapScaleToLayout = ({ startNotes, scaleMap }) => startNotes.map(({ note, octave }) => {
+  const scaleLayout: t.scaleLayout = [];
+  const startNoteNaturalParams = getNaturalNoteParams(note);
+  const startNoteOffsetPC = calcOffsetPC(note);
+  const startNotePC = startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC + c.OCTAVE_SIZE;
+  let currentOctave = octave;
+
+  for (let semitoneIndex = 0; semitoneIndex <= c.OCTAVE_SIZE; semitoneIndex += 1) {
+    const currentPC = (startNotePC + semitoneIndex) % c.OCTAVE_SIZE;
+    const scaleNoteParams = scaleMap.get(currentPC);
+    const currentNote = scaleNoteParams === undefined ? '' : scaleNoteParams.note;
+    currentOctave = currentOctave + Number(semitoneIndex > 0 && currentPC === 0);
+
+    scaleLayout.push({ note: currentNote, octave: currentOctave });
+  }
+
+  return scaleLayout;
+});

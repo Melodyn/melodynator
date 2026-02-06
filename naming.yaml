@@ -1,0 +1,55 @@
+data_control:
+  - tonic-shift
+  - modal-shift
+  - functional-shift
+  - harmonic-transform
+  - theme-toggle
+
+data_container:
+  - tonic
+  - interval-degree
+  - harmonic
+  - resolve-error
+
+data_instrument:
+  - fretboard
+  - fretboard__string
+  - fretboard__string-number
+  - fretboard__string-note
+  - keyboard
+  - keyboard__notes
+
+scale_build_params:
+  - tonic
+  - intervalPattern
+  - modalShift
+
+resolved_scale_params:
+  - scale
+  - intervalPattern
+  - canModalShift
+  - error
+
+stores:
+  - stateScaleBuildParams
+  - stateHarmonicIntervalSize
+  - stateCurrentNoteChromaticIndex
+  - stateResolvedScaleParams
+  - theme
+
+actions:
+  - changeTonic
+  - changeModalShift
+  - changeHarmonicIntervalSize
+  - toggleTheme
+
+render_targets:
+  - elTonicContainer
+  - elHarmonicContainer
+  - elIntervalContainers
+  - elResolveErrorContainer
+  - elKeyboardNotes
+
+controls:
+  - directionControl
+  - direction

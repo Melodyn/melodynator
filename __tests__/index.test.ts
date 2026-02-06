@@ -40,17 +40,17 @@ describe('minor', () => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 1, 2, 2, 1, 2, 2],
-      modeShift: 0,
+      modalShift: 0,
     });
     expect(result.scale.map(({ note }) => note).join(' ')).toEqual(expected);
   });
 
   const shiftedMinor = minor.map((scale, index) => ({ tonic: <t.noteName>scale[0], expected: major[index].join(' ') }));
-  test.each(shiftedMinor)('modeShift $tonic', ({ tonic, expected }) => {
+  test.each(shiftedMinor)('modalShift $tonic', ({ tonic, expected }) => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 1, 2, 2, 1, 2, 2],
-      modeShift: 2,
+      modalShift: 2,
     });
     expect(result.scale.map(({ note }) => note).join(' ')).not.toEqual(expected);
   });
@@ -62,17 +62,17 @@ describe('major', () => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-      modeShift: 0,
+      modalShift: 0,
     });
     expect(result.scale.map(({ note }) => note).join(' ')).toEqual(expected);
   });
 
   const shiftedMajor = major.map((scale, index) => ({ tonic: <t.noteName>scale[0], expected: minor[index].join(' ') }));
-  test.each(shiftedMajor)('modeShift $tonic', ({ tonic, expected }) => {
+  test.each(shiftedMajor)('modalShift $tonic', ({ tonic, expected }) => {
     const result = resolveScale({
       tonic,
       intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-      modeShift: 5,
+      modalShift: 5,
     });
     expect(result.scale.map(({ note }) => note).join(' ')).not.toEqual(expected);
   });

@@ -1,4 +1,4 @@
-import type { Atom, MapStore, ReadableAtom } from 'nanostores';
+import type { Atom, MapStore, ReadableAtom, WritableAtom } from 'nanostores';
 
 export type naturalNoteName = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
 export type flatSymbol = '♭';
@@ -32,7 +32,7 @@ export type intervalPattern = intervalSize[];
 export type scaleBuildParams = {
   tonic: noteName
   intervalPattern: intervalPattern
-  modeShift: number
+  modalShift: number
 };
 
 export type scale = noteParams[];
@@ -42,14 +42,15 @@ export type scaleToMap = (scale: scale) => scaleMap;
 export type resolvedScaleParams = {
   scale: scale
   intervalPattern: intervalPattern
-  canModeShift: boolean
+  canModalShift: boolean
+  error: string
 };
 
 export type resolveScale = (scaleBuildParams: scaleBuildParams) => resolvedScaleParams;
 
 export type buildDiatonicScale = (scaleBuildParams: Pick<scaleBuildParams, 'tonic' | 'intervalPattern'>) => scale;
 
-export type applyModeShift = (intervalPattern: intervalPattern, modeShift: scaleBuildParams['modeShift']) => intervalPattern;
+export type applyModalShift = (intervalPattern: intervalPattern, modalShift: scaleBuildParams['modalShift']) => intervalPattern;
 
 export type applyFunctionalShift = (resolvedScaleParams: resolvedScaleParams, functionalShift: functionalShift) => resolvedScaleParams;
 
@@ -81,7 +82,7 @@ export type direction = 'up' | 'down';
 
 export type changer = (direction: direction) => void;
 
-export type directionControl = 'tonic' | 'modal' | 'functional' | 'harmonic';
+export type directionControl = 'tonic-shift' | 'modal-shift' | 'functional-shift' | 'harmonic-transform';
 
 export type directionHandler = (control: directionControl, direction: direction) => void;
 
@@ -89,16 +90,19 @@ export type querySelectorParam = Parameters<typeof document.querySelector>[0];
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
-  stateHarmonicShift: Atom<number>
+  stateHarmonicIntervalSize: Atom<number>
   stateCurrentNoteChromaticIndex: ReadableAtom<number>
   stateResolvedScaleParams: ReadableAtom<resolvedScaleParams>
   changeTonic: changer
-  changeHarmonicShift: changer
+  changeHarmonicIntervalSize: changer
+  changeModalShift: changer
 };
 
 export type domRefs = {
+  elResolveErrorContainer: HTMLParagraphElement
   elTonicContainer: HTMLTableCellElement
   elHarmonicContainer: HTMLTableCellElement
+  elThemeToggle: HTMLInputElement
   elFretboard: HTMLTableSectionElement
   elFretboardStringTemplate: HTMLTableRowElement
   elFretboardChangeStringNote: HTMLButtonElement
@@ -106,4 +110,15 @@ export type domRefs = {
   elFretboardNewStringNoteParams: HTMLFormElement
   elDirectionControllers: NodeListOf<HTMLButtonElement>
   elTooltipTriggers: NodeListOf<Element>
+  elKeyboardNotes: NodeListOf<HTMLTableCellElement>
+  elIntervalContainers: NodeListOf<HTMLTableCellElement>
 };
+
+export type uiTheme = 'light' | 'dark';
+
+export type uiStore = {
+  theme: ReadableAtom<uiTheme>
+  toggleTheme: () => void
+};
+
+export type appStore = store & uiStore;

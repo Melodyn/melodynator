@@ -35,7 +35,7 @@
 // const scaleBuildParams: t.scaleBuildParams = {
 //   tonic,
 //   intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-//   modeShift: 1,
+//   modalShift: 1,
 // };
 
 // const resolvedScaleParams = resolveScale(scaleBuildParams);
@@ -52,7 +52,7 @@
 // const result = {
 //   tonic: 'A',
 //   intervalPattern: [2, 1, 2, 2, 1, 2, 2], // интервальная схема по полутонам
-//   modeShift: 2, // смещение по ступеням от 0 до 7
+//   modalShift: 2, // смещение по ступеням от 0 до 7
 //   functionalShift: 3, // смещение по ступеням от 0 до 7
 //   harmonicIntervalSize: 5, // смещение по полутонам от 0 до 11
 //   hiddenDegrees: [4, 7, 8], // номера ступеней, скрытых в UI
