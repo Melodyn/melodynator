@@ -98,7 +98,7 @@
           <thead class="align-middle">
             <tr class="height-30px fw-bold">
               <td class="p-0 text-start">смещение</td>
-              <td class="p-0" colspan="3">тоника</td>
+              <td class="p-0" colspan="3">центр</td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
@@ -140,14 +140,14 @@
                   &#8592;
                 </button>
               </td>
-              <td class="p-0 width-30px fw-bold" data-container="interval-degree">0</td>
-              <td class="p-0 width-30px" data-container="interval-degree">2</td>
-              <td class="p-0 width-30px" data-container="interval-degree">2</td>
-              <td class="p-0 width-30px" data-container="interval-degree">1</td>
-              <td class="p-0 width-30px" data-container="interval-degree">2</td>
-              <td class="p-0 width-30px" data-container="interval-degree">2</td>
-              <td class="p-0 width-30px" data-container="interval-degree">2</td>
-              <td class="p-0 width-30px" data-container="interval-degree">1</td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
               <td class="p-0 text-start">
                 <button type="button" data-control="modal-shift" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
@@ -156,23 +156,23 @@
               </td>
             </tr>
             <tr class="height-30px">
-              <td class="p-0 text-start"><span class="pe-1">функциональное</span></td>
+              <td class="p-0 text-start"><span class="pe-1">вращение</span></td>
               <td class="p-0 width-30px">
-                <button type="button" data-control="functional-shift" data-direction="down"
+                <button type="button" data-control="degree-rotation" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
                   &#8592;
                 </button>
               </td>
-              <td class="p-0 width-30px fw-bold">C</td>
-              <td class="p-0 width-30px">D</td>
-              <td class="p-0 width-30px">E</td>
-              <td class="p-0 width-30px">F</td>
-              <td class="p-0 width-30px">G</td>
-              <td class="p-0 width-30px">A</td>
-              <td class="p-0 width-30px">B</td>
-              <td class="p-0 width-30px">C</td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
               <td class="p-0 text-start">
-                <button type="button" data-control="functional-shift" data-direction="up"
+                <button type="button" data-control="degree-rotation" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
@@ -214,7 +214,7 @@
                   &#8592;
                 </button>
               </td>
-              <td class="p-0 width-30px fw-bold" data-container="harmonic">0</td>
+              <td class="p-0 width-30px fw-bold" data-container="harmonic" colspan="2"></td>
               <td class="p-0 width-30px">
                 <button type="button" data-control="harmonic-transform" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
@@ -226,14 +226,13 @@
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
               <td class="p-0"></td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="row pb-5 justify-content-center">
+      <div class="row pb-5 justify-content-center d-none">
         <table class="table table-bordered align-middle text-center w-auto m-0 p-0">
           <thead class="align-middle">
             <tr class="height-30px">
@@ -299,8 +298,7 @@
       </div>
 
       <div class="row pb-5 justify-content-center">
-        <p class="pb-3 text-center text-danger" data-container="resolve-error"></p>
-        <div class="col-auto">
+        <div class="col-auto position-relative">
           <table data-instrument="keyboard" class="table table-borderless text-center w-auto m-0 p-0">
             <tbody>
               <tr class="height-60px">
@@ -359,6 +357,9 @@
               </tr>
             </tbody>
           </table>
+          <p class="p-0 m-0 w-100 text-center text-danger position-absolute bottom-0 start-0"
+            data-container="resolve-error">
+          </p>
         </div>
       </div>
 

@@ -24,7 +24,8 @@ export const getDomRefs = (): t.domRefs => {
   // 
   const elTonicContainer = qs<HTMLTableCellElement>('[data-container="tonic"]');
   const elHarmonicContainer = qs<HTMLTableCellElement>('[data-container="harmonic"]');
-  const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-degree"]');
+  const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
+  const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   //
   const elFretboard = qs<HTMLTableSectionElement>('[data-instrument="fretboard"]');
   const elFretboardStringTemplate = qs<HTMLTableRowElement>('[data-instrument="fretboard__string"]', elFretboard);
@@ -42,6 +43,7 @@ export const getDomRefs = (): t.domRefs => {
     elTonicContainer,
     elHarmonicContainer,
     elIntervalContainers,
+    elScaleToneContainers,
     //
     elFretboard,
     elFretboardStringTemplate,
@@ -52,7 +54,7 @@ export const getDomRefs = (): t.domRefs => {
   };
 };
 
-export const initPopovers = (refs: t.domRefs): void => {
+export const initPopovers = (refs: t.domRefs) => {
   const pop = new Popover(refs.elFretboardChangeStringNote, {
     html: true,
     sanitize: false,
@@ -67,17 +69,17 @@ export const initPopovers = (refs: t.domRefs): void => {
   });
 };
 
-export const initTooltips = (refs: t.domRefs): void => {
+export const initTooltips = (refs: t.domRefs) => {
   refs.elTooltipTriggers.forEach((tooltipTriggerEl) => new Tooltip(tooltipTriggerEl));
 };
 
-export const bindThemeToggle = (refs: t.domRefs, store: t.uiStore): void => {
+export const bindThemeToggle = (refs: t.domRefs, store: t.uiStore) => {
   refs.elThemeToggle.addEventListener('change', () => {
     store.toggleTheme();
   });
 };
 
-export const bindDirectionControls = (refs: t.domRefs, onChange: t.directionHandler): void => {
+export const bindDirectionControls = (refs: t.domRefs, onChange: t.directionHandler) => {
   refs.elDirectionControllers.forEach((el) => {
     el.addEventListener('click', () => {
       if (!el.dataset.control || !el.dataset.direction) return;

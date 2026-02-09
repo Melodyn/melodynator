@@ -1,4 +1,4 @@
-import type { Atom, MapStore, ReadableAtom, WritableAtom } from 'nanostores';
+import type { Atom, MapStore } from 'nanostores';
 
 export type naturalNoteName = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
 export type flatSymbol = '♭';
@@ -25,7 +25,7 @@ export type noteParams = {
 
 export type intervalSize = 1 | 2; // количество полутонов для построения интервала
 export type harmonicIntervalSize = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
-export type functionalShift = number;
+export type degreeRotation = number;
 
 export type intervalPattern = intervalSize[];
 
@@ -43,7 +43,8 @@ export type resolvedScaleParams = {
   scale: scale
   intervalPattern: intervalPattern
   canModalShift: boolean
-  error: string
+  canHarmonicTransform: boolean
+  harmonicTargets: noteName[]
 };
 
 export type resolveScale = (scaleBuildParams: scaleBuildParams) => resolvedScaleParams;
@@ -52,7 +53,7 @@ export type buildDiatonicScale = (scaleBuildParams: Pick<scaleBuildParams, 'toni
 
 export type applyModalShift = (intervalPattern: intervalPattern, modalShift: scaleBuildParams['modalShift']) => intervalPattern;
 
-export type applyFunctionalShift = (resolvedScaleParams: resolvedScaleParams, functionalShift: functionalShift) => resolvedScaleParams;
+export type applyDegreeRotation = (resolvedScaleParams: resolvedScaleParams, degreeRotation: degreeRotation) => resolvedScaleParams;
 
 export type applyHarmonicTransform = (resolvedScaleParams: resolvedScaleParams, harmonicIntervalSize: harmonicIntervalSize) => resolvedScaleParams;
 
@@ -80,9 +81,11 @@ export type mapScaleToLayout = (instrumentParams: instrumentParams) => scaleLayo
 
 export type direction = 'up' | 'down';
 
-export type changer = (direction: direction) => void;
+export type directionOffset = -1 | 1;
 
-export type directionControl = 'tonic-shift' | 'modal-shift' | 'functional-shift' | 'harmonic-transform';
+export type changer = (offset: directionOffset) => void;
+
+export type directionControl = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'harmonic-transform';
 
 export type directionHandler = (control: directionControl, direction: direction) => void;
 
@@ -91,11 +94,14 @@ export type querySelectorParam = Parameters<typeof document.querySelector>[0];
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
   stateHarmonicIntervalSize: Atom<number>
-  stateCurrentNoteChromaticIndex: ReadableAtom<number>
-  stateResolvedScaleParams: ReadableAtom<resolvedScaleParams>
+  stateCurrentNoteChromaticIndex: Atom<number>
+  stateResolvedScaleParams: Atom<resolvedScaleParams>
+  stateUnshiftResolvedScaleParams: Atom<resolvedScaleParams>
+  stateDegreeRotation: Atom<number>
   changeTonic: changer
   changeHarmonicIntervalSize: changer
   changeModalShift: changer
+  changeDegreeRotation: changer
 };
 
 export type domRefs = {
@@ -112,12 +118,13 @@ export type domRefs = {
   elTooltipTriggers: NodeListOf<Element>
   elKeyboardNotes: NodeListOf<HTMLTableCellElement>
   elIntervalContainers: NodeListOf<HTMLTableCellElement>
+  elScaleToneContainers: NodeListOf<HTMLTableCellElement>
 };
 
 export type uiTheme = 'light' | 'dark';
 
 export type uiStore = {
-  theme: ReadableAtom<uiTheme>
+  theme: Atom<uiTheme>
   toggleTheme: () => void
 };
 

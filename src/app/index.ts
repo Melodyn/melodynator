@@ -1,3 +1,4 @@
+import type * as t from '../types';
 import { createStore } from './store';
 import { bindRenderers } from './render';
 import {
@@ -9,7 +10,7 @@ import {
   initTooltips,
 } from './ui';
 
-export const run = (): void => {
+export const run = () => {
   const store = createStore();
   const uiStore = createUiStore();
   const appStore = { ...store, ...uiStore };
@@ -21,20 +22,22 @@ export const run = (): void => {
   bindThemeToggle(refs, uiStore);
 
   bindDirectionControls(refs, (control, direction) => {
+    const offset: t.directionOffset = direction === 'up' ? 1 : -1;
     switch (control) {
       case 'tonic-shift':
-        store.changeTonic(direction);
+        store.changeTonic(offset);
         break;
       case 'modal-shift':
-        store.changeModalShift(direction);
+        store.changeModalShift(offset);
         break;
-      case 'functional-shift':
+      case 'degree-rotation':
+        store.changeDegreeRotation(offset);
         break;
       case 'harmonic-transform':
-        store.changeHarmonicIntervalSize(direction);
+        store.changeHarmonicIntervalSize(offset);
         break;
       default:
-        console.log({ control, direction });
+        break;
     }
   });
 };

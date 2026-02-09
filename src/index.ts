@@ -105,20 +105,21 @@ export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modalShif
     scale,
     intervalPattern: shiftedIntervalPattern,
     canModalShift,
-    error: '\u00A0',
+    canHarmonicTransform: true,
+    harmonicTargets: [tonic],
   };
 
   return resolvedScaleParams;
 };
 
-export const applyFunctionalShift: t.applyFunctionalShift = (resolvedScaleParams, functionalShift) => {
-  if (!resolvedScaleParams.canModalShift || functionalShift === 0) return resolvedScaleParams;
+export const applyDegreeRotation: t.applyDegreeRotation = (resolvedScaleParams, degreeRotation) => {
+  if (!resolvedScaleParams.canModalShift || degreeRotation === 0) return resolvedScaleParams;
 
-  const newCenterNote: t.noteName = resolvedScaleParams.scale[functionalShift].note;
+  const newCenterNote: t.noteName = resolvedScaleParams.scale[degreeRotation].note;
   return resolveScale({
     tonic: newCenterNote,
     intervalPattern: resolvedScaleParams.intervalPattern,
-    modalShift: functionalShift,
+    modalShift: degreeRotation,
   });
 };
 
@@ -141,37 +142,52 @@ export const applyHarmonicTransform: t.applyHarmonicTransform = (resolvedScalePa
 
     const homeCenterInTargetScale = targetResolvedScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
     if (homeCenterInTargetScale) {
-      return applyFunctionalShift(targetResolvedScaleParams, homeCenterInTargetScale.degree - 1);
+      const resolvedScale = applyDegreeRotation(targetResolvedScaleParams, homeCenterInTargetScale.degree - 1);
+      return {
+        ...resolvedScale,
+        harmonicTargets: [targetTonicInHomeScale.note],
+      };
     }
 
     return {
       ...targetResolvedScaleParams,
-      error: `${homeCenterNoteParams.note} не входит в гамму ${targetTonicInHomeScale.note}`,
+      canHarmonicTransform: false,
+      harmonicTargets: [targetTonicInHomeScale.note],
     };
   }
   // если нет, ищем в нотах с именами повышенной (C#) и пониженной (Db) альтерации
 
-  const chromaticUpperTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === targetTonicPC + 1);
+  const chromaticUpperTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === (targetTonicPC + 1) % c.OCTAVE_SIZE);
   const chromaticUpperTonicName = alterAccidentalBySemitone(chromaticUpperTonicParams.note, 'down');
   const chromaticUpperScaleParams = resolveScaleByTonic(chromaticUpperTonicName);
 
+  const chromaticLowerTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === (targetTonicPC + c.OCTAVE_SIZE - 1) % c.OCTAVE_SIZE);
+  const chromaticLowerTonicName = alterAccidentalBySemitone(chromaticLowerTonicParams.note, 'up');
+
   const homeCenterInUpperTargetScale = chromaticUpperScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
   if (homeCenterInUpperTargetScale) {
-    return applyFunctionalShift(chromaticUpperScaleParams, homeCenterInUpperTargetScale.degree - 1);
+    const resolvedScale = applyDegreeRotation(chromaticUpperScaleParams, homeCenterInUpperTargetScale.degree - 1);
+    return {
+      ...resolvedScale,
+      harmonicTargets: [chromaticLowerTonicName, chromaticUpperTonicName],
+    };
   }
 
-  const chromaticLowerTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === targetTonicPC - 1);
-  const chromaticLowerTonicName = alterAccidentalBySemitone(chromaticLowerTonicParams.note, 'up');
   const chromaticLowerScaleParams = resolveScaleByTonic(chromaticLowerTonicName);
 
   const homeCenterInLowerTargetScale = chromaticLowerScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
   if (homeCenterInLowerTargetScale) {
-    return applyFunctionalShift(chromaticLowerScaleParams, homeCenterInLowerTargetScale.degree - 1);
+    const resolvedScale = applyDegreeRotation(chromaticLowerScaleParams, homeCenterInLowerTargetScale.degree - 1);
+    return {
+      ...resolvedScale,
+      harmonicTargets: [chromaticLowerTonicName, chromaticUpperTonicName],
+    };
   }
 
   return {
     ...chromaticLowerScaleParams,
-    error: `${homeCenterNoteParams.note} не входит в гаммы ${chromaticLowerTonicName}/${chromaticUpperTonicName}`,
+    canHarmonicTransform: false,
+    harmonicTargets: [chromaticLowerTonicName, chromaticUpperTonicName],
   };
 };
 

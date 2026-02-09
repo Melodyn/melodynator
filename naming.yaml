@@ -1,13 +1,13 @@
 data_control:
   - tonic-shift
   - modal-shift
-  - functional-shift
+  - degree-rotation
   - harmonic-transform
   - theme-toggle
 
 data_container:
   - tonic
-  - interval-degree
+  - interval-step
   - harmonic
   - resolve-error
 

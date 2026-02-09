@@ -39,7 +39,7 @@
 // };
 
 // const resolvedScaleParams = resolveScale(scaleBuildParams);
-// const resolvedFunctionalShiftedScaleParams = applyFunctionalShift(resolvedScaleParams, 0);
+// const resolvedDegreeRotatedScaleParams = applyDegreeRotation(resolvedScaleParams, 0);
 // const harmonicTransformedScaleParams = applyHarmonicTransform(resolvedFunctionalShiftedScaleParams, 0);
 
 // console.log([
@@ -53,7 +53,7 @@
 //   tonic: 'A',
 //   intervalPattern: [2, 1, 2, 2, 1, 2, 2], // интервальная схема по полутонам
 //   modalShift: 2, // смещение по ступеням от 0 до 7
-//   functionalShift: 3, // смещение по ступеням от 0 до 7
+//   degreeRotation: 3, // смещение по ступеням от 0 до 7
 //   harmonicIntervalSize: 5, // смещение по полутонам от 0 до 11
 //   hiddenDegrees: [4, 7, 8], // номера ступеней, скрытых в UI
 //   resultTonic: 'F', // итоговая тоника

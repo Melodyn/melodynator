@@ -36,3 +36,7 @@ $theme-colors: map-merge($theme-colors,
     opacity: 1;
   }
 }
+
+.bg-opacity-2 {
+  --bs-bg-opacity: .2;
+}
