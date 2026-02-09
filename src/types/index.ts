@@ -77,7 +77,7 @@ export type scaleLayout = instrumentNoteParams[];
 
 export type scaleLayouts = scaleLayout[];
 
-export type mapScaleToLayout = (instrumentParams: instrumentParams) => scaleLayouts;
+export type mapScaleToLayout = (instrumentParams: Omit<instrumentParams, 'name'>) => scaleLayouts;
 
 export type direction = 'up' | 'down';
 

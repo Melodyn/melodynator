@@ -47,7 +47,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     const currentNoteChromaticIndex = store.stateCurrentNoteChromaticIndex.get();
     const unwrapPitchClassForDisplay = tonic.pitchClass === 0 && currentNoteChromaticIndex > 1 ? c.OCTAVE_SIZE : tonic.pitchClass;
 
-    const scaleLayouts = mu.mapScaleToLayout({ scaleMap, startNotes: [{ note: tonic.note, octave: 1 }], name: 'keyboard' });
+    const scaleLayouts = mu.mapScaleToLayout({ scaleMap, startNotes: [{ note: tonic.note, octave: 1 }] });
     const keyboardScaleLayout = scaleLayouts[0];
 
     const startKeyIndex = unwrapPitchClassForDisplay;
@@ -65,7 +65,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   store.stateUnshiftResolvedScaleParams.subscribe((resolvedScaleParams) => {
     const scaleMap = mu.scaleToMap(resolvedScaleParams.scale);
     const tonic = resolvedScaleParams.scale[0];
-    const scaleLayouts = mu.mapScaleToLayout({ scaleMap, startNotes: [{ note: tonic.note, octave: 1 }], name: 'keyboard' });
+    const scaleLayouts = mu.mapScaleToLayout({ scaleMap, startNotes: [{ note: tonic.note, octave: 1 }] });
     const keyboardScaleLayout = scaleLayouts[0];
     const keyboardScaleLayoutWithoutEmpty = keyboardScaleLayout.filter((n) => n.note !== '');
     refs.elScaleToneContainers.forEach((el, i) => {

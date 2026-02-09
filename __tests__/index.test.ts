@@ -114,7 +114,6 @@ describe('mapScaleToLayout', () => {
     });
     const scaleMap = scaleToMap(scale);
     const result = mapScaleToLayout({
-      name: 'test',
       startNotes: [{ note: <t.noteName>'C', octave: 4 }],
       scaleMap,
     });
@@ -138,7 +137,6 @@ describe('mapScaleToLayout', () => {
     });
     const scaleMap = scaleToMap(scale);
     const result = mapScaleToLayout({
-      name: 'test',
       startNotes: [{ note: <t.noteName>'C', octave: 4 }],
       scaleMap,
     });
