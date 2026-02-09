@@ -1,4 +1,4 @@
-import { resolve } from 'path'
+import { resolve } from 'path';
 
 export default {
   root: resolve(__dirname, 'src'),

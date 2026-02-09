@@ -21,7 +21,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     });
   });
 
-  store.stateHarmonicIntervalSize.subscribe((stateHarmonicIntervalSize) => {
+  store.stateHarmonicIntervalSize.subscribe(() => {
     const resolvedScale = store.stateResolvedScaleParams.get()
     refs.elHarmonicContainer.textContent = resolvedScale.harmonicTargets.join('/');
   });
@@ -31,7 +31,10 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
-    refs.elResolveErrorContainer.textContent = resolvedScaleParams.canHarmonicTransform ? '' : `Центр не входит в гамму ${resolvedScaleParams.harmonicTargets.join('/')}`;
+    refs.elResolveErrorContainer.textContent = resolvedScaleParams.canHarmonicTransform
+      ? ''
+      : `Центр не входит в гамму ${resolvedScaleParams.harmonicTargets.join('/')}`;
+
     if (!resolvedScaleParams.canHarmonicTransform) {
       refs.elKeyboardNotes.forEach((key) => {
         key.textContent = '\u00A0';

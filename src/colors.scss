@@ -40,3 +40,8 @@ $theme-colors: map-merge($theme-colors,
 .bg-opacity-2 {
   --bs-bg-opacity: .2;
 }
+
+.table-spacing-y {
+  border-collapse: separate;
+  border-spacing: 0 4px;
+}
