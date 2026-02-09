@@ -71,7 +71,6 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     refs.elScaleToneContainers.forEach((el, i) => {
       el.textContent = keyboardScaleLayoutWithoutEmpty[i].note;
     });
-    refs.elHarmonicContainer.textContent = tonic.note;
   });
 
   store.stateDegreeRotation.subscribe((degreeRotation) => {
