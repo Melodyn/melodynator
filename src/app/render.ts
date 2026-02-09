@@ -22,7 +22,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.stateHarmonicIntervalSize.subscribe(() => {
-    const resolvedScale = store.stateResolvedScaleParams.get()
+    const resolvedScale = store.stateResolvedScaleParams.get();
     refs.elHarmonicContainer.textContent = resolvedScale.harmonicTargets.join('/');
   });
 

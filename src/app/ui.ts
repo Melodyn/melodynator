@@ -83,7 +83,7 @@ export const bindDirectionControls = (refs: t.domRefs, onChange: t.directionHand
   refs.elDirectionControllers.forEach((el) => {
     el.addEventListener('click', () => {
       if (!el.dataset.control || !el.dataset.direction) return;
-      const { control, direction } = el.dataset as { control: t.directionControl; direction: t.direction };
+      const { control, direction } = <{ control: t.directionControl; direction: t.direction }>el.dataset;
       onChange(control, direction);
     });
   });

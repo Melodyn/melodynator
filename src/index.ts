@@ -3,7 +3,6 @@
 import * as t from './types';
 import * as c from './constants';
 import * as cu from './commonUtils';
-import { AppError } from './constants/errors';
 
 // const hawk = new HawkCatcher({
 //   token: 'eyJpbnRlZ3JhdGlvbklkIjoiOTYxYTk2NWMtNDI0Mi00YjE0LWIzZDctYzc3MGRkNzQ2MDYxIiwic2VjcmV0IjoiNDg0ZWY0MTktMjgzNi00NjlhLWEwMDUtNjFjOTAzODUzODI2In0=',
