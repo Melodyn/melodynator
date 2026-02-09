@@ -16,12 +16,12 @@ export const createUiStore = (): t.uiStore => {
   };
 };
 
-export const getDomRefs = (): t.domRefs => {
+const getDomRefs = (): t.domRefs => {
   const elThemeToggle = qs<HTMLInputElement>('[data-control="theme-toggle"]');
   const elTooltipTriggers = qsa('[data-bs-toggle="tooltip"]');
   const elDirectionControllers = qsa<HTMLButtonElement>('[data-direction]');
   const elResolveErrorContainer = qs<HTMLParagraphElement>('[data-container="resolve-error"]');
-  // 
+  //
   const elTonicContainer = qs<HTMLTableCellElement>('[data-container="tonic"]');
   const elHarmonicContainer = qs<HTMLTableCellElement>('[data-container="harmonic"]');
   const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
@@ -54,37 +54,50 @@ export const getDomRefs = (): t.domRefs => {
   };
 };
 
-export const initPopovers = (refs: t.domRefs) => {
-  const pop = new Popover(refs.elFretboardChangeStringNote, {
+export const initUI = (appStore: t.appStore): t.domRefs => {
+  const refs = getDomRefs();
+
+  // Bootstrap popovers
+  new Popover(refs.elFretboardChangeStringNote, {
     html: true,
     sanitize: false,
     content: () => {
       const elFretboardNewStringNoteForm = <HTMLFormElement>refs.elFretboardNewStringNoteParams.cloneNode(true);
       elFretboardNewStringNoteForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        pop.hide();
+        // TODO: implement logic
       });
       return elFretboardNewStringNoteForm;
     },
   });
-};
 
-export const initTooltips = (refs: t.domRefs) => {
+  // Bootstrap tooltips
   refs.elTooltipTriggers.forEach((tooltipTriggerEl) => new Tooltip(tooltipTriggerEl));
-};
 
-export const bindThemeToggle = (refs: t.domRefs, store: t.uiStore) => {
+  // Theme toggle
   refs.elThemeToggle.addEventListener('change', () => {
-    store.toggleTheme();
+    appStore.toggleTheme();
   });
-};
 
-export const bindDirectionControls = (refs: t.domRefs, onChange: t.directionHandler) => {
+  // Direction controls - mapping UI control -> business logic
+  const controlToOffset: Record<t.control, t.offsetScaleParam> = {
+    'tonic-shift': appStore.offsetTonicShift,
+    'modal-shift': appStore.offsetModalShift,
+    'degree-rotation': appStore.offsetDegreeRotation,
+    'harmonic-transform': appStore.offsetHarmonicTransform,
+  };
+
   refs.elDirectionControllers.forEach((el) => {
     el.addEventListener('click', () => {
       if (!el.dataset.control || !el.dataset.direction) return;
-      const { control, direction } = <{ control: t.directionControl; direction: t.direction }>el.dataset;
-      onChange(control, direction);
+      const { control, direction } = <{ control: t.control, direction: t.controlDirection }>el.dataset;
+
+      const offset: number = direction === 'up' ? 1 : -1;
+      const offsetScaleParam: t.offsetScaleParam = controlToOffset[control];
+
+      offsetScaleParam(offset);
     });
   });
+
+  return refs;
 };

@@ -79,17 +79,15 @@ export type scaleLayouts = scaleLayout[];
 
 export type mapScaleToLayout = (instrumentParams: Omit<instrumentParams, 'name'>) => scaleLayouts;
 
-export type direction = 'up' | 'down';
+// UI level (user intention)
+export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'harmonic-transform';
 
-export type directionOffset = -1 | 1;
+export type controlDirection = 'up' | 'down';
 
-export type changer = (offset: directionOffset) => void;
+export type controlDirectionHandler = (control: control, direction: controlDirection) => void;
 
-export type directionControl = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'harmonic-transform';
-
-export type directionHandler = (control: directionControl, direction: direction) => void;
-
-export type querySelectorParam = Parameters<typeof document.querySelector>[0];
+// Business logic level (scale transformation)
+export type offsetScaleParam = (offset: number) => void;
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
@@ -98,10 +96,10 @@ export type store = {
   stateResolvedScaleParams: Atom<resolvedScaleParams>
   stateUnshiftResolvedScaleParams: Atom<resolvedScaleParams>
   stateDegreeRotation: Atom<number>
-  changeTonic: changer
-  changeHarmonicIntervalSize: changer
-  changeModalShift: changer
-  changeDegreeRotation: changer
+  offsetTonicShift: offsetScaleParam
+  offsetModalShift: offsetScaleParam
+  offsetDegreeRotation: offsetScaleParam
+  offsetHarmonicTransform: offsetScaleParam
 };
 
 export type domRefs = {

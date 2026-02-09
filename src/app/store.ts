@@ -35,21 +35,21 @@ export const createStore = (): t.store => {
     },
   );
 
-  const changeTonic: t.changer = (offset) => {
+  const offsetTonicShift: t.offsetScaleParam = (offset) => {
     const currentTonicIndex = stateCurrentNoteChromaticIndex.get();
     const newTonicIndex = (currentTonicIndex + chromaticNotesCount + offset) % chromaticNotesCount;
     const newTonic = c.allNotesNames[newTonicIndex];
     stateScaleBuildParams.setKey('tonic', newTonic);
   };
 
-  const changeModalShift: t.changer = (offset) => {
+  const offsetModalShift: t.offsetScaleParam = (offset) => {
     const { intervalPattern, modalShift: currentShift } = stateScaleBuildParams.get();
     const degreeCount = intervalPattern.length + 1;
     const newShift = (currentShift + offset + degreeCount) % degreeCount;
     stateScaleBuildParams.setKey('modalShift', newShift);
   };
 
-  const changeDegreeRotation: t.changer = (offset) => {
+  const offsetDegreeRotation: t.offsetScaleParam = (offset) => {
     const { intervalPattern } = stateScaleBuildParams.get();
     const currentShift = stateDegreeRotation.get();
     const degreeCount = intervalPattern.length + 1;
@@ -57,7 +57,7 @@ export const createStore = (): t.store => {
     stateDegreeRotation.set(newShift);
   };
 
-  const changeHarmonicIntervalSize: t.changer = (offset) => {
+  const offsetHarmonicTransform: t.offsetScaleParam = (offset) => {
     const currentShift = stateHarmonicIntervalSize.get();
     stateHarmonicIntervalSize.set(<t.harmonicIntervalSize>((currentShift + c.OCTAVE_SIZE + offset) % c.OCTAVE_SIZE));
   };
@@ -69,9 +69,9 @@ export const createStore = (): t.store => {
     stateResolvedScaleParams,
     stateUnshiftResolvedScaleParams,
     stateDegreeRotation,
-    changeTonic,
-    changeHarmonicIntervalSize,
-    changeModalShift,
-    changeDegreeRotation,
+    offsetTonicShift,
+    offsetModalShift,
+    offsetDegreeRotation,
+    offsetHarmonicTransform,
   };
 };
