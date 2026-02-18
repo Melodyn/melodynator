@@ -2,6 +2,8 @@ import type * as t from '../types';
 import * as mu from '../index';
 import * as c from '../constants';
 
+const selectedScaleParamsClasses = ['fw-bold', 'bg-secondary', 'bg-opacity-2'];
+
 export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   store.stateScaleBuildParams.subscribe(({ tonic, intervalPattern, modalShift }) => {
     refs.elTonicContainer.textContent = tonic;
@@ -10,13 +12,9 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       const intervalStep = index === 0 ? 0 : intervalPattern[index - 1];
       el.textContent = intervalStep.toString();
 
-      el.classList.remove('fw-bold');
-      el.classList.remove('bg-secondary');
-      el.classList.remove('bg-opacity-2');
+      el.classList.remove(...selectedScaleParamsClasses);
       if (index === modalShift) {
-        el.classList.add('fw-bold');
-        el.classList.add('bg-secondary');
-        el.classList.add('bg-opacity-2');
+        el.classList.add(...selectedScaleParamsClasses);
       }
     });
   });
@@ -31,13 +29,18 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
+    const scaleBP = store.stateScaleBuildParams.get();
+    console.log(JSON.stringify(scaleBP, null, 1));
+    console.log(JSON.stringify(resolvedScaleParams, null, 1));
+    const hiddenDegrees = store.stateHiddenDegrees.get();
+
     refs.elResolveErrorContainer.textContent = resolvedScaleParams.canHarmonicTransform
       ? ''
       : `Центр не входит в гамму ${resolvedScaleParams.harmonicTargets.join('/')}`;
 
     if (!resolvedScaleParams.canHarmonicTransform) {
       refs.elKeyboardNotes.forEach((key) => {
-        key.textContent = '\u00A0';
+        key.textContent = c.EMPTY_VALUE;
       });
       return;
     }
@@ -54,10 +57,13 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     const lastKeyIndex = startKeyIndex + c.OCTAVE_SIZE;
 
     refs.elKeyboardNotes.forEach((elKey, keyIndex) => {
-      elKey.textContent = '';
+      elKey.textContent = c.EMPTY_VALUE;
       if (keyIndex >= startKeyIndex && keyIndex < lastKeyIndex) {
         const noteIndex = keyIndex - startKeyIndex;
-        elKey.textContent = keyboardScaleLayout[noteIndex].note;
+        const { note, degree } = keyboardScaleLayout[noteIndex];
+        if (!hiddenDegrees.has(degree)) {
+          elKey.textContent = note;
+        }
       }
     });
   });
@@ -75,13 +81,34 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
 
   store.stateDegreeRotation.subscribe((degreeRotation) => {
     refs.elScaleToneContainers.forEach((el, index) => {
-      el.classList.remove('fw-bold');
-      el.classList.remove('bg-secondary');
-      el.classList.remove('bg-opacity-2');
+      el.classList.remove(...selectedScaleParamsClasses);
       if (index === degreeRotation) {
-        el.classList.add('fw-bold');
-        el.classList.add('bg-secondary');
-        el.classList.add('bg-opacity-2');
+        el.classList.add(...selectedScaleParamsClasses);
+      }
+    });
+  });
+
+  store.stateHiddenDegrees.subscribe((cur, prev = new Set()) => {
+    const visibleDegrees: t.degree[] = [];
+    prev.forEach(degree => {
+      if (!cur.has(degree)) {
+        visibleDegrees.push(degree);
+      }
+    });
+    visibleDegrees.forEach((degree) => {
+      const elSwitchDegreeContainer = refs.elSwitchDegreeContainers[degree - 1];
+      const [elLabel] = elSwitchDegreeContainer.labels || [];
+      if (elLabel) {
+        elLabel.classList.remove('text-secondary', 'text-decoration-line-through');
+        elLabel.classList.add('border-dark-subtle');
+      }
+    });
+    cur.forEach((degree) => {
+      const elSwitchDegreeContainer = refs.elSwitchDegreeContainers[degree - 1];
+      const [elLabel] = elSwitchDegreeContainer.labels || [];
+      if (elLabel) {
+        elLabel.classList.add('text-secondary', 'text-decoration-line-through');
+        elLabel.classList.remove('border-dark-subtle');
       }
     });
   });

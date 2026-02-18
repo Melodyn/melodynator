@@ -41,6 +41,16 @@ $theme-colors: map-merge($theme-colors,
   --bs-bg-opacity: .2;
 }
 
+.btn-check.btn-focusable:focus-visible+.btn {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-dark-rgb), 0.25);
+}
+
+.btn-check.btn-focusable+.btn {
+  &:hover {
+    background-color: rgba(var(--bs-emphasis-color-rgb), 0.1);
+  }
+}
+
 .table-spacing-y {
   border-collapse: separate;
   border-spacing: 0 4px;

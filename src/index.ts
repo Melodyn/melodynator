@@ -205,14 +205,16 @@ export const mapScaleToLayout: t.mapScaleToLayout = ({ startNotes, scaleMap }) =
   const startNoteOffsetPC = calcOffsetPC(note);
   const startNotePC = startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC + c.OCTAVE_SIZE;
   let currentOctave = octave;
+  let currentDegree: t.degree = 0;
 
   for (let semitoneIndex = 0; semitoneIndex <= c.OCTAVE_SIZE; semitoneIndex += 1) {
     const currentPC = (startNotePC + semitoneIndex) % c.OCTAVE_SIZE;
     const scaleNoteParams = scaleMap.get(currentPC);
     const currentNote = scaleNoteParams === undefined ? '' : scaleNoteParams.note;
     currentOctave = currentOctave + Number(semitoneIndex > 0 && currentPC === 0);
+    currentDegree += Number(currentNote.length > 0);
 
-    scaleLayout.push({ note: currentNote, octave: currentOctave });
+    scaleLayout.push({ note: currentNote, octave: currentOctave, degree: currentDegree });
   }
 
   return scaleLayout;

@@ -5,6 +5,7 @@ export type flatSymbol = '♭';
 export type sharpSymbol = '♯';
 export type accidental = flatSymbol | sharpSymbol | '';
 export type noteName = `${naturalNoteName}${accidental}`;
+export type degree = number;
 
 export type octaveParams = {
   sinceNumber: number
@@ -13,7 +14,7 @@ export type octaveParams = {
 
 export type naturalNoteParams = {
   note: naturalNoteName
-  degree: number
+  degree: degree
   naturalPitchClass: number
 };
 
@@ -59,12 +60,13 @@ export type applyHarmonicTransform = (resolvedScaleParams: resolvedScaleParams, 
 
 export type instrumentStartNoteParams = {
   note: noteName
-  octave: number;
+  octave: number
 };
 
 export type instrumentNoteParams = {
   note: noteName | ''
-  octave: number;
+  octave: number
+  degree: degree
 };
 
 export type instrumentParams = {
@@ -88,6 +90,7 @@ export type controlDirectionHandler = (control: control, direction: controlDirec
 
 // Business logic level (scale transformation)
 export type offsetScaleParam = (offset: number) => void;
+export type switchDegreeVisibility = (degree: degree) => void;
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
@@ -96,27 +99,32 @@ export type store = {
   stateResolvedScaleParams: Atom<resolvedScaleParams>
   stateUnshiftResolvedScaleParams: Atom<resolvedScaleParams>
   stateDegreeRotation: Atom<number>
+  stateHiddenDegrees: Atom<Set<degree>>
   offsetTonicShift: offsetScaleParam
   offsetModalShift: offsetScaleParam
   offsetDegreeRotation: offsetScaleParam
   offsetHarmonicTransform: offsetScaleParam
+  switchDegreeVisibility: switchDegreeVisibility
 };
 
 export type domRefs = {
+  elThemeToggle: HTMLInputElement
+  elTooltipTriggers: NodeListOf<Element>
+  elDirectionControllers: NodeListOf<HTMLButtonElement>
   elResolveErrorContainer: HTMLParagraphElement
+  //
   elTonicContainer: HTMLTableCellElement
   elHarmonicContainer: HTMLTableCellElement
-  elThemeToggle: HTMLInputElement
+  elIntervalContainers: NodeListOf<HTMLTableCellElement>
+  elScaleToneContainers: NodeListOf<HTMLTableCellElement>
+  elSwitchDegreeContainers: NodeListOf<HTMLInputElement>
+  //
   elFretboard: HTMLTableSectionElement
   elFretboardStringTemplate: HTMLTableRowElement
   elFretboardChangeStringNote: HTMLButtonElement
   elFretboardNewStringNoteParamsTemplate: HTMLTemplateElement
   elFretboardNewStringNoteParams: HTMLFormElement
-  elDirectionControllers: NodeListOf<HTMLButtonElement>
-  elTooltipTriggers: NodeListOf<Element>
   elKeyboardNotes: NodeListOf<HTMLTableCellElement>
-  elIntervalContainers: NodeListOf<HTMLTableCellElement>
-  elScaleToneContainers: NodeListOf<HTMLTableCellElement>
 };
 
 export type uiTheme = 'light' | 'dark';

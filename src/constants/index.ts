@@ -6,6 +6,7 @@ export const OCTAVE_SIZE = <const>12;
 export const MAX_PITCH_CLASS_OFFSET = <const>6;
 export const FLAT_SYMBOL: t.flatSymbol = '♭';
 export const SHARP_SYMBOL: t.sharpSymbol = '♯';
+export const EMPTY_VALUE = '\u00A0';
 
 export const naturalNotesParams: t.naturalNoteParams[] = [
   { note: 'C', degree: 1, naturalPitchClass: 0 },

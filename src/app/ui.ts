@@ -26,6 +26,7 @@ const getDomRefs = (): t.domRefs => {
   const elHarmonicContainer = qs<HTMLTableCellElement>('[data-container="harmonic"]');
   const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
+  const elSwitchDegreeContainers = qsa<HTMLInputElement>('[data-container="switch-degree"]');
   //
   const elFretboard = qs<HTMLTableSectionElement>('[data-instrument="fretboard"]');
   const elFretboardStringTemplate = qs<HTMLTableRowElement>('[data-instrument="fretboard__string"]', elFretboard);
@@ -44,6 +45,7 @@ const getDomRefs = (): t.domRefs => {
     elHarmonicContainer,
     elIntervalContainers,
     elScaleToneContainers,
+    elSwitchDegreeContainers,
     //
     elFretboard,
     elFretboardStringTemplate,
@@ -96,6 +98,12 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
       const offsetScaleParam: t.offsetScaleParam = controlToOffset[control];
 
       offsetScaleParam(offset);
+    });
+  });
+
+  refs.elSwitchDegreeContainers.forEach((el) => {
+    el.addEventListener('click', () => {
+      appStore.switchDegreeVisibility(Number(el.value));
     });
   });
 

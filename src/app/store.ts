@@ -11,6 +11,7 @@ export const createStore = (): t.store => {
     intervalPattern: [2, 2, 1, 2, 2, 2, 1],
     modalShift: 0,
   };
+  const stateHiddenDegrees = n.atom<Set<t.noteParams['degree']>>(new Set());
   const stateScaleBuildParams = n.map(defaultScaleBuildParams);
   const stateDegreeRotation = n.atom<t.degreeRotation>(0);
   const stateHarmonicIntervalSize = n.atom<t.harmonicIntervalSize>(0);
@@ -26,7 +27,7 @@ export const createStore = (): t.store => {
     },
   );
   const stateResolvedScaleParams = n.computed(
-    [stateScaleBuildParams, stateDegreeRotation, stateHarmonicIntervalSize],
+    [stateScaleBuildParams, stateDegreeRotation, stateHarmonicIntervalSize, stateHiddenDegrees],
     (scaleBuildParams, stateDegreeRotation, harmonicIntervalSize) => {
       const resolvedScaleParams = mu.resolveScale(scaleBuildParams);
       const resolvedDegreeRotatedScaleParams = mu.applyDegreeRotation(resolvedScaleParams, stateDegreeRotation);
@@ -62,6 +63,16 @@ export const createStore = (): t.store => {
     stateHarmonicIntervalSize.set(<t.harmonicIntervalSize>((currentShift + c.OCTAVE_SIZE + offset) % c.OCTAVE_SIZE));
   };
 
+  const switchDegreeVisibility: t.switchDegreeVisibility = (degree) => {
+    const hiddenDegrees = new Set(stateHiddenDegrees.get());
+    if (hiddenDegrees.has(degree)) {
+      hiddenDegrees.delete(degree);
+    } else {
+      hiddenDegrees.add(degree);
+    }
+    stateHiddenDegrees.set(hiddenDegrees);
+  };
+
   return {
     stateScaleBuildParams,
     stateHarmonicIntervalSize,
@@ -69,9 +80,11 @@ export const createStore = (): t.store => {
     stateResolvedScaleParams,
     stateUnshiftResolvedScaleParams,
     stateDegreeRotation,
+    stateHiddenDegrees,
     offsetTonicShift,
     offsetModalShift,
     offsetDegreeRotation,
     offsetHarmonicTransform,
+    switchDegreeVisibility,
   };
 };
