@@ -104,8 +104,8 @@ export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modalShif
     scale,
     intervalPattern: shiftedIntervalPattern,
     canModalShift,
-    canHarmonicTransform: true,
-    harmonicTargets: [tonic],
+    canApplyContext: true,
+    contextTargets: [tonic],
   };
 
   return resolvedScaleParams;
@@ -115,18 +115,23 @@ export const applyDegreeRotation: t.applyDegreeRotation = (resolvedScaleParams, 
   if (!resolvedScaleParams.canModalShift || degreeRotation === 0) return resolvedScaleParams;
 
   const newCenterNote: t.noteName = resolvedScaleParams.scale[degreeRotation].note;
-  return resolveScale({
+  const rotated = resolveScale({
     tonic: newCenterNote,
     intervalPattern: resolvedScaleParams.intervalPattern,
     modalShift: degreeRotation,
   });
+  return {
+    ...rotated,
+    contextTargets: resolvedScaleParams.contextTargets,
+    canApplyContext: resolvedScaleParams.canApplyContext,
+  };
 };
 
-export const applyHarmonicTransform: t.applyHarmonicTransform = (resolvedScaleParams, harmonicIntervalSize) => {
-  if (harmonicIntervalSize === 0) return resolvedScaleParams;
+export const applyContextTransform: t.applyContextTransform = (resolvedScaleParams, contextOffset) => {
+  if (contextOffset === 0) return resolvedScaleParams;
 
   const homeCenterNoteParams: t.noteParams = resolvedScaleParams.scale[0];
-  const targetTonicPC = (homeCenterNoteParams.pitchClass + harmonicIntervalSize) % c.OCTAVE_SIZE;
+  const targetTonicPC = (homeCenterNoteParams.pitchClass + contextOffset) % c.OCTAVE_SIZE;
   const targetTonicInHomeScale = resolvedScaleParams.scale.find((n) => n.pitchClass === targetTonicPC);
 
   const resolveScaleByTonic = (tonic: t.noteName) => resolveScale({
@@ -138,55 +143,52 @@ export const applyHarmonicTransform: t.applyHarmonicTransform = (resolvedScalePa
   // нота содержится в текущей гамме?
   if (targetTonicInHomeScale) {
     const targetResolvedScaleParams = resolveScaleByTonic(targetTonicInHomeScale.note);
-
     const homeCenterInTargetScale = targetResolvedScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
     if (homeCenterInTargetScale) {
-      const resolvedScale = applyDegreeRotation(targetResolvedScaleParams, homeCenterInTargetScale.degree - 1);
       return {
-        ...resolvedScale,
-        harmonicTargets: [targetTonicInHomeScale.note],
+        ...targetResolvedScaleParams,
+        contextTargets: [targetTonicInHomeScale.note],
       };
     }
-
     return {
       ...targetResolvedScaleParams,
-      canHarmonicTransform: false,
-      harmonicTargets: [targetTonicInHomeScale.note],
+      canApplyContext: false,
+      contextTargets: [targetTonicInHomeScale.note],
     };
   }
+
   // если нет, ищем в нотах с именами повышенной (C#) и пониженной (Db) альтерации
+  // предпочитаем нижнюю хроматическую (более простая нотация, напр. A вместо B♭♭)
+  const chromaticLowerTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === (targetTonicPC + c.OCTAVE_SIZE - 1) % c.OCTAVE_SIZE);
+  const chromaticLowerTonicName = alterAccidentalBySemitone(chromaticLowerTonicParams.note, 'up');
+  const chromaticLowerScaleParams = resolveScaleByTonic(chromaticLowerTonicName);
 
   const chromaticUpperTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === (targetTonicPC + 1) % c.OCTAVE_SIZE);
   const chromaticUpperTonicName = alterAccidentalBySemitone(chromaticUpperTonicParams.note, 'down');
-  const chromaticUpperScaleParams = resolveScaleByTonic(chromaticUpperTonicName);
 
-  const chromaticLowerTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === (targetTonicPC + c.OCTAVE_SIZE - 1) % c.OCTAVE_SIZE);
-  const chromaticLowerTonicName = alterAccidentalBySemitone(chromaticLowerTonicParams.note, 'up');
-
-  const homeCenterInUpperTargetScale = chromaticUpperScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
-  if (homeCenterInUpperTargetScale) {
-    const resolvedScale = applyDegreeRotation(chromaticUpperScaleParams, homeCenterInUpperTargetScale.degree - 1);
-    return {
-      ...resolvedScale,
-      harmonicTargets: [chromaticLowerTonicName, chromaticUpperTonicName],
-    };
-  }
-
-  const chromaticLowerScaleParams = resolveScaleByTonic(chromaticLowerTonicName);
+  const contextTargets: t.noteName[] = [chromaticLowerTonicName, chromaticUpperTonicName];
 
   const homeCenterInLowerTargetScale = chromaticLowerScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
   if (homeCenterInLowerTargetScale) {
-    const resolvedScale = applyDegreeRotation(chromaticLowerScaleParams, homeCenterInLowerTargetScale.degree - 1);
     return {
-      ...resolvedScale,
-      harmonicTargets: [chromaticLowerTonicName, chromaticUpperTonicName],
+      ...chromaticLowerScaleParams,
+      contextTargets,
+    };
+  }
+
+  const chromaticUpperScaleParams = resolveScaleByTonic(chromaticUpperTonicName);
+  const homeCenterInUpperTargetScale = chromaticUpperScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
+  if (homeCenterInUpperTargetScale) {
+    return {
+      ...chromaticUpperScaleParams,
+      contextTargets,
     };
   }
 
   return {
     ...chromaticLowerScaleParams,
-    canHarmonicTransform: false,
-    harmonicTargets: [chromaticLowerTonicName, chromaticUpperTonicName],
+    canApplyContext: false,
+    contextTargets,
   };
 };
 

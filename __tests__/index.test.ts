@@ -121,12 +121,12 @@ describe('mapScaleToLayout', () => {
     expect(result).toHaveLength(1);
     expect(result[0]).toHaveLength(13);
     // C мажор: C D E F G A B C, между E(4) и F(5) нет ноты
-    expect(result[0][0]).toEqual({ note: 'C', octave: 4 });
-    expect(result[0][1]).toEqual({ note: '', octave: 4 }); // C# не входит в гамму
-    expect(result[0][2]).toEqual({ note: 'D', octave: 4 });
-    expect(result[0][4]).toEqual({ note: 'E', octave: 4 });
-    expect(result[0][5]).toEqual({ note: 'F', octave: 4 });
-    expect(result[0][6]).toEqual({ note: '', octave: 4 }); // F# не входит в гамму
+    expect(result[0][0]).toEqual({ note: 'C', octave: 4, degree: 1 });
+    expect(result[0][1]).toEqual({ note: '', octave: 4, degree: 1 }); // C# не входит в гамму
+    expect(result[0][2]).toEqual({ note: 'D', octave: 4, degree: 2 });
+    expect(result[0][4]).toEqual({ note: 'E', octave: 4, degree: 3 });
+    expect(result[0][5]).toEqual({ note: 'F', octave: 4, degree: 4 });
+    expect(result[0][6]).toEqual({ note: '', octave: 4, degree: 4 }); // F# не входит в гамму
   });
 
   test('returns layout with filtered notes string', () => {

@@ -23,7 +23,7 @@ const getDomRefs = (): t.domRefs => {
   const elResolveErrorContainer = qs<HTMLParagraphElement>('[data-container="resolve-error"]');
   //
   const elTonicContainer = qs<HTMLTableCellElement>('[data-container="tonic"]');
-  const elHarmonicContainer = qs<HTMLTableCellElement>('[data-container="harmonic"]');
+  const elContextContainer = qs<HTMLTableCellElement>('[data-container="context"]');
   const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   const elSwitchDegreeContainers = qsa<HTMLInputElement>('[data-container="switch-degree"]');
@@ -42,7 +42,7 @@ const getDomRefs = (): t.domRefs => {
     elResolveErrorContainer,
     //
     elTonicContainer,
-    elHarmonicContainer,
+    elContextContainer,
     elIntervalContainers,
     elScaleToneContainers,
     elSwitchDegreeContainers,
@@ -86,7 +86,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
     'tonic-shift': appStore.offsetTonicShift,
     'modal-shift': appStore.offsetModalShift,
     'degree-rotation': appStore.offsetDegreeRotation,
-    'harmonic-transform': appStore.offsetHarmonicTransform,
+    'context-shift': appStore.offsetContext,
   };
 
   refs.elDirectionControllers.forEach((el) => {

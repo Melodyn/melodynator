@@ -25,7 +25,7 @@ export type noteParams = {
 };
 
 export type intervalSize = 1 | 2; // количество полутонов для построения интервала
-export type harmonicIntervalSize = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+export type contextOffset = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 export type degreeRotation = number;
 
 export type intervalPattern = intervalSize[];
@@ -44,8 +44,8 @@ export type resolvedScaleParams = {
   scale: scale
   intervalPattern: intervalPattern
   canModalShift: boolean
-  canHarmonicTransform: boolean
-  harmonicTargets: noteName[]
+  canApplyContext: boolean
+  contextTargets: noteName[]
 };
 
 export type resolveScale = (scaleBuildParams: scaleBuildParams) => resolvedScaleParams;
@@ -56,7 +56,7 @@ export type applyModalShift = (intervalPattern: intervalPattern, modalShift: sca
 
 export type applyDegreeRotation = (resolvedScaleParams: resolvedScaleParams, degreeRotation: degreeRotation) => resolvedScaleParams;
 
-export type applyHarmonicTransform = (resolvedScaleParams: resolvedScaleParams, harmonicIntervalSize: harmonicIntervalSize) => resolvedScaleParams;
+export type applyContextTransform = (resolvedScaleParams: resolvedScaleParams, contextOffset: contextOffset) => resolvedScaleParams;
 
 export type instrumentStartNoteParams = {
   note: noteName
@@ -82,7 +82,7 @@ export type scaleLayouts = scaleLayout[];
 export type mapScaleToLayout = (instrumentParams: Omit<instrumentParams, 'name'>) => scaleLayouts;
 
 // UI level (user intention)
-export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'harmonic-transform';
+export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'context-shift';
 
 export type controlDirection = 'up' | 'down';
 
@@ -94,7 +94,7 @@ export type switchDegreeVisibility = (degree: degree) => void;
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
-  stateHarmonicIntervalSize: Atom<number>
+  stateContextOffset: Atom<number>
   stateCurrentNoteChromaticIndex: Atom<number>
   stateResolvedScaleParams: Atom<resolvedScaleParams>
   stateUnshiftResolvedScaleParams: Atom<resolvedScaleParams>
@@ -103,7 +103,7 @@ export type store = {
   offsetTonicShift: offsetScaleParam
   offsetModalShift: offsetScaleParam
   offsetDegreeRotation: offsetScaleParam
-  offsetHarmonicTransform: offsetScaleParam
+  offsetContext: offsetScaleParam
   switchDegreeVisibility: switchDegreeVisibility
 };
 
@@ -114,7 +114,7 @@ export type domRefs = {
   elResolveErrorContainer: HTMLParagraphElement
   //
   elTonicContainer: HTMLTableCellElement
-  elHarmonicContainer: HTMLTableCellElement
+  elContextContainer: HTMLTableCellElement
   elIntervalContainers: NodeListOf<HTMLTableCellElement>
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
   elSwitchDegreeContainers: NodeListOf<HTMLInputElement>

@@ -14,25 +14,25 @@ export const createStore = (): t.store => {
   const stateHiddenDegrees = n.atom<Set<t.noteParams['degree']>>(new Set());
   const stateScaleBuildParams = n.map(defaultScaleBuildParams);
   const stateDegreeRotation = n.atom<t.degreeRotation>(0);
-  const stateHarmonicIntervalSize = n.atom<t.harmonicIntervalSize>(0);
+  const stateContextOffset = n.atom<t.contextOffset>(0);
   const stateCurrentNoteChromaticIndex = n.computed(
     stateScaleBuildParams,
     ({ tonic }) => cu.findIndex(c.allNotesNames, (noteName) => noteName === tonic),
   );
   const stateUnshiftResolvedScaleParams = n.computed(
-    stateScaleBuildParams,
-    (scaleBuildParams) => {
-      const resolvedScaleParams = mu.resolveScale({ ...scaleBuildParams, modalShift: 0 });
-      return resolvedScaleParams;
+    [stateScaleBuildParams, stateContextOffset],
+    (scaleBuildParams, contextOffset) => {
+      const resolvedScaleParams = mu.resolveScale(scaleBuildParams);
+      return mu.applyContextTransform(resolvedScaleParams, contextOffset);
     },
   );
   const stateResolvedScaleParams = n.computed(
-    [stateScaleBuildParams, stateDegreeRotation, stateHarmonicIntervalSize, stateHiddenDegrees],
-    (scaleBuildParams, stateDegreeRotation, harmonicIntervalSize) => {
+    [stateScaleBuildParams, stateDegreeRotation, stateContextOffset, stateHiddenDegrees],
+    (scaleBuildParams, degreeRotation, contextOffset) => {
       const resolvedScaleParams = mu.resolveScale(scaleBuildParams);
-      const resolvedDegreeRotatedScaleParams = mu.applyDegreeRotation(resolvedScaleParams, stateDegreeRotation);
-      const resolvedHarmonicTransformedScaleParams = mu.applyHarmonicTransform(resolvedDegreeRotatedScaleParams, harmonicIntervalSize);
-      return resolvedHarmonicTransformedScaleParams;
+      const resolvedContextScaleParams = mu.applyContextTransform(resolvedScaleParams, contextOffset);
+      const resolvedDegreeRotatedScaleParams = mu.applyDegreeRotation(resolvedContextScaleParams, degreeRotation);
+      return resolvedDegreeRotatedScaleParams;
     },
   );
 
@@ -45,7 +45,7 @@ export const createStore = (): t.store => {
 
   const offsetModalShift: t.offsetScaleParam = (offset) => {
     const { intervalPattern, modalShift: currentShift } = stateScaleBuildParams.get();
-    const degreeCount = intervalPattern.length + 1;
+    const degreeCount = intervalPattern.length;
     const newShift = (currentShift + offset + degreeCount) % degreeCount;
     stateScaleBuildParams.setKey('modalShift', newShift);
   };
@@ -53,14 +53,14 @@ export const createStore = (): t.store => {
   const offsetDegreeRotation: t.offsetScaleParam = (offset) => {
     const { intervalPattern } = stateScaleBuildParams.get();
     const currentShift = stateDegreeRotation.get();
-    const degreeCount = intervalPattern.length + 1;
+    const degreeCount = intervalPattern.length;
     const newShift = (currentShift + offset + degreeCount) % degreeCount;
     stateDegreeRotation.set(newShift);
   };
 
-  const offsetHarmonicTransform: t.offsetScaleParam = (offset) => {
-    const currentShift = stateHarmonicIntervalSize.get();
-    stateHarmonicIntervalSize.set(<t.harmonicIntervalSize>((currentShift + c.OCTAVE_SIZE + offset) % c.OCTAVE_SIZE));
+  const offsetContext: t.offsetScaleParam = (offset) => {
+    const currentShift = stateContextOffset.get();
+    stateContextOffset.set(<t.contextOffset>((currentShift + c.OCTAVE_SIZE + offset) % c.OCTAVE_SIZE));
   };
 
   const switchDegreeVisibility: t.switchDegreeVisibility = (degree) => {
@@ -75,7 +75,7 @@ export const createStore = (): t.store => {
 
   return {
     stateScaleBuildParams,
-    stateHarmonicIntervalSize,
+    stateContextOffset,
     stateCurrentNoteChromaticIndex,
     stateResolvedScaleParams,
     stateUnshiftResolvedScaleParams,
@@ -84,7 +84,7 @@ export const createStore = (): t.store => {
     offsetTonicShift,
     offsetModalShift,
     offsetDegreeRotation,
-    offsetHarmonicTransform,
+    offsetContext,
     switchDegreeVisibility,
   };
 };

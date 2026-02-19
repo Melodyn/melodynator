@@ -19,9 +19,8 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     });
   });
 
-  store.stateHarmonicIntervalSize.subscribe(() => {
-    const resolvedScale = store.stateResolvedScaleParams.get();
-    refs.elHarmonicContainer.textContent = resolvedScale.harmonicTargets.join('/');
+  store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
+    refs.elContextContainer.textContent = resolvedScaleParams.contextTargets.join('/');
   });
 
   store.theme.subscribe((theme) => {
@@ -29,16 +28,15 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
-    const scaleBP = store.stateScaleBuildParams.get();
-    console.log(JSON.stringify(scaleBP, null, 1));
-    console.log(JSON.stringify(resolvedScaleParams, null, 1));
     const hiddenDegrees = store.stateHiddenDegrees.get();
 
-    refs.elResolveErrorContainer.textContent = resolvedScaleParams.canHarmonicTransform
-      ? ''
-      : `Центр не входит в гамму ${resolvedScaleParams.harmonicTargets.join('/')}`;
+    const centerNote = store.stateScaleBuildParams.get().tonic;
 
-    if (!resolvedScaleParams.canHarmonicTransform) {
+    refs.elResolveErrorContainer.textContent = resolvedScaleParams.canApplyContext
+      ? c.EMPTY_VALUE
+      : `Центр ${centerNote} не входит в гамму ${resolvedScaleParams.contextTargets.join('/')}`;
+
+    if (!resolvedScaleParams.canApplyContext) {
       refs.elKeyboardNotes.forEach((key) => {
         key.textContent = c.EMPTY_VALUE;
       });
