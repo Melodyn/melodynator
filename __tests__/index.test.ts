@@ -1,6 +1,6 @@
 import { expect, test, describe } from 'vitest';
 import * as t from '../src/types';
-import { resolveScale, scaleToMap, mapScaleToLayout } from '../src';
+import { resolveScale, scaleToMap, mapScaleToLayout, applyContextTransform, applyDegreeRotation } from '../src';
 
 const major = [
   ['G♭', 'A♭', 'B♭', 'C♭', 'D♭', 'E♭', 'F', 'G♭'],
@@ -75,6 +75,62 @@ describe('major', () => {
       modalShift: 5,
     });
     expect(result.scale.map(({ note }) => note).join(' ')).not.toEqual(expected);
+  });
+});
+
+describe('applyContextTransform', () => {
+  const cMajor = resolveScale({ tonic: 'C', intervalPattern: [2, 2, 1, 2, 2, 2, 1], modalShift: 0 });
+
+  test('contextOffset=0 не меняет гамму', () => {
+    const result = applyContextTransform(cMajor, 0);
+    expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F G A B C');
+  });
+
+  test('context=F (offset=5): pitch set F major, якорь C, ступени 1–7 от C', () => {
+    const result = applyContextTransform(cMajor, 5);
+    expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F G A B♭ C');
+    expect(result.scale[0].degree).toBe(1);
+    expect(result.scale[6].degree).toBe(7);
+    expect(result.scale[7].degree).toBe(8);
+    expect(result.contextTargets).toEqual(['F']);
+  });
+
+  test('context=G (offset=7): pitch set G major, якорь C, F♯ вместо F', () => {
+    const result = applyContextTransform(cMajor, 7);
+    expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F♯ G A B C');
+    expect(result.scale[0].degree).toBe(1);
+    expect(result.contextTargets).toEqual(['G']);
+  });
+
+  test('context=F: C всегда degree=1', () => {
+    const result = applyContextTransform(cMajor, 5);
+    const firstNote = result.scale[0];
+    expect(firstNote.note).toBe('C');
+    expect(firstNote.degree).toBe(1);
+  });
+});
+
+describe('applyDegreeRotation', () => {
+  const cMajor = resolveScale({ tonic: 'C', intervalPattern: [2, 2, 1, 2, 2, 2, 1], modalShift: 0 });
+
+  test('degreeRotation=0 не меняет гамму', () => {
+    const result = applyDegreeRotation(cMajor, 0);
+    expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F G A B C');
+  });
+
+  test('rotation=1 на C major: D становится degree=1, ноты сохраняются', () => {
+    const result = applyDegreeRotation(cMajor, 1);
+    expect(result.scale.map(({ note }) => note).join(' ')).toBe('D E F G A B C D');
+    expect(result.scale[0].degree).toBe(1);
+    expect(result.scale[6].degree).toBe(7);
+    expect(result.scale[7].degree).toBe(8);
+  });
+
+  test('rotation=1 на C-в-контексте-F: B♭ сохраняется (не заменяется на B♮)', () => {
+    const cInF = applyContextTransform(cMajor, 5);
+    const result = applyDegreeRotation(cInF, 1);
+    expect(result.scale.map(({ note }) => note).join(' ')).toBe('D E F G A B♭ C D');
+    expect(result.scale[5].note).toBe('B♭');
   });
 });
 

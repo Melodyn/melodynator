@@ -114,17 +114,20 @@ export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modalShif
 export const applyDegreeRotation: t.applyDegreeRotation = (resolvedScaleParams, degreeRotation) => {
   if (!resolvedScaleParams.canModalShift || degreeRotation === 0) return resolvedScaleParams;
 
-  const newCenterNote: t.noteName = resolvedScaleParams.scale[degreeRotation].note;
-  const rotated = resolveScale({
-    tonic: newCenterNote,
-    intervalPattern: resolvedScaleParams.intervalPattern,
-    modalShift: degreeRotation,
-  });
-  return {
-    ...rotated,
-    contextTargets: resolvedScaleParams.contextTargets,
-    canApplyContext: resolvedScaleParams.canApplyContext,
-  };
+  const scaleBody = resolvedScaleParams.scale.slice(0, resolvedScaleParams.scale.length - 1);
+  const rotatedBody = cu.rotate(scaleBody, degreeRotation);
+  const renumbered = rotatedBody.map((n, i) => ({ ...n, degree: i + 1 }));
+  const octaveNote = { ...renumbered[0], degree: renumbered.length + 1 };
+  return { ...resolvedScaleParams, scale: [...renumbered, octaveNote] };
+};
+
+const anchorScaleToCenter = (scale: t.scale, centerPitchClass: number): t.scale => {
+  const scaleBody = scale.slice(0, scale.length - 1);
+  const centerIndex = cu.findIndex(scaleBody, (n) => n.pitchClass === centerPitchClass);
+  const rotatedBody = cu.rotate(scaleBody, centerIndex);
+  const renumbered = rotatedBody.map((n, i) => ({ ...n, degree: i + 1 }));
+  const octaveNote = { ...renumbered[0], degree: renumbered.length + 1 };
+  return [...renumbered, octaveNote];
 };
 
 export const applyContextTransform: t.applyContextTransform = (resolvedScaleParams, contextOffset) => {
@@ -145,8 +148,10 @@ export const applyContextTransform: t.applyContextTransform = (resolvedScalePara
     const targetResolvedScaleParams = resolveScaleByTonic(targetTonicInHomeScale.note);
     const homeCenterInTargetScale = targetResolvedScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
     if (homeCenterInTargetScale) {
+      const anchoredScale = anchorScaleToCenter(targetResolvedScaleParams.scale, homeCenterNoteParams.pitchClass);
       return {
         ...targetResolvedScaleParams,
+        scale: anchoredScale,
         contextTargets: [targetTonicInHomeScale.note],
       };
     }
@@ -170,8 +175,10 @@ export const applyContextTransform: t.applyContextTransform = (resolvedScalePara
 
   const homeCenterInLowerTargetScale = chromaticLowerScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
   if (homeCenterInLowerTargetScale) {
+    const anchoredScale = anchorScaleToCenter(chromaticLowerScaleParams.scale, homeCenterNoteParams.pitchClass);
     return {
       ...chromaticLowerScaleParams,
+      scale: anchoredScale,
       contextTargets,
     };
   }
@@ -179,8 +186,10 @@ export const applyContextTransform: t.applyContextTransform = (resolvedScalePara
   const chromaticUpperScaleParams = resolveScaleByTonic(chromaticUpperTonicName);
   const homeCenterInUpperTargetScale = chromaticUpperScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
   if (homeCenterInUpperTargetScale) {
+    const anchoredScale = anchorScaleToCenter(chromaticUpperScaleParams.scale, homeCenterNoteParams.pitchClass);
     return {
       ...chromaticUpperScaleParams,
+      scale: anchoredScale,
       contextTargets,
     };
   }
