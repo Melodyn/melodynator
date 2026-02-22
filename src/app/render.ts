@@ -4,6 +4,14 @@ import * as c from '../constants';
 
 const selectedScaleParamsClasses = ['fw-bold', 'bg-secondary', 'bg-opacity-2'];
 
+const removeOctaveClass = (elFretNote: HTMLTableCellElement) => {
+  elFretNote.classList.forEach((className) => {
+    if (className.startsWith('bg-octave-')) {
+      elFretNote.classList.remove(className);
+    }
+  });
+};
+
 export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   store.stateScaleBuildParams.subscribe(({ tonic, intervalPattern, modalShift }) => {
     refs.elTonicContainer.textContent = tonic;
@@ -82,6 +90,45 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       el.classList.remove(...selectedScaleParamsClasses);
       if (index === degreeRotation) {
         el.classList.add(...selectedScaleParamsClasses);
+      }
+    });
+  });
+
+  store.stateFretboardLayout.subscribe((scaleLayouts) => {
+    const hiddenDegrees = store.stateHiddenDegrees.get();
+
+    if (!scaleLayouts) {
+      refs.elFretboardStartNoteContainers.forEach((elFretboardStartNoteContainer) => {
+        elFretboardStartNoteContainer.textContent = c.EMPTY_VALUE;
+      });
+      refs.elFretboardStringFrets.forEach((elFretboardStringFret) => {
+        elFretboardStringFret.forEach((elFretNote) => {
+          elFretNote.textContent = c.EMPTY_VALUE;
+          removeOctaveClass(elFretNote);
+        });
+      });
+      return;
+    }
+
+    scaleLayouts.forEach((layout, stringIndex) => {
+      const elFretboardStartNoteContainer = refs.elFretboardStartNoteContainers[stringIndex];
+      const startNoteParams = layout[0];
+      elFretboardStartNoteContainer.textContent = (startNoteParams.note && !hiddenDegrees.has(startNoteParams.degree))
+        ? startNoteParams.note
+        : c.EMPTY_VALUE;
+
+      for (let fret = 1; fret <= c.OCTAVE_SIZE; fret++) {
+        const elFretNote = refs.elFretboardStringFrets[stringIndex][fret - 1];
+        const noteParams = layout[fret];
+        removeOctaveClass(elFretNote);
+        elFretNote.classList.add('text-black');
+
+        if (noteParams.note && !hiddenDegrees.has(noteParams.degree)) {
+          elFretNote.textContent = noteParams.note;
+          elFretNote.classList.add(`bg-octave-${noteParams.octave}`);
+        } else {
+          elFretNote.textContent = c.EMPTY_VALUE;
+        }
       }
     });
   });

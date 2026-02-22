@@ -1,55 +1,123 @@
+# naming.yaml — карта имён предметной области
+#
+# Назначение:
+# Отслеживать, что одна концепция называется единообразно на всех уровнях стека.
+# Это точка схождения: HTML-атрибут ↔ тип ↔ store ↔ refs ↔ переменная в render.ts.
+#
+# Пример несоответствия: degree-rotation (data_control) + degreeRotation (stores) + rotateStep (actions)
+# Правильно:            degree-rotation (data_control) + stateDegreeRotation (stores) + offsetDegreeRotation (actions)
+#
+# Алгоритм обновления (выполнять после каждого изменения имён):
+# 1. Найти корень концепции (напр. "degree-rotation" / "degreeRotation").
+# 2. Проверить все секции ниже — везде, где эта концепция используется, имя должно
+#    быть образовано от одного корня с учётом формата секции.
+# 3. При добавлении новой концепции — вписать её имя во все релевантные секции.
+# 4. При переименовании — обновить все секции одновременно.
+#
+# Проверка согласованности (ИИ-агент выполняет после работы):
+# 5. Сравнить имена в этом файле с фактическим кодом (data-атрибуты в HTML,
+#    имена атомов в store.ts, ключи domRefs в ui.ts, типы в types/index.ts).
+# 6. Если концепция есть в коде, но не в этом файле — добавить и сообщить автору.
+# 7. Если концепция есть в этом файле, но не находится в коде — спросить автора:
+#    это запланированное удаление или потеря?
+# 8. Если одна концепция называется по-разному в разных секциях без явной причины —
+#    спросить автора, прежде чем переименовывать.
+#
+# Форматы по секциям:
+# - data_control / data_container / data_instrument: kebab-case (data-атрибуты HTML)
+# - key_types: PascalCase (типы из types/index.ts — источник истины для именования)
+# - stores: camelCase с префиксом state (stateXxx)
+# - actions: camelCase, глагол + объект (offsetXxx, switchXxx, setXxx)
+# - render_targets: camelCase с префиксом el (elXxx)
+# - *_params: camelCase поля объекта
+
 data_control:
-  - tonic-shift
-  - modal-shift
-  - degree-rotation
-  - harmonic-transform
-  - theme-toggle
+  - tonic-shift     # → offsetTonicShift → stateScaleBuildParams(.tonic) → elTonicContainer
+  - modal-shift     # → offsetModalShift → stateScaleBuildParams(.modalShift) → elIntervalContainers
+  - degree-rotation # → offsetDegreeRotation → stateDegreeRotation → elScaleToneContainers
+  - context-shift   # → offsetContext → stateContextOffset → elContextContainer
+  - theme-toggle    # → toggleTheme → uiStore.theme → document.body
+  - start-note      # → setFretboardStartNote → stateFretboardStartNotes → elFretboardStartNoteButtons
 
 data_container:
-  - tonic
-  - interval-step
-  - harmonic
-  - resolve-error
+  - tonic           # ← stateScaleBuildParams(.tonic) → elTonicContainer
+  - context         # ← stateResolvedScaleParams(.contextTargets) → elContextContainer
+  - interval-step   # ← stateScaleBuildParams(.intervalPattern) → elIntervalContainers | var: intervalStep
+  - scale-tone      # ← stateUnshiftResolvedScaleParams(.scale) → elScaleToneContainers
+  - switch-degree   # → switchDegreeVisibility → stateHiddenDegrees | ← stateHiddenDegrees → elSwitchDegreeContainers
+  - resolve-error   # ← stateResolvedScaleParams(.canApplyContext) → elResolveErrorContainer
 
 data_instrument:
-  - fretboard
-  - fretboard__string
-  - fretboard__string-number
-  - fretboard__string-note
-  - keyboard
-  - keyboard__notes
+  - fretboard              # refs: elFretboard (tbody-контейнер строк)
+  - fretboard__string      # refs: elFretboardStrings (per-string tr)
+  - fretboard__string-number  # устанавливается в initFretboard через getElFretboardStringNumberContainer; refs нет
+  - fretboard__string-note    # TD-ячейка открытой ноты; refs нет; внутри — кнопка data-control="start-note"
+  - keyboard               # нет refs
+  - keyboard__notes        # refs: elKeyboardNotes (td-ячейки строки нот)
 
-scale_build_params:
-  - tonic
-  - intervalPattern
-  - modalShift
-
-resolved_scale_params:
-  - scale
-  - intervalPattern
-  - canModalShift
-  - error
+# Типы из types/index.ts. Источник истины для именования переменных в render.ts и store.ts.
+# Если переменная или поле ссылается на концепцию, имя берётся отсюда, а не из позиции в DOM.
+key_types:
+  - noteName             # поле: scaleBuildParams.tonic, fretboardStartNoteParams.note, fretboardNoteParams.note
+  - degree               # поле: noteParams.degree | store: stateHiddenDegrees | action: switchDegreeVisibility
+  - intervalPattern      # поле: scaleBuildParams.intervalPattern, resolvedScaleParams.intervalPattern
+  - contextOffset        # store: stateContextOffset | action: offsetContext | data-control="context-shift"
+  - degreeRotation       # store: stateDegreeRotation | action: offsetDegreeRotation | data-control="degree-rotation"
+  - scaleBuildParams     # store: stateScaleBuildParams | поля: tonic, intervalPattern, modalShift
+  - resolvedScaleParams  # store: stateResolvedScaleParams, stateUnshiftResolvedScaleParams | var: resolvedScaleParams
+  - fretboardStartNoteParams  # store: stateFretboardStartNotes (элемент) | action: setFretboardStartNote | var: startNote, не openNote и не fret0
+  - scaleLayouts              # type: scaleLayout[] | store: stateFretboardLayout | результат mapScaleToLayout всех струн
+  - fretboardNoteParams       # нота на конкретном ладу | var: noteParams | элемент scaleLayout[fretIndex]
+  - fretboardParams      # тип для defaultInstrumentParams в store.ts
+  - scaleLayout          # type: fretboardNoteParams[] | var: layout | результат mapScaleToLayout одной струны
+  - domRefs              # собирается в getDomRefs() в ui.ts
+  - store                # t.store — базовый тип стора (без UI)
+  - uiStore              # t.uiStore — тема + toggleTheme
+  - appStore             # store & uiStore — полный стор приложения
 
 stores:
-  - stateScaleBuildParams
-  - stateHarmonicIntervalSize
-  - stateCurrentNoteChromaticIndex
-  - stateResolvedScaleParams
-  - theme
+  - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
+  - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
+  - stateCurrentNoteChromaticIndex  # computed: stateScaleBuildParams(.tonic) → chromaticIndex (для offsetTonicShift)
+  - stateResolvedScaleParams        # computed: resolveScale + applyContextTransform + applyDegreeRotation | → elContextContainer, elKeyboardNotes, renderFretboard
+  - stateUnshiftResolvedScaleParams # computed: resolveScale + applyContextTransform (без вращения ступеней) | → elScaleToneContainers
+  - stateDegreeRotation             # type: Atom<degreeRotation> | ← degree-rotation | → elScaleToneContainers
+  - stateHiddenDegrees              # type: Atom<Set<degree>> | ← switch-degree | → elSwitchDegreeContainers, elKeyboardNotes, renderFretboard
+  - stateFretboardStartNotes        # type: Atom<fretboardStartNoteParams[]> | ← start-note | → stateFretboardLayout
+  - stateFretboardLayout            # computed: [stateResolvedScaleParams, stateFretboardStartNotes] → scaleLayouts | null | → renderFretboard
 
 actions:
-  - changeTonic
-  - changeModalShift
-  - changeHarmonicIntervalSize
-  - toggleTheme
+  - offsetTonicShift          # ← data-control="tonic-shift" | → stateScaleBuildParams(.tonic)
+  - offsetModalShift          # ← data-control="modal-shift" | → stateScaleBuildParams(.modalShift)
+  - offsetDegreeRotation      # ← data-control="degree-rotation" | → stateDegreeRotation
+  - offsetContext             # ← data-control="context-shift" | → stateContextOffset
+  - switchDegreeVisibility    # ← data-container="switch-degree" (click) | → stateHiddenDegrees
+  - setFretboardStartNote     # ← data-control="start-note" (popover-форма) | → stateFretboardStartNotes
+  - toggleTheme               # ← data-control="theme-toggle" | → uiStore.theme
 
 render_targets:
-  - elTonicContainer
-  - elHarmonicContainer
-  - elIntervalContainers
-  - elResolveErrorContainer
-  - elKeyboardNotes
+  - elTonicContainer          # data-container="tonic" | ← stateScaleBuildParams(.tonic)
+  - elContextContainer        # data-container="context" | ← stateResolvedScaleParams(.contextTargets)
+  - elIntervalContainers      # data-container="interval-step" | ← stateScaleBuildParams(.intervalPattern, .modalShift)
+  - elScaleToneContainers     # data-container="scale-tone" | ← stateUnshiftResolvedScaleParams(.scale), stateDegreeRotation
+  - elSwitchDegreeContainers  # data-container="switch-degree" | ← stateHiddenDegrees (labels стилизуются)
+  - elResolveErrorContainer   # data-container="resolve-error" | ← stateResolvedScaleParams(.canApplyContext)
+  - elKeyboardNotes           # data-instrument="keyboard__notes" td | ← stateResolvedScaleParams(.scale)
+  - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard
+  - elFretboardStrings        # data-instrument="fretboard__string" (per-string tr) | ← stateFretboardStrings
+  - elFretboardStartNoteContainers  # data-control="start-note" в data-instrument="fretboard__string-note" | ← stateFretboardLayout
+  - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
+  - elFretboardString               # <template #template-fretboard__string> → клонируется в initFretboard
+  - elFretboardNewStringNoteParams  # <template #template-fretboard__set-string-params> → клонируется в popover; note select заполняется нотами один раз в getDomRefs
 
-controls:
-  - directionControl
-  - direction
+scale_build_params:
+  - tonic          # data-container="tonic" | data-control="tonic-shift" → offsetTonicShift
+  - intervalPattern  # data-container="interval-step" | data-control="modal-shift" → offsetModalShift
+  - modalShift     # data-control="modal-shift" → offsetModalShift | выделяется в elIntervalContainers[modalShift]
+
+resolved_scale_params:
+  - scale          # → elScaleToneContainers, elKeyboardNotes, renderFretboard
+  - intervalPattern  # (readonly после resolveScale, не отображается напрямую)
+  - canModalShift    # (не используется в render.ts)
+  - canApplyContext  # → elResolveErrorContainer (условие отрисовки)
+  - contextTargets   # → elContextContainer

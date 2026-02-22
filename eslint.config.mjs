@@ -21,6 +21,11 @@ export default tseslint.config(
       'comma-dangle': ['error', 'always-multiline'],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'angle-bracket' }],
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      'no-restricted-syntax': ['error', {
+        selector: 'ChainExpression',
+        message: 'Optional chaining (?.) is not allowed. Use explicit if or type cast instead.',
+      }],
     },
   },
 

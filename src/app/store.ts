@@ -11,7 +11,19 @@ export const createStore = (): t.store => {
     intervalPattern: [2, 2, 1, 2, 2, 2, 1],
     modalShift: 0,
   };
+  const defaultInstrumentParams: t.fretboardParams = {
+    name: 'guitar',
+    startNotes: [
+      { note: 'E', octave: 4 },
+      { note: 'B', octave: 3 },
+      { note: 'G', octave: 3 },
+      { note: 'D', octave: 3 },
+      { note: 'A', octave: 2 },
+      { note: 'E', octave: 2 },
+    ],
+  };
   const stateHiddenDegrees = n.atom<Set<t.noteParams['degree']>>(new Set());
+  const stateFretboardStartNotes = n.atom<t.fretboardStartNoteParams[]>(defaultInstrumentParams.startNotes);
   const stateScaleBuildParams = n.map(defaultScaleBuildParams);
   const stateDegreeRotation = n.atom<t.degreeRotation>(0);
   const stateContextOffset = n.atom<t.contextOffset>(0);
@@ -33,6 +45,14 @@ export const createStore = (): t.store => {
       const resolvedContextScaleParams = mu.applyContextTransform(resolvedScaleParams, contextOffset);
       const resolvedDegreeRotatedScaleParams = mu.applyDegreeRotation(resolvedContextScaleParams, degreeRotation);
       return resolvedDegreeRotatedScaleParams;
+    },
+  );
+  const stateFretboardLayout = n.computed(
+    [stateResolvedScaleParams, stateFretboardStartNotes],
+    (resolvedScaleParams, startNotes) => {
+      if (!resolvedScaleParams.canApplyContext) return null;
+      const scaleMap = mu.scaleToMap(resolvedScaleParams.scale);
+      return mu.mapScaleToLayout({ scaleMap, startNotes });
     },
   );
 
@@ -73,6 +93,13 @@ export const createStore = (): t.store => {
     stateHiddenDegrees.set(hiddenDegrees);
   };
 
+  const setFretboardStartNote: t.setFretboardStartNote = (startNoteParams) => {
+    const { index: changeStringIndex, ...newStringParams } = startNoteParams;
+    const currentStartNotes = stateFretboardStartNotes.get();
+    const newStartNotes = currentStartNotes.map((startNote: t.fretboardStartNoteParams, i: number) => i === changeStringIndex ? newStringParams : startNote);
+    stateFretboardStartNotes.set(newStartNotes);
+  };
+
   return {
     stateScaleBuildParams,
     stateContextOffset,
@@ -81,10 +108,13 @@ export const createStore = (): t.store => {
     stateUnshiftResolvedScaleParams,
     stateDegreeRotation,
     stateHiddenDegrees,
+    stateFretboardStartNotes,
+    stateFretboardLayout,
     offsetTonicShift,
     offsetModalShift,
     offsetDegreeRotation,
     offsetContext,
     switchDegreeVisibility,
+    setFretboardStartNote,
   };
 };

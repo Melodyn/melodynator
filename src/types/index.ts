@@ -58,28 +58,27 @@ export type applyDegreeRotation = (resolvedScaleParams: resolvedScaleParams, deg
 
 export type applyContextTransform = (resolvedScaleParams: resolvedScaleParams, contextOffset: contextOffset) => resolvedScaleParams;
 
-export type instrumentStartNoteParams = {
+export type fretboardStartNoteParams = {
   note: noteName
   octave: number
 };
 
-export type instrumentNoteParams = {
+export type fretboardNoteParams = {
   note: noteName | ''
   octave: number
   degree: degree
 };
 
-export type instrumentParams = {
+export type fretboardParams = {
   name: string
-  startNotes: instrumentStartNoteParams[]
-  scaleMap: scaleMap
+  startNotes: fretboardStartNoteParams[]
 };
 
-export type scaleLayout = instrumentNoteParams[];
+export type scaleLayout = fretboardNoteParams[];
 
 export type scaleLayouts = scaleLayout[];
 
-export type mapScaleToLayout = (instrumentParams: Omit<instrumentParams, 'name'>) => scaleLayouts;
+export type mapScaleToLayout = (layoutParams: { scaleMap: scaleMap, startNotes: fretboardStartNoteParams[] }) => scaleLayouts;
 
 // UI level (user intention)
 export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'context-shift';
@@ -91,6 +90,7 @@ export type controlDirectionHandler = (control: control, direction: controlDirec
 // Business logic level (scale transformation)
 export type offsetScaleParam = (offset: number) => void;
 export type switchDegreeVisibility = (degree: degree) => void;
+export type setFretboardStartNote = (startNoteParams: fretboardStartNoteParams & { index: number }) => void;
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
@@ -100,11 +100,14 @@ export type store = {
   stateUnshiftResolvedScaleParams: Atom<resolvedScaleParams>
   stateDegreeRotation: Atom<number>
   stateHiddenDegrees: Atom<Set<degree>>
+  stateFretboardStartNotes: Atom<fretboardStartNoteParams[]>
+  stateFretboardLayout: Atom<scaleLayouts | null>
   offsetTonicShift: offsetScaleParam
   offsetModalShift: offsetScaleParam
   offsetDegreeRotation: offsetScaleParam
   offsetContext: offsetScaleParam
   switchDegreeVisibility: switchDegreeVisibility
+  setFretboardStartNote: setFretboardStartNote
 };
 
 export type domRefs = {
@@ -119,12 +122,13 @@ export type domRefs = {
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
   elSwitchDegreeContainers: NodeListOf<HTMLInputElement>
   //
-  elFretboard: HTMLTableSectionElement
-  elFretboardStringTemplate: HTMLTableRowElement
-  elFretboardChangeStringNote: HTMLButtonElement
-  elFretboardNewStringNoteParamsTemplate: HTMLTemplateElement
-  elFretboardNewStringNoteParams: HTMLFormElement
   elKeyboardNotes: NodeListOf<HTMLTableCellElement>
+  elFretboard: HTMLTableSectionElement
+  elFretboardStrings: HTMLTableRowElement[]
+  elFretboardStartNoteContainers: HTMLButtonElement[]
+  elFretboardStringFrets: HTMLTableCellElement[][]
+  elFretboardString: HTMLTableRowElement
+  elFretboardNewStringNoteParams: HTMLFormElement
 };
 
 export type uiTheme = 'light' | 'dark';
