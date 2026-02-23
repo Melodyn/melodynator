@@ -1,0 +1,45 @@
+{
+  "scaleParams": {
+    "offset": "offset",
+    "center": "center",
+    "context": "context",
+    "tonal": "tonal",
+    "modal": "modal",
+    "degrees": "degrees",
+    "hide": "hide",
+    "degreesTooltip": "Click a degree number to remove it from the scale. Use this to show only chord tones: 1, 3, 5"
+  },
+  "fretboard": {
+    "openNoteLabel": "Open note",
+    "octaveLabel": "Octave",
+    "confirmButton": "✓",
+    "octaveName0": "subcontra",
+    "octaveName1": "contra",
+    "octaveName2": "great",
+    "octaveName3": "small",
+    "octaveName4": "one-lined",
+    "octaveName5": "two-lined",
+    "octaveName6": "three-lined",
+    "octaveName7": "four-lined",
+    "octaveName8": "five-lined"
+  },
+  "content": {
+    "pageTitle": "Scales and Chords Online",
+    "pageDescription": "An interactive music theory calculator for building scales, chords, and interval patterns.",
+    "sectionTheoryTitle": "Music Theory — Visually",
+    "sectionTheoryText": "This tool helps you learn music theory through visualization. Choose a tonic, build an interval pattern, and see how scales and chords look on different instruments.",
+    "sectionFeaturesTitle": "What You Can Build",
+    "featureScales": "Scales and modes",
+    "featureChords": "Chords and intervals",
+    "featureIntervals": "Interval patterns (whole / half step)",
+    "featureDegrees": "Scale degrees and structures",
+    "sectionAudienceTitle": "Who This Is For",
+    "sectionAudienceText": "This tool is designed for beginner musicians and anyone studying the basics of music theory, regardless of their instrument.",
+    "sectionInstrumentsTitle": "Instrument Support",
+    "sectionInstrumentsText": "Visualization is available for keyboard and string instruments, with support for custom tuning and string count.",
+    "footerText": "Interactive Music Theory • Scales • Chords • Intervals"
+  },
+  "errors": {
+    "resolveError": "Center {note} is not in the {targets} scale"
+  }
+}

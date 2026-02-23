@@ -51,6 +51,19 @@ $theme-colors: map-merge($theme-colors,
   }
 }
 
+.logo {
+  transition: transform 0.2s ease;
+  transform-origin: 37.65% 99%;
+}
+
+.logo-toggle:hover .logo {
+  transform: rotate(-15deg);
+}
+
+.logo-toggle:active .logo {
+  transform: rotate(15deg);
+}
+
 .table-spacing-y {
   border-collapse: separate;
   border-spacing: 0 4px;

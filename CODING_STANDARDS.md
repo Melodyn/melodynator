@@ -33,6 +33,7 @@ scaleLayout               // универсально: любой инструм
 |---|---|---|
 | DOM-элемент | `el` prefix | `elFretboard`, `elTonicContainer` |
 | Nanostores atom | `state` prefix | `stateFretboardStrings`, `stateHiddenDegrees` |
+| i18n text atom | `text` prefix | `textScaleParams`, `textFretboard`, `textContent`, `textErrors` |
 | Значение по умолчанию | `default` prefix | `defaultScaleBuildParams` |
 | Действие над состоянием | глагол + объект | `offsetTonicShift`, `switchDegreeVisibility`, `setFretboardStringParams` |
 | Параметры / данные | существительное + суффикс | `scaleBuildParams`, `resolvedScaleParams`, `fretboardStartNoteParams` |
@@ -187,7 +188,131 @@ qs('[data-control="start-note"]', elFretboardString)
 
 ---
 
-## 5. Проверка
+## 5. Интернационализация (i18n)
+
+### Архитектура
+
+Весь i18n-код живёт в `src/app/i18n.ts`. Он не знает про DOM, не инициализирует Bootstrap-компоненты и не зависит от состояния приложения. Это позволяет импортировать text-сторы в `ui.ts` и `render.ts` без циклических зависимостей.
+
+| Файл | Роль |
+|---|---|
+| `i18n.ts` | `locale`, `i18n` factory, все text-сторы |
+| `ui.ts` | Инициализация Bootstrap-компонентов с i18n-текстом |
+| `render.ts` | Подписки text-сторов → обновление DOM через refs |
+
+### Text-сторы
+
+Text-сторы — атомы, значение которых обновляется при смене локали. Называются с префиксом `text`, суффикс — namespace:
+
+```typescript
+// ✗
+export const scaleParamsTexts = i18n('scaleParams', { ... }); // неверный префикс
+export const i18nContent = i18n('content', { ... });           // нет отражения namespace
+
+// ✓
+export const textScaleParams = i18n('scaleParams', { ... });
+export const textContent = i18n('content', { ... });
+```
+
+Дефолтные строки в `i18n()` — это русский текст (базовая локаль). Переводы в `src/translations/en.json` должны содержать те же ключи.
+
+### Чтение текста
+
+**`subscribe()`** — в `render.ts`, когда DOM обновляется реактивно при смене локали:
+
+```typescript
+// ✗ — однократное чтение: при смене языка не обновится
+const texts = textScaleParams.get();
+refs.elScaleParamsOffset.textContent = texts.offset;
+
+// ✓
+textScaleParams.subscribe((texts) => {
+  refs.elScaleParamsOffset.textContent = texts.offset;
+});
+```
+
+**`get()`** — в `ui.ts`, когда текст нужен разово при создании компонента. Допустимо только там, где компонент пересоздаётся при каждой смене локали — тогда `get()` всегда возвращает актуальное значение:
+
+```typescript
+// ✓ — в content() popover: вызывается при каждом show(), popover пересоздаётся на каждую смену локали
+const fretboardTexts = textFretboard.get();
+noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
+```
+
+### Bootstrap-компоненты с переводимым текстом
+
+**Tooltip.** Bootstrap проверяет наличие контента через `getTitle()` — читает конфиг `title` или атрибут `data-bs-title`. Если оба пустые при инициализации, tooltip не покажется даже после `setContent()`. Поэтому tooltip с i18n-текстом инициализируется отдельно, с явным `title`:
+
+```typescript
+// ✗ — без title; getTitle() пустой, tooltip не отобразится
+refs.elTooltipTriggers.forEach((el) => new Tooltip(el));
+Tooltip.getInstance(el).setContent({ '.tooltip-inner': text });
+
+// ✓ — title задан при инициализации; setContent() обновляет при смене локали
+const instance = new Tooltip(el, { title: textScaleParams.get().degreesTooltip });
+textScaleParams.subscribe((texts) => {
+  instance.setContent({ '.tooltip-inner': texts.degreesTooltip });
+});
+```
+
+Bootstrap не обрабатывает события мыши на SVG-элементах надёжно. Если tooltip привязан к иконке — оборачивай SVG в `<button>`.
+
+**Popover.** После первого `show()` Bootstrap кеширует DOM в `this._tip` и не вызывает `content()` повторно. При смене локали нужно уничтожить экземпляр и создать новый:
+
+```typescript
+// ✗ — Bootstrap возьмёт кешированный DOM, content() не перезапустится
+textFretboard.subscribe(() => { popover.hide(); });
+
+// ✓ — dispose() очищает кеш; makePopover() создаёт свежий экземпляр
+const makePopover = () => new Popover(el, { content: () => { ... } });
+textFretboard.subscribe(() => {
+  const existing = Popover.getInstance(el);
+  if (existing) existing.dispose();
+  makePopover();
+});
+```
+
+При закрытии popover через `hide()` — получай экземпляр через `Popover.getInstance()`, а не через замыкание над переменной: после `dispose()` и `makePopover()` переменная указывает на старый объект.
+
+### Что не переводится
+
+Нотация нот (`C D E F G A B ♭ ♯`) — интернациональна. Добавлять её в переводы — ошибка.
+
+```typescript
+// ✗
+textFretboard = i18n('fretboard', { noteC: 'до', noteD: 'ре', ... });
+
+// ✓ — ноты используются напрямую как константы предметной области
+opt.textContent = name; // name: noteName = 'C' | 'C♯' | ...
+```
+
+### Текст не в HTML
+
+Переводимый текст не хранится в HTML. Исходники строк — JSON-файлы переводов и дефолты в `i18n.ts`. HTML содержит только `data-content` как точку привязки для refs.
+
+```html
+<!-- ✗ — текст в HTML дублирует источник правды и не обновляется при смене локали -->
+<h1 data-content="page-title">Гаммы и аккорды онлайн</h1>
+
+<!-- ✓ — textContent устанавливается из textContent store -->
+<h1 data-content="page-title"></h1>
+```
+
+Это распространяется и на `<template>`: переводимый текст не кладётся в разметку шаблона. После клонирования — устанавливать `textContent` и `ariaLabel` из text-стора до вставки в DOM.
+
+```typescript
+// ✗ — текст захардкожен в шаблоне, при смене локали не обновится
+const form = refs.elFretboardNewStringNoteParams.cloneNode(true);
+
+// ✓ — текст устанавливается после клонирования из актуального text-стора
+const form = refs.elFretboardNewStringNoteParams.cloneNode(true);
+const fretboardTexts = textFretboard.get();
+noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
+```
+
+---
+
+## 6. Проверка
 
 Перед тем как считать задачу выполненной:
 

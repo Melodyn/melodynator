@@ -1,6 +1,10 @@
 import { expect, test, describe } from 'vitest';
 import * as t from '../src/types';
 import { resolveScale, scaleToMap, mapScaleToLayout, applyContextTransform, applyDegreeRotation } from '../src';
+import { textScaleParams, textFretboard, textContent, textErrors } from '../src/app/i18n';
+import enJson from '../src/translations/en.json';
+
+const keys = (obj: object) => Object.keys(obj).sort();
 
 const major = [
   ['G♭', 'A♭', 'B♭', 'C♭', 'D♭', 'E♭', 'F', 'G♭'],
@@ -199,5 +203,23 @@ describe('mapScaleToLayout', () => {
 
     const notesString = result[0].map(({ note }) => note).filter(n => n.length > 0).join(' ');
     expect(notesString).toBe('C D E F G A B C');
+  });
+});
+
+describe('en.json completeness', () => {
+  test('scaleParams keys match base locale', () => {
+    expect(keys(enJson.scaleParams)).toEqual(keys(textScaleParams.get()));
+  });
+
+  test('fretboard keys match base locale', () => {
+    expect(keys(enJson.fretboard)).toEqual(keys(textFretboard.get()));
+  });
+
+  test('content keys match base locale', () => {
+    expect(keys(enJson.content)).toEqual(keys(textContent.get()));
+  });
+
+  test('errors keys match base locale', () => {
+    expect(keys(enJson.errors)).toEqual(keys(textErrors.get()));
   });
 });

@@ -37,7 +37,35 @@ data_control:
   - degree-rotation # → offsetDegreeRotation → stateDegreeRotation → elScaleToneContainers
   - context-shift   # → offsetContext → stateContextOffset → elContextContainer
   - theme-toggle    # → toggleTheme → uiStore.theme → document.body
+  - locale-switch   # → switchLocale → stateLocale → elLocaleSwitch
   - start-note      # → setFretboardStartNote → stateFretboardStartNotes → elFretboardStartNoteButtons
+
+data_content:
+  # метки конфигуратора гаммы (textScaleParams)
+  - scale-params-offset   # → elScaleParamsOffset
+  - scale-params-center   # → elScaleParamsCenter
+  - scale-params-context  # → elScaleParamsContext
+  - scale-params-tonal    # → elScaleParamsTonal
+  - scale-params-modal    # → elScaleParamsModal
+  - scale-params-degrees  # → elScaleParamsDegrees (span)
+  - scale-params-hide     # → elScaleParamsHide (span)
+  # tooltip (data-bs-toggle="tooltip", text из textScaleParams.degreesTooltip)
+  # data-content не используется — SVG-элемент, текст устанавливается через Tooltip.setContent()
+  # статичный текст страницы (textContent)
+  - page-title              # → elPageTitle
+  - page-description        # → elPageDescription
+  - section-theory-title    # → elSectionTheoryTitle
+  - section-theory-text     # → elSectionTheoryText
+  - section-features-title  # → elSectionFeaturesTitle
+  - feature-scales          # → elFeatureScales
+  - feature-chords          # → elFeatureChords
+  - feature-intervals       # → elFeatureIntervals
+  - feature-degrees         # → elFeatureDegrees
+  - section-audience-title    # → elSectionAudienceTitle
+  - section-audience-text     # → elSectionAudienceText
+  - section-instruments-title # → elSectionInstrumentsTitle
+  - section-instruments-text  # → elSectionInstrumentsText
+  - footer-text               # → elFooterText
 
 data_container:
   - tonic           # ← stateScaleBuildParams(.tonic) → elTonicContainer
@@ -70,12 +98,14 @@ key_types:
   - fretboardNoteParams       # нота на конкретном ладу | var: noteParams | элемент scaleLayout[fretIndex]
   - fretboardParams      # тип для defaultInstrumentParams в store.ts
   - scaleLayout          # type: fretboardNoteParams[] | var: layout | результат mapScaleToLayout одной струны
+  - locale               # type: 'ru' | 'en' | store: stateLocale | action: switchLocale | data-control="locale-switch"
   - domRefs              # собирается в getDomRefs() в ui.ts
   - store                # t.store — базовый тип стора (без UI)
-  - uiStore              # t.uiStore — тема + toggleTheme
+  - uiStore              # t.uiStore — тема + toggleTheme + локаль + switchLocale
   - appStore             # store & uiStore — полный стор приложения
 
 stores:
+  - stateLocale                     # type: Atom<locale> | computed от persistentAtom + browser() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
   - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
   - stateCurrentNoteChromaticIndex  # computed: stateScaleBuildParams(.tonic) → chromaticIndex (для offsetTonicShift)
@@ -94,6 +124,7 @@ actions:
   - switchDegreeVisibility    # ← data-container="switch-degree" (click) | → stateHiddenDegrees
   - setFretboardStartNote     # ← data-control="start-note" (popover-форма) | → stateFretboardStartNotes
   - toggleTheme               # ← data-control="theme-toggle" | → uiStore.theme
+  - switchLocale              # ← data-control="locale-switch" | → stateLocale (через persistentAtom)
 
 render_targets:
   - elTonicContainer          # data-container="tonic" | ← stateScaleBuildParams(.tonic)
@@ -109,6 +140,34 @@ render_targets:
   - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
   - elFretboardString               # <template #template-fretboard__string> → клонируется в initFretboard
   - elFretboardNewStringNoteParams  # <template #template-fretboard__set-string-params> → клонируется в popover; note select заполняется нотами один раз в getDomRefs
+  # refs data-control
+  - elThemeToggle             # data-control="theme-toggle" (logo-toggle button) | click → toggleTheme → document.body[data-bs-theme]
+  # i18n refs (data-control)
+  - elLocaleSwitch            # data-control="locale-switch" | ← stateLocale (кнопка с текущим не-активным языком)
+  # i18n refs (data-content — textScaleParams)
+  - elScaleParamsOffset       # data-content="scale-params-offset" | ← textScaleParams.offset
+  - elScaleParamsCenter       # data-content="scale-params-center" | ← textScaleParams.center
+  - elScaleParamsContext      # data-content="scale-params-context" | ← textScaleParams.context
+  - elScaleParamsTonal        # data-content="scale-params-tonal" | ← textScaleParams.tonal
+  - elScaleParamsModal        # data-content="scale-params-modal" | ← textScaleParams.modal
+  - elScaleParamsDegrees          # data-content="scale-params-degrees" (span) | ← textScaleParams.degrees
+  - elScaleParamsHide             # data-content="scale-params-hide" (span) | ← textScaleParams.hide
+  - elScaleParamsDegreesTooltip   # button[data-bs-toggle="tooltip"] (SVG внутри) | ← textScaleParams.degreesTooltip (через Tooltip.setContent)
+  # i18n refs (data-content — textContent)
+  - elPageTitle               # data-content="page-title" | ← textContent.pageTitle
+  - elPageDescription         # data-content="page-description" | ← textContent.pageDescription
+  - elSectionTheoryTitle      # data-content="section-theory-title" | ← textContent.sectionTheoryTitle
+  - elSectionTheoryText       # data-content="section-theory-text" | ← textContent.sectionTheoryText
+  - elSectionFeaturesTitle    # data-content="section-features-title" | ← textContent.sectionFeaturesTitle
+  - elFeatureScales           # data-content="feature-scales" | ← textContent.featureScales
+  - elFeatureChords           # data-content="feature-chords" | ← textContent.featureChords
+  - elFeatureIntervals        # data-content="feature-intervals" | ← textContent.featureIntervals
+  - elFeatureDegrees          # data-content="feature-degrees" | ← textContent.featureDegrees
+  - elSectionAudienceTitle    # data-content="section-audience-title" | ← textContent.sectionAudienceTitle
+  - elSectionAudienceText     # data-content="section-audience-text" | ← textContent.sectionAudienceText
+  - elSectionInstrumentsTitle # data-content="section-instruments-title" | ← textContent.sectionInstrumentsTitle
+  - elSectionInstrumentsText  # data-content="section-instruments-text" | ← textContent.sectionInstrumentsText
+  - elFooterText              # data-content="footer-text" | ← textContent.footerText
 
 scale_build_params:
   - tonic          # data-container="tonic" | data-control="tonic-shift" → offsetTonicShift
