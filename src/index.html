@@ -48,7 +48,7 @@
 </head>
 
 <body data-bs-theme="light">
-  <div class="root container pt-5 p-0">
+  <div class="root container py-3 px-1">
     <!-- Visible SEO content -->
     <header>
       <div class="d-flex align-items-center">
@@ -68,168 +68,170 @@
     </header>
 
     <main>
-      <section class="row pb-3 justify-content-center">
+      <section class="pb-3">
         <h2 data-static-content="section-theory-title"></h2>
         <p data-static-content="section-theory-text"></p>
 
-        <table class="table table-sm table-borderless align-middle text-center w-auto m-0 p-0 table-spacing-y">
-          <thead class="align-middle">
-            <tr class="height-30px fw-bold">
-              <td class="p-0 text-start" data-static-content="scale-params__offset"></td>
-              <td class="p-0" colspan="3">
-                <span data-tooltip="center" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__center"></span>
-              </td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px" colspan="4">
-                <span data-tooltip="context" data-tooltip-placement="left"></span>
-                <span data-static-content="scale-params__context"></span>
-              </td>
-            </tr>
-          </thead>
-          <tbody class="align-middle">
-            <tr class="height-30px" data-container="center">
-              <td class="p-0 text-start">
-                <span data-tooltip="tonal" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__tonal"></span>
-              </td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="tonic-shift" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px fw-bold" data-container="tonic"></td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="tonic-shift" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="context-shift" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px fw-bold" data-container="context" colspan="2"></td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="context-shift" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-            </tr>
-            <tr class="height-30px" data-container="interval">
-              <td class="p-0 text-start">
-                <span data-tooltip="modal" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__modal"></span>
-              </td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="modal-shift" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px text-secondary" data-container="interval-step"></td>
-              <td class="p-0 text-start">
-                <button type="button" data-control="modal-shift" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-            </tr>
-            <tr class="height-30px" data-container="tones">
-              <td class="p-0 text-start">
-                <span data-tooltip="degrees" data-tooltip-placement="right"></span>
-                <span class="pe-1" data-static-content="scale-params__degrees"></span>
-              </td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="degree-rotation" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px text-secondary" data-container="scale-tone"></td>
-              <td class="p-0 text-start">
-                <button type="button" data-control="degree-rotation" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-            </tr>
-            <tr class="height-30px" data-container="degree">
-              <td class="px-0 pb-0 pt-2 border-top text-start">
-                <span data-tooltip="hide" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__hide"></span>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">&#9745;</td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-1" value="1" type="checkbox"
-                  data-container="switch-degree" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-1">1</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-2" value="2" type="checkbox"
-                  data-container="switch-degree" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-2">2</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-3" value="3" type="checkbox"
-                  data-container="switch-degree" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-3">3</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-4" value="4" type="checkbox"
-                  data-container="switch-degree" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-4">4</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-5" value="5" type="checkbox"
-                  data-container="switch-degree" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-5">5</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-6" value="6" type="checkbox"
-                  data-container="switch-degree" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-6">6</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-7" value="7" type="checkbox"
-                  data-container="switch-degree" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-7">7</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">8</td>
-              <td class="px-0 pb-0 pt-1 border-top"></td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="table table-sm table-borderless align-middle text-center w-auto mx-auto p-0 table-spacing-y">
+            <thead class="align-middle">
+              <tr class="height-30px fw-bold">
+                <td class="p-0 text-start" data-static-content="scale-params__offset"></td>
+                <td class="p-0 text-nowrap" colspan="3">
+                  <span data-tooltip="center" data-tooltip-placement="right"></span>
+                  <span data-static-content="scale-params__center"></span>
+                </td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px text-nowrap" colspan="4">
+                  <span data-tooltip="context" data-tooltip-placement="left"></span>
+                  <span data-static-content="scale-params__context"></span>
+                </td>
+              </tr>
+            </thead>
+            <tbody class="align-middle">
+              <tr class="height-30px" data-container="center">
+                <td class="p-0 text-start text-nowrap">
+                  <span data-tooltip="tonal" data-tooltip-placement="right"></span>
+                  <span data-static-content="scale-params__tonal"></span>
+                </td>
+                <td class="p-0 width-30px">
+                  <button type="button" data-control="tonic-shift" data-direction="down"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                    &#8592;
+                  </button>
+                </td>
+                <td class="p-0 width-30px fw-bold" data-container="tonic"></td>
+                <td class="p-0 width-30px">
+                  <button type="button" data-control="tonic-shift" data-direction="up"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                    &#8594;
+                  </button>
+                </td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px"></td>
+                <td class="p-0 width-30px">
+                  <button type="button" data-control="context-shift" data-direction="down"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                    &#8592;
+                  </button>
+                </td>
+                <td class="p-0 width-30px fw-bold" data-container="context" colspan="2"></td>
+                <td class="p-0 width-30px">
+                  <button type="button" data-control="context-shift" data-direction="up"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                    &#8594;
+                  </button>
+                </td>
+              </tr>
+              <tr class="height-30px" data-container="interval">
+                <td class="p-0 text-start text-nowrap">
+                  <span data-tooltip="modal" data-tooltip-placement="right"></span>
+                  <span data-static-content="scale-params__modal"></span>
+                </td>
+                <td class="p-0 width-30px">
+                  <button type="button" data-control="modal-shift" data-direction="down"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                    &#8592;
+                  </button>
+                </td>
+                <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                <td class="p-0 width-30px text-secondary" data-container="interval-step"></td>
+                <td class="p-0 text-start">
+                  <button type="button" data-control="modal-shift" data-direction="up"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                    &#8594;
+                  </button>
+                </td>
+              </tr>
+              <tr class="height-30px" data-container="tones">
+                <td class="p-0 text-start text-nowrap">
+                  <span data-tooltip="degrees" data-tooltip-placement="right"></span>
+                  <span class="pe-1" data-static-content="scale-params__degrees"></span>
+                </td>
+                <td class="p-0 width-30px">
+                  <button type="button" data-control="degree-rotation" data-direction="down"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                    &#8592;
+                  </button>
+                </td>
+                <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                <td class="p-0 width-30px text-secondary" data-container="scale-tone"></td>
+                <td class="p-0 text-start">
+                  <button type="button" data-control="degree-rotation" data-direction="up"
+                    class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                    &#8594;
+                  </button>
+                </td>
+              </tr>
+              <tr class="height-30px" data-container="degree">
+                <td class="px-0 pb-0 pt-2 border-top text-start text-nowrap">
+                  <span data-tooltip="hide" data-tooltip-placement="right"></span>
+                  <span data-static-content="scale-params__hide"></span>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">&#9745;</td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px">
+                  <input class="btn-check btn-focusable" id="switch-degree-1" value="1" type="checkbox"
+                    data-container="switch-degree" />
+                  <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-1">1</label>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px">
+                  <input class="btn-check btn-focusable" id="switch-degree-2" value="2" type="checkbox"
+                    data-container="switch-degree" />
+                  <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-2">2</label>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px">
+                  <input class="btn-check btn-focusable" id="switch-degree-3" value="3" type="checkbox"
+                    data-container="switch-degree" />
+                  <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-3">3</label>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px">
+                  <input class="btn-check btn-focusable" id="switch-degree-4" value="4" type="checkbox"
+                    data-container="switch-degree" />
+                  <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-4">4</label>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px">
+                  <input class="btn-check btn-focusable" id="switch-degree-5" value="5" type="checkbox"
+                    data-container="switch-degree" />
+                  <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-5">5</label>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px">
+                  <input class="btn-check btn-focusable" id="switch-degree-6" value="6" type="checkbox"
+                    data-container="switch-degree" />
+                  <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-6">6</label>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px">
+                  <input class="btn-check btn-focusable" id="switch-degree-7" value="7" type="checkbox"
+                    data-container="switch-degree" />
+                  <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-7">7</label>
+                </td>
+                <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">8</td>
+                <td class="px-0 pb-0 pt-1 border-top"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <p class="text-center text-danger pt-2 pb-1 m-0" data-container="resolve-error">
+        <p class="text-center text-danger pb-1 m-0" data-container="resolve-error">
         </p>
       </section>
 
-      <div class="row pb-5 justify-content-center">
-        <table class="table table-bordered align-middle text-center w-auto m-0 p-0">
+      <div class="overflow-x-auto pb-5">
+        <table class="table table-bordered align-middle text-center w-auto mx-auto p-0">
           <thead class="align-middle">
             <tr class="height-30px">
               <td class="p-0 text-secondary width-30px"></td>
@@ -271,67 +273,65 @@
         </table>
       </div>
 
-      <div class="row pb-5 justify-content-center">
-        <div class="col-auto position-relative">
-          <table data-instrument="keyboard" class="table table-borderless text-center w-auto m-0 p-0">
-            <tbody>
-              <tr class="height-60px">
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
+      <div class="overflow-x-auto pb-5">
+        <table data-instrument="keyboard" class="table table-borderless text-center w-auto mx-auto p-0">
+          <tbody>
+            <tr class="height-60px">
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
 
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-                <td class="bg-dark border width-30px"></td>
-                <td class="bg-light border width-30px"></td>
-              </tr>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+              <td class="bg-dark border width-30px"></td>
+              <td class="bg-light border width-30px"></td>
+            </tr>
 
-              <tr data-instrument="keyboard__notes">
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-                <td class="p-0 width-30px"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            <tr data-instrument="keyboard__notes">
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px"></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <section>

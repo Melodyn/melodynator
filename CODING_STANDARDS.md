@@ -186,6 +186,20 @@ qs('[data-control="start-note"]', elFretboardString)
 
 Исключение: Bootstrap JS-компоненты (Tooltip, Popover) инициализируются по `data-bs-*` — это их API, а не наша выборка.
 
+`.row` используется только вместе с `.col` — только для сетки Bootstrap. Для центрирования отдельных элементов — `mx-auto` (block-level) или `d-flex justify-content-center`. Таблицы шире вьюпорта оборачиваются в `overflow-x-auto`, не в `.row.justify-content-center` (flex-center шире вьюпорта выталкивает левый край в отрицательные координаты — недоступно без горизонтального скролла).
+
+```html
+<!-- ✗ — flex-center + wide content: левый край уходит за 0 -->
+<div class="row m-0 justify-content-center">
+  <table class="w-auto">...</table>
+</div>
+
+<!-- ✓ — mx-auto центрирует если влезает; overflow-x-auto даёт скролл вправо если нет -->
+<div class="overflow-x-auto">
+  <table class="w-auto mx-auto">...</table>
+</div>
+```
+
 ### BEM в значениях `data`-атрибутов
 
 Значения `data`-атрибутов предметной области именуются по BEM: `block__element`. `-` разделяет слова внутри блока или элемента, `__` (двойное подчёркивание) — блок от элемента.
