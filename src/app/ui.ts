@@ -3,7 +3,7 @@ import * as n from 'nanostores';
 import { qs, qsa } from '../commonUtils';
 import * as c from '../constants';
 import type * as t from '../types';
-import { localeStore, locale, textScaleParams, textFretboard } from './i18n';
+import { localeStore, locale, textTooltips, textFretboard, textScaleParams, textContent } from './i18n';
 
 export const createUiStore = (): t.uiStore => {
   const theme = n.atom<t.uiTheme>('light');
@@ -33,7 +33,7 @@ const getElFretboardStringFrets = (elFretboardString: HTMLTableRowElement): HTML
 
 const getDomRefs = (): t.domRefs => {
   const elThemeToggle = qs<HTMLButtonElement>('[data-control="theme-toggle"]');
-  const elTooltipTriggers = qsa('[data-bs-toggle="tooltip"]');
+  const elTooltipTemplate = qs<HTMLTemplateElement>('#template-tooltip');
   const elDirectionControllers = qsa<HTMLButtonElement>('[data-direction]');
   const elResolveErrorContainer = qs<HTMLParagraphElement>('[data-container="resolve-error"]');
   //
@@ -64,35 +64,11 @@ const getDomRefs = (): t.domRefs => {
   });
 
   const elLocaleSwitch = qs<HTMLButtonElement>('[data-control="locale-switch"]');
-  // data-content — метки конфигуратора гаммы
-  const elScaleParamsOffset = qs<HTMLTableCellElement>('[data-content="scale-params-offset"]');
-  const elScaleParamsCenter = qs<HTMLTableCellElement>('[data-content="scale-params-center"]');
-  const elScaleParamsContext = qs<HTMLTableCellElement>('[data-content="scale-params-context"]');
-  const elScaleParamsTonal = qs<HTMLTableCellElement>('[data-content="scale-params-tonal"]');
-  const elScaleParamsModal = qs<HTMLTableCellElement>('[data-content="scale-params-modal"]');
-  const elScaleParamsDegrees = qs<HTMLSpanElement>('[data-content="scale-params-degrees"]');
-  const elScaleParamsHide = qs<HTMLSpanElement>('[data-content="scale-params-hide"]');
-  const elScaleParamsDegreesTooltip = qs<HTMLButtonElement>('[data-bs-toggle="tooltip"].tooltip-configurator');
-  // data-content — статичный текст страницы
-  const elPageTitle = qs<HTMLHeadingElement>('[data-content="page-title"]');
-  const elPageDescription = qs<HTMLParagraphElement>('[data-content="page-description"]');
-  const elSectionTheoryTitle = qs<HTMLHeadingElement>('[data-content="section-theory-title"]');
-  const elSectionTheoryText = qs<HTMLParagraphElement>('[data-content="section-theory-text"]');
-  const elSectionFeaturesTitle = qs<HTMLHeadingElement>('[data-content="section-features-title"]');
-  const elFeatureScales = qs<HTMLLIElement>('[data-content="feature-scales"]');
-  const elFeatureChords = qs<HTMLLIElement>('[data-content="feature-chords"]');
-  const elFeatureIntervals = qs<HTMLLIElement>('[data-content="feature-intervals"]');
-  const elFeatureDegrees = qs<HTMLLIElement>('[data-content="feature-degrees"]');
-  const elSectionAudienceTitle = qs<HTMLHeadingElement>('[data-content="section-audience-title"]');
-  const elSectionAudienceText = qs<HTMLParagraphElement>('[data-content="section-audience-text"]');
-  const elSectionInstrumentsTitle = qs<HTMLHeadingElement>('[data-content="section-instruments-title"]');
-  const elSectionInstrumentsText = qs<HTMLParagraphElement>('[data-content="section-instruments-text"]');
-  const elFooterText = qs<HTMLParagraphElement>('[data-content="footer-text"]');
 
   return {
     elThemeToggle,
     elLocaleSwitch,
-    elTooltipTriggers,
+    elTooltipTemplate,
     elDirectionControllers,
     elResolveErrorContainer,
     //
@@ -109,30 +85,6 @@ const getDomRefs = (): t.domRefs => {
     elFretboardStringFrets,
     elFretboardString,
     elFretboardNewStringNoteParams,
-    // data-content — метки конфигуратора гаммы
-    elScaleParamsOffset,
-    elScaleParamsCenter,
-    elScaleParamsContext,
-    elScaleParamsTonal,
-    elScaleParamsModal,
-    elScaleParamsDegrees,
-    elScaleParamsHide,
-    elScaleParamsDegreesTooltip,
-    // data-content — статичный текст страницы
-    elPageTitle,
-    elPageDescription,
-    elSectionTheoryTitle,
-    elSectionTheoryText,
-    elSectionFeaturesTitle,
-    elFeatureScales,
-    elFeatureChords,
-    elFeatureIntervals,
-    elFeatureDegrees,
-    elSectionAudienceTitle,
-    elSectionAudienceText,
-    elSectionInstrumentsTitle,
-    elSectionInstrumentsText,
-    elFooterText,
   };
 };
 
@@ -194,23 +146,63 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
+const initTooltips = (refs: t.domRefs): void => {
+  const tooltipInstances = new Map<string, Tooltip>();
+  const tooltipPlaceholders = qsa<HTMLElement>('[data-tooltip]');
+  const elTooltipButton = <HTMLButtonElement>refs.elTooltipTemplate.content.firstElementChild;
+
+  tooltipPlaceholders.forEach((placeholder) => {
+    const key = <string>placeholder.dataset.tooltip;
+    const button = <HTMLButtonElement>elTooltipButton.cloneNode(true);
+    button.dataset.tooltip = key;
+    button.dataset.bsPlacement = <string>placeholder.dataset.tooltipPlacement;
+    placeholder.replaceWith(button);
+
+    const tooltipTexts = textTooltips.get();
+    const instance = new Tooltip(button, {
+      title: tooltipTexts[<keyof typeof tooltipTexts>key],
+    });
+    tooltipInstances.set(key, instance);
+  });
+
+  textTooltips.subscribe((texts) => {
+    tooltipInstances.forEach((instance, key) => {
+      instance.setContent({ '.tooltip-inner': texts[<keyof typeof texts>key] });
+    });
+  });
+};
+
+const initStaticText = (): void => {
+  type i18nTextAtom = n.ReadableAtom<Record<string, string>>;
+
+  const kebabToCamel = (s: string): string =>
+    s.replace(/[-_]+([a-z])/g, (_, c: string) => c.toUpperCase());
+
+  const SCALE_PARAMS_PREFIX = 'scale-params__';
+
+  qsa<HTMLElement>('[data-static-content]').forEach((el) => {
+    const value = <string>el.dataset.staticContent;
+    let store: i18nTextAtom;
+    let key: string;
+    if (value.startsWith(SCALE_PARAMS_PREFIX)) {
+      store = <i18nTextAtom><unknown>textScaleParams;
+      key = kebabToCamel(value.slice(SCALE_PARAMS_PREFIX.length));
+    } else {
+      store = <i18nTextAtom><unknown>textContent;
+      key = kebabToCamel(value);
+    }
+    store.subscribe((texts) => {
+      el.textContent = texts[key];
+    });
+  });
+};
+
 export const initUI = (appStore: t.appStore): t.domRefs => {
   const refs = getDomRefs();
 
   initFretboard(refs, appStore);
-
-  // Bootstrap tooltips (degrees tooltip initialized separately — needs i18n title)
-  refs.elTooltipTriggers.forEach((tooltipTriggerEl) => {
-    if (tooltipTriggerEl !== refs.elScaleParamsDegreesTooltip) new Tooltip(tooltipTriggerEl);
-  });
-
-  // Degrees tooltip — initialized with i18n title so Bootstrap _isWithContent() passes
-  const degreesTooltipInstance = new Tooltip(refs.elScaleParamsDegreesTooltip, {
-    title: textScaleParams.get().degreesTooltip,
-  });
-  textScaleParams.subscribe((texts) => {
-    degreesTooltipInstance.setContent({ '.tooltip-inner': texts.degreesTooltip });
-  });
+  initTooltips(refs);
+  initStaticText();
 
   // Locale switch
   refs.elLocaleSwitch.addEventListener('click', () => {

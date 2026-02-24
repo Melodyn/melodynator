@@ -6,8 +6,15 @@
     "tonal": "tonal",
     "modal": "modal",
     "degrees": "degrees",
-    "hide": "hide",
-    "degreesTooltip": "Click a degree number to remove it from the scale. Use this to show only chord tones: 1, 3, 5"
+    "hide": "hide"
+  },
+  "tooltips": {
+    "hide": "Click to remove a degree from the scale. This lets you keep only chord tones: 1, 3, 5",
+    "tonal": "Changes the tonic of the scale. Degrees and chords are built from it",
+    "modal": "Shifting the interval pattern changes the mode. Moving 5 steps right gives the Aeolian mode (natural minor)",
+    "degrees": "Shifts the center within the scale. The mode changes without altering the notes, unlike modal shift",
+    "center": "The center is the root note of the scale. It is always the first degree and the reference point for chords, regardless of context",
+    "context": "Context builds the scale from a related key around the center. For example, F gives B♭ for C7"
   },
   "fretboard": {
     "openNoteLabel": "Open note",

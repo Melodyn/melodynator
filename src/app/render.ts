@@ -1,7 +1,7 @@
 import type * as t from '../types';
 import * as mu from '../index';
 import * as c from '../constants';
-import { textScaleParams, textContent, textErrors } from './i18n';
+import { textErrors } from './i18n';
 
 const selectedScaleParamsClasses = ['fw-bold', 'bg-secondary', 'bg-opacity-2'];
 
@@ -163,33 +163,6 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
 
   store.stateLocale.subscribe((locale) => {
     refs.elLocaleSwitch.textContent = locale === 'ru' ? 'EN' : 'RU';
-  });
-
-  textScaleParams.subscribe((texts) => {
-    refs.elScaleParamsOffset.textContent = texts.offset;
-    refs.elScaleParamsCenter.textContent = texts.center;
-    refs.elScaleParamsContext.textContent = texts.context;
-    refs.elScaleParamsTonal.textContent = texts.tonal;
-    refs.elScaleParamsModal.textContent = texts.modal;
-    refs.elScaleParamsDegrees.textContent = texts.degrees;
-    refs.elScaleParamsHide.textContent = texts.hide;
-  });
-
-  textContent.subscribe((texts) => {
-    refs.elPageTitle.textContent = texts.pageTitle;
-    refs.elPageDescription.textContent = texts.pageDescription;
-    refs.elSectionTheoryTitle.textContent = texts.sectionTheoryTitle;
-    refs.elSectionTheoryText.textContent = texts.sectionTheoryText;
-    refs.elSectionFeaturesTitle.textContent = texts.sectionFeaturesTitle;
-    refs.elFeatureScales.textContent = texts.featureScales;
-    refs.elFeatureChords.textContent = texts.featureChords;
-    refs.elFeatureIntervals.textContent = texts.featureIntervals;
-    refs.elFeatureDegrees.textContent = texts.featureDegrees;
-    refs.elSectionAudienceTitle.textContent = texts.sectionAudienceTitle;
-    refs.elSectionAudienceText.textContent = texts.sectionAudienceText;
-    refs.elSectionInstrumentsTitle.textContent = texts.sectionInstrumentsTitle;
-    refs.elSectionInstrumentsText.textContent = texts.sectionInstrumentsText;
-    refs.elFooterText.textContent = texts.footerText;
   });
 
   textErrors.subscribe((texts) => {

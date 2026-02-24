@@ -186,6 +186,23 @@ qs('[data-control="start-note"]', elFretboardString)
 
 Исключение: Bootstrap JS-компоненты (Tooltip, Popover) инициализируются по `data-bs-*` — это их API, а не наша выборка.
 
+### BEM в значениях `data`-атрибутов
+
+Значения `data`-атрибутов предметной области именуются по BEM: `block__element`. `-` разделяет слова внутри блока или элемента, `__` (двойное подчёркивание) — блок от элемента.
+
+```html
+<!-- ✗ — принадлежность к блоку не видна, блоком назначено слишком общее слово -->
+<tr data-instrument="fretboard-string">
+<td data-instrument="content__fretboard-string-note">
+
+<!-- ✓ — block__element читается сразу -->
+<tbody data-instrument="fretboard">
+<tr data-instrument="fretboard__string">
+<td data-instrument="fretboard__string-note">
+```
+
+`__` — семантика имени, а не разделитель, который парсится в коде. Значение обрабатывается целиком — `pseudo-header__configurator` конвертируется в `pseudoHeaderConfigurator`.
+
 ---
 
 ## 5. Интернационализация (i18n)

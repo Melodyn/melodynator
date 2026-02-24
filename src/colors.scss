@@ -28,8 +28,11 @@ $theme-colors: map-merge($theme-colors,
   height: 60px;
 }
 
-.tooltip-configurator {
+.tooltip-mw-300 {
   --bs-tooltip-max-width: 300px;
+}
+
+.icon-faded {
   opacity: 0.5;
 
   &:hover {

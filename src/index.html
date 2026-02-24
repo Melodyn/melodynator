@@ -59,31 +59,42 @@
             <path d="m48.19 62.57l-32.1 32.1 32.1 32.09 32.09-32.09v-29.18l32.1-29.18-37.93-35.02-5.84 2.92v78.79z" />
           </svg>
         </button>
-        <h1 data-content="page-title"></h1>
+        <h1 data-static-content="page-title"></h1>
         <div class="flex-grow-1 text-end">
           <button type="button" class="btn btn-sm btn-outline-secondary" data-control="locale-switch"></button>
         </div>
       </div>
-      <p data-content="page-description"></p>
+      <p data-static-content="page-description"></p>
     </header>
 
     <main>
+      <section class="row pb-3 justify-content-center">
+        <h2 data-static-content="section-theory-title"></h2>
+        <p data-static-content="section-theory-text"></p>
 
-      <div class="row pb-5 justify-content-center">
         <table class="table table-sm table-borderless align-middle text-center w-auto m-0 p-0 table-spacing-y">
           <thead class="align-middle">
             <tr class="height-30px fw-bold">
-              <td class="p-0 text-start" data-content="scale-params-offset"></td>
-              <td class="p-0" colspan="3" data-content="scale-params-center"></td>
+              <td class="p-0 text-start" data-static-content="scale-params__offset"></td>
+              <td class="p-0" colspan="3">
+                <span data-tooltip="center" data-tooltip-placement="right"></span>
+                <span data-static-content="scale-params__center"></span>
+              </td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px" colspan="4" data-content="scale-params-context"></td>
+              <td class="p-0 width-30px" colspan="4">
+                <span data-tooltip="context" data-tooltip-placement="left"></span>
+                <span data-static-content="scale-params__context"></span>
+              </td>
             </tr>
           </thead>
           <tbody class="align-middle">
             <tr class="height-30px" data-container="center">
-              <td class="p-0 text-start" data-content="scale-params-tonal"></td>
+              <td class="p-0 text-start">
+                <span data-tooltip="tonal" data-tooltip-placement="right"></span>
+                <span data-static-content="scale-params__tonal"></span>
+              </td>
               <td class="p-0 width-30px">
                 <button type="button" data-control="tonic-shift" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
@@ -115,7 +126,10 @@
               </td>
             </tr>
             <tr class="height-30px" data-container="interval">
-              <td class="p-0 text-start" data-content="scale-params-modal"></td>
+              <td class="p-0 text-start">
+                <span data-tooltip="modal" data-tooltip-placement="right"></span>
+                <span data-static-content="scale-params__modal"></span>
+              </td>
               <td class="p-0 width-30px">
                 <button type="button" data-control="modal-shift" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
@@ -138,7 +152,10 @@
               </td>
             </tr>
             <tr class="height-30px" data-container="tones">
-              <td class="p-0 text-start"><span class="pe-1" data-content="scale-params-degrees"></span></td>
+              <td class="p-0 text-start">
+                <span data-tooltip="degrees" data-tooltip-placement="right"></span>
+                <span class="pe-1" data-static-content="scale-params__degrees"></span>
+              </td>
               <td class="p-0 width-30px">
                 <button type="button" data-control="degree-rotation" data-direction="down"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
@@ -162,15 +179,8 @@
             </tr>
             <tr class="height-30px" data-container="degree">
               <td class="px-0 pb-0 pt-2 border-top text-start">
-                <button type="button" class="tooltip-configurator border-0 bg-transparent p-0 align-middle text-body"
-                  data-bs-custom-class="tooltip-configurator" data-bs-toggle="tooltip" data-bs-placement="right">
-                  <svg width="16" height="16" viewBox="0 0 128 128" fill="currentColor"
-                    class="text-danger align-text-top" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="m48.19 62.57l-32.1 32.1 32.1 32.09 32.09-32.09v-29.18l32.1-29.18-37.93-35.02-5.84 2.92v78.79z" />
-                  </svg>
-                </button>
-                <span data-content="scale-params-hide"></span>
+                <span data-tooltip="hide" data-tooltip-placement="right"></span>
+                <span data-static-content="scale-params__hide"></span>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">&#9745;</td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
@@ -213,7 +223,10 @@
             </tr>
           </tbody>
         </table>
-      </div>
+
+        <p class="text-center text-danger pt-2 pb-1 m-0" data-container="resolve-error">
+        </p>
+      </section>
 
       <div class="row pb-5 justify-content-center">
         <table class="table table-bordered align-middle text-center w-auto m-0 p-0">
@@ -318,42 +331,44 @@
               </tr>
             </tbody>
           </table>
-          <p class="p-0 m-0 w-100 text-center text-danger position-absolute bottom-0 start-0"
-            data-container="resolve-error">
-          </p>
         </div>
       </div>
 
       <section>
-        <h2 data-content="section-theory-title"></h2>
-        <p data-content="section-theory-text"></p>
-      </section>
-
-      <section>
-        <h2 data-content="section-features-title"></h2>
+        <h2 data-static-content="section-features-title"></h2>
         <ul>
-          <li data-content="feature-scales"></li>
-          <li data-content="feature-chords"></li>
-          <li data-content="feature-intervals"></li>
-          <li data-content="feature-degrees"></li>
+          <li data-static-content="feature-scales"></li>
+          <li data-static-content="feature-chords"></li>
+          <li data-static-content="feature-intervals"></li>
+          <li data-static-content="feature-degrees"></li>
         </ul>
       </section>
 
       <section>
-        <h2 data-content="section-audience-title"></h2>
-        <p data-content="section-audience-text"></p>
+        <h2 data-static-content="section-audience-title"></h2>
+        <p data-static-content="section-audience-text"></p>
       </section>
 
       <section>
-        <h2 data-content="section-instruments-title"></h2>
-        <p data-content="section-instruments-text"></p>
+        <h2 data-static-content="section-instruments-title"></h2>
+        <p data-static-content="section-instruments-text"></p>
       </section>
 
     </main>
 
     <footer>
-      <p data-content="footer-text"></p>
+      <p data-static-content="footer-text"></p>
     </footer>
+
+    <template id="template-tooltip">
+      <button type="button" class="icon-faded border-0 bg-transparent p-0 align-middle text-body"
+        data-bs-custom-class="tooltip-mw-300" data-bs-toggle="tooltip">
+        <svg width="16" height="16" viewBox="0 0 128 128" fill="currentColor" class="text-danger align-text-top"
+          xmlns="http://www.w3.org/2000/svg">
+          <path d="m48.19 62.57l-32.1 32.1 32.1 32.09 32.09-32.09v-29.18l32.1-29.18-37.93-35.02-5.84 2.92v78.79z" />
+        </svg>
+      </button>
+    </template>
 
     <template id="template-fretboard__string">
       <tr class="height-30px" data-instrument="fretboard__string">

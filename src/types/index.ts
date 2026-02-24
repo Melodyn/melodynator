@@ -113,7 +113,7 @@ export type store = {
 export type domRefs = {
   elThemeToggle: HTMLButtonElement
   elLocaleSwitch: HTMLButtonElement
-  elTooltipTriggers: NodeListOf<Element>
+  elTooltipTemplate: HTMLTemplateElement
   elDirectionControllers: NodeListOf<HTMLButtonElement>
   elResolveErrorContainer: HTMLParagraphElement
   //
@@ -130,30 +130,6 @@ export type domRefs = {
   elFretboardStringFrets: HTMLTableCellElement[][]
   elFretboardString: HTMLTableRowElement
   elFretboardNewStringNoteParams: HTMLFormElement
-  // data-content — метки конфигуратора гаммы (i18n, textScaleParams)
-  elScaleParamsOffset: HTMLTableCellElement
-  elScaleParamsCenter: HTMLTableCellElement
-  elScaleParamsContext: HTMLTableCellElement
-  elScaleParamsTonal: HTMLTableCellElement
-  elScaleParamsModal: HTMLTableCellElement
-  elScaleParamsDegrees: HTMLSpanElement
-  elScaleParamsHide: HTMLSpanElement
-  elScaleParamsDegreesTooltip: HTMLButtonElement
-  // data-content — статичный текст страницы (i18n, textContent)
-  elPageTitle: HTMLHeadingElement
-  elPageDescription: HTMLParagraphElement
-  elSectionTheoryTitle: HTMLHeadingElement
-  elSectionTheoryText: HTMLParagraphElement
-  elSectionFeaturesTitle: HTMLHeadingElement
-  elFeatureScales: HTMLLIElement
-  elFeatureChords: HTMLLIElement
-  elFeatureIntervals: HTMLLIElement
-  elFeatureDegrees: HTMLLIElement
-  elSectionAudienceTitle: HTMLHeadingElement
-  elSectionAudienceText: HTMLParagraphElement
-  elSectionInstrumentsTitle: HTMLHeadingElement
-  elSectionInstrumentsText: HTMLParagraphElement
-  elFooterText: HTMLParagraphElement
 };
 
 export type uiTheme = 'light' | 'dark';
