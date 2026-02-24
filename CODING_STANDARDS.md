@@ -219,7 +219,35 @@ qs('[data-control="start-note"]', elFretboardString)
 
 ---
 
-## 5. Интернационализация (i18n)
+## 5. Начальные значения и localStorage
+
+### getSavedValues()
+
+`getSavedValues()` в `src/commonUtils.ts` — единственная точка чтения сохранённого состояния. Возвращает гарантированно типизированный объект: из localStorage (если значение валидно) или дефолт из кода. Дефолты определены внутри функции.
+
+Весь остальной код берёт начальные значения только из неё — не читает localStorage напрямую, не пишет `n.atom('light')` с хардкодом.
+
+```typescript
+// ✗ — хардкод дефолта в сторе; localStorage не читается
+const theme = n.atom<t.uiTheme>('light');
+
+// ✗ — прямое чтение localStorage в сторе
+const storedTheme = <t.uiTheme>(localStorage.getItem('theme') ?? 'light');
+const theme = n.atom<t.uiTheme>(storedTheme);
+
+// ✓ — начальное значение из единой точки чтения
+const theme = persistentAtom<t.uiTheme>('theme', getSavedValues().theme);
+```
+
+Запись в localStorage — через `persistentAtom` (автоматически при `.set()`). `getSavedValues()` отвечает только за чтение.
+
+Когда понадобится заменить localStorage на backend или URL-параметр — меняется только `getSavedValues()`, сторы не трогаются.
+
+Функция должна корректно работать в не-браузерном окружении (Node.js, тесты): при отсутствии `localStorage` возвращает дефолты.
+
+---
+
+## 6. Интернационализация (i18n)
 
 ### Архитектура
 
@@ -343,7 +371,7 @@ noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
 
 ---
 
-## 6. Проверка
+## 7. Проверка
 
 Перед тем как считать задачу выполненной:
 

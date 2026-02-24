@@ -136,6 +136,11 @@ export type uiTheme = 'light' | 'dark';
 
 export type locale = 'ru' | 'en';
 
+export type savedValues = {
+  theme: uiTheme
+  locale: locale
+};
+
 export type uiStore = {
   theme: Atom<uiTheme>
   toggleTheme: () => void

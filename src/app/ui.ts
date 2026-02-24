@@ -1,12 +1,13 @@
 import { Popover, Tooltip } from 'bootstrap';
 import * as n from 'nanostores';
-import { qs, qsa } from '../commonUtils';
+import { persistentAtom } from '@nanostores/persistent';
+import { qs, qsa, getSavedValues } from '../commonUtils';
 import * as c from '../constants';
 import type * as t from '../types';
 import { localeStore, locale, textTooltips, textFretboard, textScaleParams, textContent } from './i18n';
 
 export const createUiStore = (): t.uiStore => {
-  const theme = n.atom<t.uiTheme>('light');
+  const theme = persistentAtom<t.uiTheme>('theme', getSavedValues().theme);
 
   const toggleTheme = () => {
     theme.set(theme.get() === 'dark' ? 'light' : 'dark');

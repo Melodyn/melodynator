@@ -1,11 +1,10 @@
-import { createI18n, localeFrom, browser, params } from '@nanostores/i18n';
+import { createI18n, params } from '@nanostores/i18n';
 import { persistentAtom } from '@nanostores/persistent';
+import type * as t from '../types';
+import { getSavedValues } from '../commonUtils';
 
-export const localeStore = persistentAtom<string | undefined>('locale', undefined);
-export const locale = localeFrom(
-  localeStore,
-  browser({ available: ['ru', 'en'], fallback: 'ru' }),
-);
+export const localeStore = persistentAtom<t.locale>('locale', getSavedValues().locale);
+export const locale = localeStore;
 
 const i18n = createI18n(locale, {
   baseLocale: 'ru',
@@ -25,12 +24,14 @@ export const textScaleParams = i18n('scaleParams', {
 });
 
 export const textTooltips = i18n('tooltips', {
+  tooltip: 'Кликни по чёрной ноте',
   hide: 'По клику ступень удаляется из гаммы. Так можно оставить только ступени аккорда: 1, 3, 5',
   tonal: 'Меняет тонику гаммы. От неё считаются ступени и строятся аккорды',
   modal: 'Смещение по интервальной схеме меняет лад. Сдвиг на 5 шагов вправо даёт эолийский лад (натуральный минор)',
   degrees: 'Смещение центра внутри гаммы. Лад меняется без изменения нот, в отличие от модального смещения',
   center: 'Центр — основная нота гаммы. Он всегда первая ступень и точка отсчёта для аккордов, независимо от контекста',
   context: 'Контекст формирует гамму из родственной тональности вокруг центра. Например, F даёт B♭ для C7',
+  fretboard: 'Первая струна — тонкая. Клик по нулевому ладу откроет настройку струны. Так можно сделать нестандартный строй.',
 });
 
 export const textFretboard = i18n('fretboard', {
@@ -39,13 +40,13 @@ export const textFretboard = i18n('fretboard', {
   confirmButton: '✓',
   octaveName0: 'субконтроктава',
   octaveName1: 'контроктава',
-  octaveName2: 'большая',
-  octaveName3: 'малая',
-  octaveName4: 'первая',
-  octaveName5: 'вторая',
-  octaveName6: 'третья',
-  octaveName7: 'четвёртая',
-  octaveName8: 'пятая',
+  octaveName2: 'большая октава',
+  octaveName3: 'малая октава',
+  octaveName4: 'первая октава',
+  octaveName5: 'вторая октава',
+  octaveName6: 'третья октава',
+  octaveName7: 'четвёртая октава',
+  octaveName8: 'пятая октава',
 });
 
 export const textContent = i18n('content', {
@@ -61,8 +62,10 @@ export const textContent = i18n('content', {
   sectionAudienceTitle: 'Для кого этот сервис',
   sectionAudienceText: 'Инструмент создан для начинающих музыкантов и всех, кто изучает основы музыкальной теории независимо от инструмента.',
   sectionInstrumentsTitle: 'Поддержка инструментов',
-  sectionInstrumentsText: 'Визуализация доступна для клавишных и струнных инструментов с возможностью настройки строя и количества струн.',
+  sectionInstrumentsText: 'Визуализация доступна для клавишных и струнных инструментов. В будущем, для струнных, появится возможностью настройки количества струн для баса, укулеле и других инструментов.',
   footerText: 'Интерактивная музыкальная теория • Гаммы • Аккорды • Интервалы',
+  aboutTooltip: '— красная нота это подсказка с полезной информацией. Работает по наведению мыши и касанию на мобильных.',
+  fretboardInfo: 'Разный цвет нот на грифе гитары означает октаву. Вы можете изменить настройку каждой струны.',
 });
 
 export const textErrors = i18n('errors', {

@@ -8,6 +8,10 @@ export const FLAT_SYMBOL: t.flatSymbol = '♭';
 export const SHARP_SYMBOL: t.sharpSymbol = '♯';
 export const EMPTY_VALUE = '\u00A0';
 
+export const DEFAULT_SAVED_VALUES: t.savedValues = { theme: 'light', locale: 'ru' };
+export const VALID_THEMES: t.uiTheme[] = ['light', 'dark'];
+export const VALID_LOCALES: t.locale[] = ['ru', 'en'];
+
 export const naturalNotesParams: t.naturalNoteParams[] = [
   { note: 'C', degree: 1, naturalPitchClass: 0 },
   { note: 'D', degree: 2, naturalPitchClass: 2 },
@@ -19,17 +23,3 @@ export const naturalNotesParams: t.naturalNoteParams[] = [
 ];
 
 export const allNotesNames: t.noteName[] = naturalNotesParams.flatMap<t.noteName>(({ note }) => [`${note}${FLAT_SYMBOL}`, note, `${note}${SHARP_SYMBOL}`]);
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const octavesParams: t.octaveParams[] = [
-  { sinceNumber: 0, nameHelmholtz: 'N2' }, // субконтр_
-  { sinceNumber: 1, nameHelmholtz: 'N1' }, // контр_
-  { sinceNumber: 2, nameHelmholtz: 'N' }, // большая
-  { sinceNumber: 3, nameHelmholtz: 'n' }, // малая
-  { sinceNumber: 4, nameHelmholtz: 'n1' }, // первая
-  { sinceNumber: 5, nameHelmholtz: 'n2' }, // вторая
-  { sinceNumber: 6, nameHelmholtz: 'n3' }, // третья
-  { sinceNumber: 7, nameHelmholtz: 'n4' }, // четвертая
-  { sinceNumber: 8, nameHelmholtz: 'n5' }, // пятая
-];
-

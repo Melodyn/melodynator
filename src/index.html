@@ -11,6 +11,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
   <link rel="manifest" href="favicon/site.webmanifest" />
 
+
   <!-- Primary SEO -->
   <title>Melodynator: Калькулятор гамм и аккордов онлайн</title>
   <meta name="description"
@@ -30,14 +31,29 @@
 
   <!-- Indexing -->
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://example.com/" />
+  <link rel="canonical" href="https://apps.melodyn.ru/melodynator/" />
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function (m, e, t, r, i, k, a) {
+      m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+      m[i].l = 1 * new Date();
+      for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+    })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=106986514', 'ym');
+
+    ym(106986514, 'init', { ssr: true, webvisor: true, clickmap: true, ecommerce: "dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce: true, trackLinks: true });
+  </script>
+  <noscript>
+    <div><img src="https://mc.yandex.ru/watch/106986514" style="position:absolute; left:-9999px;" alt="" /></div>
+  </noscript>
+  <!-- /Yandex.Metrika counter -->
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Калькулятор гамм и аккордов" />
   <meta property="og:description"
     content="Интерактивное изучение музыкальной теории: гаммы, аккорды и интервалы с визуализацией." />
-  <meta property="og:url" content="https://example.com/" />
+  <meta property="og:url" content="https://apps.melodyn.ru/melodynator/" />
   <meta property="og:locale" content="ru_RU" />
 
   <!-- Twitter -->
@@ -46,9 +62,9 @@
   <meta name="twitter:description" content="Наглядное построение гамм и аккордов для изучения музыкальной теории." />
 
   <!-- Hreflang (задел под мультиязычность) -->
-  <link rel="alternate" hreflang="ru" href="https://example.com/" />
-  <link rel="alternate" hreflang="en" href="https://example.com/en/" />
-  <link rel="alternate" hreflang="x-default" href="https://example.com/" />
+  <link rel="alternate" hreflang="ru" href="https://apps.melodyn.ru/melodynator/" />
+  <link rel="alternate" hreflang="en" href="https://apps.melodyn.ru/melodynator/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://apps.melodyn.ru/melodynator/" />
 </head>
 
 <body data-bs-theme="light">
@@ -75,6 +91,10 @@
       <section class="pb-3">
         <h2 data-static-content="section-theory-title"></h2>
         <p data-static-content="section-theory-text"></p>
+        <p>
+          <span data-tooltip="tooltip" data-tooltip-placement="right"></span>
+          <span data-static-content="about-tooltip"></span>
+        </p>
 
         <div class="overflow-x-auto">
           <table class="table table-sm table-borderless align-middle text-center w-auto mx-auto p-0 table-spacing-y">
@@ -235,10 +255,13 @@
       </section>
 
       <div class="overflow-x-auto pb-5">
+        <p data-static-content="fretboard-info"></p>
         <table class="table table-bordered align-middle text-center w-auto mx-auto p-0">
           <thead class="align-middle">
             <tr class="height-30px">
-              <td class="p-0 text-secondary width-30px"></td>
+              <td class="p-0 text-secondary width-30px">
+                <span data-tooltip="fretboard" data-tooltip-placement="right"></span>
+              </td>
               <td class="p-0 text-secondary width-30px">0</td>
               <td class="p-0 text-secondary width-30px">1</td>
               <td class="p-0 text-secondary width-30px">2</td>

@@ -1,4 +1,6 @@
 import { AppError } from './constants/errors';
+import { DEFAULT_SAVED_VALUES, VALID_THEMES, VALID_LOCALES } from './constants';
+import type * as t from './types';
 
 export const sum = (numbers: number[]): number => numbers.reduce((acc, num) => acc + num, 0);
 
@@ -32,3 +34,22 @@ export const qsa = <E extends Element>(
   selector: querySelectorParam,
   on: Element | Document = document,
 ): NodeListOf<E> => on.querySelectorAll<E>(selector);
+
+const findValid = <T>(valid: T[], value: unknown): T | null => {
+  const found = valid.find(v => v === value);
+  return found !== undefined ? found : null;
+};
+
+export const getSavedValues = (): t.savedValues => {
+  if (typeof localStorage === 'undefined') return DEFAULT_SAVED_VALUES;
+
+  const storedTheme = localStorage.getItem('theme');
+  const storedLocale = localStorage.getItem('locale');
+  const nav = navigator.language;
+  const browserLocale = nav ? nav.slice(0, 2) : '';
+
+  const theme = findValid(VALID_THEMES, storedTheme) || DEFAULT_SAVED_VALUES.theme;
+  const locale = findValid(VALID_LOCALES, storedLocale) || findValid(VALID_LOCALES, browserLocale) || DEFAULT_SAVED_VALUES.locale;
+
+  return { theme, locale };
+};

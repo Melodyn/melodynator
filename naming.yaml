@@ -118,13 +118,15 @@ key_types:
   - domRefs              # собирается в getDomRefs() в ui.ts
   - store                # t.store — базовый тип стора (без UI)
   - uiStore              # t.uiStore — тема + toggleTheme + локаль + switchLocale
+  - uiTheme              # type: 'light' | 'dark' | persistentAtom в ui.ts, инициализируется из getSavedValues()
+  - savedValues          # getSavedValues() в commonUtils.ts — единственная точка чтения начального состояния
   - appStore             # store & uiStore — полный стор приложения
 
 stores:
   - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide | → initStaticText
   - textContent      # type: i18n atom | namespace: content | ключи: pageTitle, pageDescription, sections... | → initStaticText
   - textTooltips                    # type: i18n atom | ключи: hide, tonal, modal, degrees, center, context | → initTooltips (Tooltip.setContent)
-  - stateLocale                     # type: Atom<locale> | computed от persistentAtom + browser() | → elLocaleSwitch
+  - stateLocale                     # type: PersistentAtom<locale> | persistentAtom, инициализируется из getSavedValues() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
   - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
   - stateCurrentNoteChromaticIndex  # computed: stateScaleBuildParams(.tonic) → chromaticIndex (для offsetTonicShift)
