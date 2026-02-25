@@ -9,7 +9,7 @@
     "hide": "hide"
   },
   "tooltips": {
-    "tooltip": "Click on a black note",
+    "tooltip": "Click on the big note above",
     "hide": "Click to remove a degree from the scale. This lets you keep only chord tones: 1, 3, 5",
     "tonal": "Changes the tonic of the scale. Degrees and chords are built from it",
     "modal": "Shifting the interval pattern changes the mode. Moving 5 steps right gives the Aeolian mode (natural minor)",
@@ -48,7 +48,7 @@
     "sectionInstrumentsText": "Visualization is available for keyboard and string instruments. In the future, string instruments will support configuring the number of strings for bass, ukulele, and other instruments.",
     "footerText": "Interactive Music Theory • Scales • Chords • Intervals",
     "aboutTooltip": "— a red note is a tooltip with useful information. Works on hover and touch on mobile.",
-    "fretboardInfo": "Different note colors on the guitar fretboard indicate the octave. You can adjust the tuning of each string."
+    "fretboardInfo": "This is the guitar neck. The color indicates the octave of the note on the fret."
   },
   "errors": {
     "resolveError": "Center {note} is not in the {targets} scale"
