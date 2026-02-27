@@ -61,7 +61,9 @@ const getDomRefs = (): t.domRefs => {
     const opt = i === 0 ? optionProto : <HTMLOptionElement>optionProto.cloneNode();
     opt.value = name;
     opt.textContent = name;
-    if (i > 0) noteSelect.appendChild(opt);
+    if (i > 0) {
+      noteSelect.appendChild(opt);
+    }
   });
 
   const elLocaleSwitch = qs<HTMLButtonElement>('[data-control="locale-switch"]');
@@ -126,7 +128,9 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
           e.preventDefault();
           appStore.setFretboardStartNote({ note: <t.noteName>noteSelect.value, octave: Number(octaveSelect.value), index: stringIndex });
           const popover = Popover.getInstance(elFretboardStartNoteContainer);
-          if (popover) popover.hide();
+          if (popover) {
+            popover.hide();
+          }
         });
 
         return form;
@@ -135,7 +139,9 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
 
     textFretboard.subscribe(() => {
       const existing = Popover.getInstance(elFretboardStartNoteContainer);
-      if (existing) existing.dispose();
+      if (existing) {
+        existing.dispose();
+      }
       makePopover();
     });
 
@@ -193,7 +199,9 @@ const initStaticText = (): void => {
       key = kebabToCamel(value);
     }
     store.subscribe((texts) => {
-      if (key in texts) el.textContent = texts[key];
+      if (key in texts) {
+        el.textContent = texts[key];
+      }
     });
   });
 };
@@ -225,7 +233,9 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
 
   refs.elDirectionControllers.forEach((el) => {
     el.addEventListener('click', () => {
-      if (!el.dataset.control || !el.dataset.direction) return;
+      if (!el.dataset.control || !el.dataset.direction) {
+        return;
+      }
       const { control, direction } = <{ control: t.control, direction: t.controlDirection }>el.dataset;
 
       const offset: number = direction === 'up' ? 1 : -1;

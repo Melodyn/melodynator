@@ -50,7 +50,9 @@ export const createStore = (): t.store => {
   const stateFretboardLayout = n.computed(
     [stateResolvedScaleParams, stateFretboardStartNotes],
     (resolvedScaleParams, startNotes) => {
-      if (!resolvedScaleParams.canApplyContext) return null;
+      if (!resolvedScaleParams.canApplyContext) {
+        return null;
+      }
       const scaleMap = mu.scaleToMap(resolvedScaleParams.scale);
       return mu.mapScaleToLayout({ scaleMap, startNotes });
     },

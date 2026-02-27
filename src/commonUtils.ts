@@ -9,13 +9,17 @@ type querySelectorParam = Parameters<typeof document.querySelector>[0];
 
 export const find = <I>(arr: I[], callback: predicate<I>): I => {
   const result = arr.find(callback);
-  if (result !== undefined) return result;
+  if (result !== undefined) {
+    return result;
+  }
   throw new AppError('Отсутствует искомый элемент в массиве');
 };
 
 export const findIndex = <I>(arr: I[], callback: predicate<I>): number => {
   const result = arr.findIndex(callback);
-  if (result !== -1) return result;
+  if (result !== -1) {
+    return result;
+  }
   throw new AppError('Отсутствует искомый элемент в массиве');
 };
 
@@ -26,7 +30,9 @@ export const qs = <E extends Element>(
   on: Element | Document = document,
 ): E => {
   const element = on.querySelector<E>(selector);
-  if (element !== null) return element;
+  if (element !== null) {
+    return element;
+  }
   throw new Error(`Not found element by selector "${selector}"`);
 };
 
@@ -41,7 +47,9 @@ const findValid = <T>(valid: T[], value: unknown): T | null => {
 };
 
 export const getSavedValues = (): t.savedValues => {
-  if (typeof localStorage === 'undefined') return DEFAULT_SAVED_VALUES;
+  if (typeof localStorage === 'undefined') {
+    return DEFAULT_SAVED_VALUES;
+  }
 
   const storedTheme = localStorage.getItem('theme');
   const storedLocale = localStorage.getItem('locale');

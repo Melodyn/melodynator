@@ -35,11 +35,15 @@ export const alterAccidentalBySemitone = (noteName: t.noteName, direction: 'up' 
 
   const hasNoteSharpAccidental = noteName[1] === c.SHARP_SYMBOL;
   if (direction === 'up') {
-    if (hasNoteSharpAccidental) return <t.noteName>`${noteName}${c.SHARP_SYMBOL}`;
+    if (hasNoteSharpAccidental) {
+      return <t.noteName>`${noteName}${c.SHARP_SYMBOL}`;
+    }
     return <t.noteName>noteName.slice(0, noteName.length - 1);
   }
 
-  if (!hasNoteSharpAccidental) return <t.noteName>`${noteName}${c.FLAT_SYMBOL}`;
+  if (!hasNoteSharpAccidental) {
+    return <t.noteName>`${noteName}${c.FLAT_SYMBOL}`;
+  }
   return <t.noteName>noteName.slice(0, noteName.length - 1);
 };
 
@@ -112,7 +116,9 @@ export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modalShif
 };
 
 export const applyDegreeRotation: t.applyDegreeRotation = (resolvedScaleParams, degreeRotation) => {
-  if (!resolvedScaleParams.canModalShift || degreeRotation === 0) return resolvedScaleParams;
+  if (!resolvedScaleParams.canModalShift || degreeRotation === 0) {
+    return resolvedScaleParams;
+  }
 
   const scaleBody = resolvedScaleParams.scale.slice(0, resolvedScaleParams.scale.length - 1);
   const rotatedBody = cu.rotate(scaleBody, degreeRotation);
@@ -131,7 +137,9 @@ const anchorScaleToCenter = (scale: t.scale, centerPitchClass: number): t.scale 
 };
 
 export const applyContextTransform: t.applyContextTransform = (resolvedScaleParams, contextOffset) => {
-  if (contextOffset === 0) return resolvedScaleParams;
+  if (contextOffset === 0) {
+    return resolvedScaleParams;
+  }
 
   const homeCenterNoteParams: t.noteParams = resolvedScaleParams.scale[0];
   const targetTonicPC = (homeCenterNoteParams.pitchClass + contextOffset) % c.OCTAVE_SIZE;

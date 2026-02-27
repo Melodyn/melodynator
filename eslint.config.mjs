@@ -18,6 +18,9 @@ export default tseslint.config(
     files: tsFiles,
     rules: {
       semi: ['error', 'always'],
+      curly: ['error', 'all'],
+      'brace-style': ['error', '1tbs'],
+      indent: ['error', 2],
       'comma-dangle': ['error', 'always-multiline'],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'angle-bracket' }],
