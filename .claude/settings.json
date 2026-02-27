@@ -5,7 +5,8 @@
       "Bash(npx eslint:*)",
       "Bash(npm install:*)",
       "Bash(npx vitest run:*)",
-      "Bash(/Users/melodyn/projects/my/melodynator/__tests__/index.test.ts:*)"
+      "Bash(/Users/melodyn/projects/my/melodynator/__tests__/index.test.ts:*)",
+      "Read(//Users/melodyn/projects/my/**)"
     ]
   }
 }

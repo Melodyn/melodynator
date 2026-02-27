@@ -27,7 +27,7 @@ export const createUiStore = (): t.uiStore => {
   };
 };
 
-const getElFretboardStringNumberContainer = (elFretboardString: HTMLTableRowElement) => qs<HTMLTableCellElement>('[data-instrument="fretboard__string-number"]', elFretboardString);
+const getElFretboardStringNumberContainer = (elFretboardString: HTMLTableRowElement) => qs<HTMLTableCellElement>('[data-instrument="fretboard-string-number"]', elFretboardString);
 const getElFretboardStartNoteContainer = (elFretboardString: HTMLTableRowElement) => qs<HTMLButtonElement>('[data-control="start-note"]', elFretboardString);
 const getElFretboardStringFrets = (elFretboardString: HTMLTableRowElement): HTMLTableCellElement[] =>
   Array.from(elFretboardString.querySelectorAll<HTMLTableCellElement>('td')).slice(2);
@@ -44,10 +44,10 @@ const getDomRefs = (): t.domRefs => {
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   const elSwitchDegreeContainers = qsa<HTMLInputElement>('[data-container="switch-degree"]');
   //
-  const elKeyboardNotes = qsa<HTMLTableCellElement>('[data-instrument="keyboard__notes"] td');
+  const elKeyboardNotes = qsa<HTMLTableCellElement>('[data-instrument="keyboard-notes"] td');
 
-  const elFretboardStringTemplate = qs<HTMLTemplateElement>('#template-fretboard__string');
-  const elFretboardNewStringNoteParamsTemplate = qs<HTMLTemplateElement>('#template-fretboard__set-string-params');
+  const elFretboardStringTemplate = qs<HTMLTemplateElement>('#template-fretboard-string');
+  const elFretboardNewStringNoteParamsTemplate = qs<HTMLTemplateElement>('#template-fretboard-set-string-params');
 
   const elFretboard = qs<HTMLTableSectionElement>('[data-instrument="fretboard"]');
   const elFretboardStrings: HTMLTableRowElement[] = [];
@@ -55,7 +55,7 @@ const getDomRefs = (): t.domRefs => {
   const elFretboardStringFrets: HTMLTableCellElement[][] = [];
   const elFretboardString = <HTMLTableRowElement>elFretboardStringTemplate.content.firstElementChild;
   const elFretboardNewStringNoteParams = <HTMLFormElement>elFretboardNewStringNoteParamsTemplate.content.firstElementChild;
-  const noteSelect = qs<HTMLSelectElement>('#fretboard__set-string-note', elFretboardNewStringNoteParams);
+  const noteSelect = qs<HTMLSelectElement>('#fretboard-set-string-note', elFretboardNewStringNoteParams);
   const optionProto = <HTMLOptionElement>noteSelect.firstElementChild;
   c.allNotesNames.forEach((name, i) => {
     const opt = i === 0 ? optionProto : <HTMLOptionElement>optionProto.cloneNode();
@@ -102,8 +102,8 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
       sanitize: false,
       content: () => {
         const form = <HTMLFormElement>refs.elFretboardNewStringNoteParams.cloneNode(true);
-        const noteSelect = qs<HTMLSelectElement>('#fretboard__set-string-note', form);
-        const octaveSelect = qs<HTMLSelectElement>('#fretboard__set-note-octave', form);
+        const noteSelect = qs<HTMLSelectElement>('#fretboard-set-string-note', form);
+        const octaveSelect = qs<HTMLSelectElement>('#fretboard-set-note-octave', form);
 
         const fretboardTexts = textFretboard.get();
         noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
@@ -179,7 +179,7 @@ const initStaticText = (): void => {
   const kebabToCamel = (s: string): string =>
     s.replace(/[-_]+([a-z])/g, (_, c: string) => c.toUpperCase());
 
-  const SCALE_PARAMS_PREFIX = 'scale-params__';
+  const SCALE_PARAMS_PREFIX = 'scale-params-';
 
   qsa<HTMLElement>('[data-static-content]').forEach((el) => {
     const value = <string>el.dataset.staticContent;
@@ -193,7 +193,7 @@ const initStaticText = (): void => {
       key = kebabToCamel(value);
     }
     store.subscribe((texts) => {
-      el.textContent = texts[key];
+      if (key in texts) el.textContent = texts[key];
     });
   });
 };

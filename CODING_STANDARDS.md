@@ -1,5 +1,9 @@
 # Стандарты кодирования Melodynator
 
+> **Формат примеров:** каждый `// ✗` сопровождается комментарием — что именно не так; каждый `// ✓` — почему так. Пара `✗/✓` обязательна: одиночный пример без противопоставления не добавлять.
+
+---
+
 ## 1. Основная концепция
 
 Melodynator — инструмент для музыкантов. Код читается на языке музыканта: «вращение ступеней», «тональное смещение», «лад», «гамма». Если написано `offsetDegreeRotation` — это вращение ступеней, а не манипуляция индексами или DOM.
@@ -61,7 +65,8 @@ startNotes.forEach((openNote, stringIndex) => { ... });
 
 // ✓ — корень типа fretboardStartNoteParams / fretboardNoteParams
 startNotes.forEach((startNote, stringIndex) => { ... });
-const fretNote = refs.elFretboardStringFrets[stringIndex][fretIndex - 1];
+const elFretboardStringFrets = refs.elFretboardStringFrets[stringIndex];
+const elFretboardStringFret = elFretboardStringFrets[fretIndex - 1];
 ```
 
 ---
@@ -80,9 +85,9 @@ const fretNote = refs.elFretboardStringFrets[stringIndex][fretIndex - 1];
 
 ```typescript
 // ✗ — структура создаётся в JS
-const opt = document.createElement('option');
-opt.value = name;
-noteSelect.appendChild(opt);
+const elOpt = document.createElement('option');
+elOpt.value = name;
+elNoteSelect.appendChild(elOpt);
 
 // ✓ — структура в <template>, JS клонирует
 const elFretboardString = <HTMLTableRowElement>refs.elFretboardString.cloneNode(true);
@@ -115,7 +120,8 @@ const btn = fret0Cell.querySelector('button');
 
 // ✓ — только через refs
 const elFretboardStartNoteContainer = refs.elFretboardStartNoteContainers[stringIndex];
-const fretNote = refs.elFretboardStringFrets[stringIndex][fretIndex - 1];
+const elFretboardStringFrets = refs.elFretboardStringFrets[stringIndex];
+const elFretboardStringFret = elFretboardStringFrets[fretIndex - 1];
 ```
 
 **Именование переменных** — только из предметной области (типы в `types/index.ts`). Позиционные имена (`fret0`, `cells[i]`) запрещены — они называют место в реализации, а не концепцию.
@@ -200,22 +206,24 @@ qs('[data-control="start-note"]', elFretboardString)
 </div>
 ```
 
-### BEM в значениях `data`-атрибутов
+### Именование `data`-атрибутов и их значений
 
-Значения `data`-атрибутов предметной области именуются по BEM: `block__element`. `-` разделяет слова внутри блока или элемента, `__` (двойное подчёркивание) — блок от элемента.
+`data`-атрибут определяет семантический неймспейс — роль элемента в предметной области. Значение называет конкретную музыкальную сущность в kebab-case.
 
 ```html
-<!-- ✗ — принадлежность к блоку не видна, блоком назначено слишком общее слово -->
-<tr data-instrument="fretboard-string">
-<td data-instrument="content__fretboard-string-note">
+<!-- ✗ — атрибут generic, не выражает роль; значение описывает позицию, а не сущность -->
+<button data-btn="shift-left">
+<td data-cell="col-3">
+<td data-node="string-fret">
 
-<!-- ✓ — block__element читается сразу -->
-<tbody data-instrument="fretboard">
-<tr data-instrument="fretboard__string">
-<td data-instrument="fretboard__string-note">
+<!-- ✓ — атрибут: неймспейс (контрол / контейнер / инструмент)
+         значение: музыкальная сущность в kebab-case -->
+<button data-control="tonic-shift">
+<td data-container="interval-step">
+<td data-instrument="fretboard-string-note">
 ```
 
-`__` — семантика имени, а не разделитель, который парсится в коде. Значение обрабатывается целиком — `pseudo-header__configurator` конвертируется в `pseudoHeaderConfigurator`.
+Значение обрабатывается целиком — `fretboard-string-note` конвертируется в `fretboardStringNote`.
 
 ---
 
@@ -223,7 +231,7 @@ qs('[data-control="start-note"]', elFretboardString)
 
 ### getSavedValues()
 
-`getSavedValues()` в `src/commonUtils.ts` — единственная точка чтения сохранённого состояния. Возвращает гарантированно типизированный объект: из localStorage (если значение валидно) или дефолт из кода. Дефолты определены внутри функции.
+`getSavedValues()` в `src/commonUtils.ts` — единственная точка чтения сохранённого состояния. Возвращает гарантированно типизированный объект: из localStorage (если значение валидно) или дефолт из кода. Дефолты и списки допустимых значений — в `src/constants/index.ts` (`DEFAULT_SAVED_VALUES`, `VALID_THEMES`, `VALID_LOCALES`).
 
 Весь остальной код берёт начальные значения только из неё — не читает localStorage напрямую, не пишет `n.atom('light')` с хардкодом.
 
@@ -236,7 +244,8 @@ const storedTheme = <t.uiTheme>(localStorage.getItem('theme') ?? 'light');
 const theme = n.atom<t.uiTheme>(storedTheme);
 
 // ✓ — начальное значение из единой точки чтения
-const theme = persistentAtom<t.uiTheme>('theme', getSavedValues().theme);
+const savedValues = getSavedValues();
+const theme = persistentAtom<t.uiTheme>('theme', savedValues.theme);
 ```
 
 Запись в localStorage — через `persistentAtom` (автоматически при `.set()`). `getSavedValues()` отвечает только за чтение.
@@ -264,11 +273,11 @@ const theme = persistentAtom<t.uiTheme>('theme', getSavedValues().theme);
 Text-сторы — атомы, значение которых обновляется при смене локали. Называются с префиксом `text`, суффикс — namespace:
 
 ```typescript
-// ✗
-export const scaleParamsTexts = i18n('scaleParams', { ... }); // неверный префикс
-export const i18nContent = i18n('content', { ... });           // нет отражения namespace
+// ✗ — неверный префикс; название не отражает namespace
+export const scaleParamsTexts = i18n('scaleParams', { ... });
+export const i18nContent = i18n('content', { ... });
 
-// ✓
+// ✓ — префикс text + namespace как суффикс
 export const textScaleParams = i18n('scaleParams', { ... });
 export const textContent = i18n('content', { ... });
 ```
@@ -284,7 +293,7 @@ export const textContent = i18n('content', { ... });
 const texts = textScaleParams.get();
 refs.elScaleParamsOffset.textContent = texts.offset;
 
-// ✓
+// ✓ — subscribe() повторяет обновление при каждой смене локали
 textScaleParams.subscribe((texts) => {
   refs.elScaleParamsOffset.textContent = texts.offset;
 });
@@ -293,9 +302,17 @@ textScaleParams.subscribe((texts) => {
 **`get()`** — в `ui.ts`, когда текст нужен разово при создании компонента. Допустимо только там, где компонент пересоздаётся при каждой смене локали — тогда `get()` всегда возвращает актуальное значение:
 
 ```typescript
-// ✓ — в content() popover: вызывается при каждом show(), popover пересоздаётся на каждую смену локали
-const fretboardTexts = textFretboard.get();
-noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
+// ✗ — get() при инициализации вне пересоздающего контекста: при смене локали не обновится
+refs.elFretboard.ariaLabel = textFretboard.get().openNoteLabel;
+
+// ✓ — get() внутри content(): вызывается при каждом show(), popover пересоздаётся на каждую смену локали
+const makePopover = () => new Popover(el, {
+  content: () => {
+    const fretboardTexts = textFretboard.get();
+    elNoteSelect.ariaLabel = fretboardTexts.openNoteLabel;
+    return elContent;
+  },
+});
 ```
 
 ### Bootstrap-компоненты с переводимым текстом
@@ -308,7 +325,8 @@ refs.elTooltipTriggers.forEach((el) => new Tooltip(el));
 Tooltip.getInstance(el).setContent({ '.tooltip-inner': text });
 
 // ✓ — title задан при инициализации; setContent() обновляет при смене локали
-const instance = new Tooltip(el, { title: textScaleParams.get().degreesTooltip });
+const scaleParamsTexts = textScaleParams.get();
+const instance = new Tooltip(el, { title: scaleParamsTexts.degreesTooltip });
 textScaleParams.subscribe((texts) => {
   instance.setContent({ '.tooltip-inner': texts.degreesTooltip });
 });
@@ -338,11 +356,11 @@ textFretboard.subscribe(() => {
 Нотация нот (`C D E F G A B ♭ ♯`) — интернациональна. Добавлять её в переводы — ошибка.
 
 ```typescript
-// ✗
+// ✗ — ноты универсальны, добавлять их в i18n — ошибка
 textFretboard = i18n('fretboard', { noteC: 'до', noteD: 'ре', ... });
 
 // ✓ — ноты используются напрямую как константы предметной области
-opt.textContent = name; // name: noteName = 'C' | 'C♯' | ...
+elOpt.textContent = name; // name: noteName = 'C' | 'C♯' | ...
 ```
 
 ### Текст не в HTML
@@ -360,13 +378,14 @@ opt.textContent = name; // name: noteName = 'C' | 'C♯' | ...
 Это распространяется и на `<template>`: переводимый текст не кладётся в разметку шаблона. После клонирования — устанавливать `textContent` и `ariaLabel` из text-стора до вставки в DOM.
 
 ```typescript
-// ✗ — текст захардкожен в шаблоне, при смене локали не обновится
-const form = refs.elFretboardNewStringNoteParams.cloneNode(true);
+// ✗ — хардкод вместо text-стора: при смене локали не обновится
+const elForm = refs.elFretboardNewStringNoteParams.cloneNode(true);
+elNoteSelect.ariaLabel = 'Открытая нота';
 
-// ✓ — текст устанавливается после клонирования из актуального text-стора
-const form = refs.elFretboardNewStringNoteParams.cloneNode(true);
+// ✓ — текст из text-стора: всегда актуален при каждом клонировании
+const elForm = refs.elFretboardNewStringNoteParams.cloneNode(true);
 const fretboardTexts = textFretboard.get();
-noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
+elNoteSelect.ariaLabel = fretboardTexts.openNoteLabel;
 ```
 
 ---

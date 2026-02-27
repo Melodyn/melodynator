@@ -44,29 +44,29 @@ data_tooltip:
   # Атрибут data-tooltip="key" — на плейсхолдере <span>. Ключ совпадает с ключом в textTooltips.
   # data-tooltip-placement="right|bottom|..." — placement для Bootstrap Tooltip (всегда явно).
   # В initTooltips: плейсхолдер заменяется клоном template-tooltip; key переносится на кнопку.
+  - tooltip  # → textTooltips.tooltip  | иконка-подсказка в шапке (рядом с about-tooltip)
   - hide     # → textTooltips.hide     | рядом со «скрыть» (строка degree)
   - tonal    # → textTooltips.tonal    | рядом с «тональное»
   - modal    # → textTooltips.modal    | рядом с «модальное»
   - degrees  # → textTooltips.degrees  | рядом со «ступеней»
   - center   # → textTooltips.center   | рядом с «центр»
   - context  # → textTooltips.context  | рядом с «контекст»
+  - fretboard # → textTooltips.fretboard | иконка над фретбордом
 
 data_static_content:
   # Атрибут data-static-content="key-kebab" — на статичных i18n-элементах.
   # Диспетчеризация в initStaticText() (ui.ts):
-  #   - значение начинается с "scale-params__" → textScaleParams, ключ = часть после префикса
-  #   - иначе → textContent, ключ = всё значение
-  # kebabToCamel конвертирует и "-", и "__" перед строчной буквой → camelCase.
-  # BEM "__" в именах — семантика имени, не разделитель namespace.
+  #   - значение начинается с "scale-params-" → textScaleParams, ключ = часть после префикса
+  #   - иначе → textContent, ключ = всё значение конвертированное kebabToCamel
   # Для добавления нового текста: только HTML + i18n ключ, JS не меняется.
   # метки конфигуратора гаммы (→ textScaleParams)
-  - scale-params__offset   # → textScaleParams.offset
-  - scale-params__center   # → textScaleParams.center (span внутри td)
-  - scale-params__context  # → textScaleParams.context (span внутри td)
-  - scale-params__tonal    # → textScaleParams.tonal (span внутри td)
-  - scale-params__modal    # → textScaleParams.modal (span внутри td)
-  - scale-params__degrees  # → textScaleParams.degrees (span внутри td)
-  - scale-params__hide     # → textScaleParams.hide (span внутри td)
+  - scale-params-offset   # → textScaleParams.offset
+  - scale-params-center   # → textScaleParams.center (span внутри td)
+  - scale-params-context  # → textScaleParams.context (span внутри td)
+  - scale-params-tonal    # → textScaleParams.tonal (span внутри td)
+  - scale-params-modal    # → textScaleParams.modal (span внутри td)
+  - scale-params-degrees  # → textScaleParams.degrees (span внутри td)
+  - scale-params-hide     # → textScaleParams.hide (span внутри td)
   # статичный текст страницы (→ textContent)
   - page-title
   - page-description
@@ -81,9 +81,17 @@ data_static_content:
   - section-audience-text
   - section-instruments-title
   - section-instruments-text
-  - footer-text
+  - footer-keywords  # → textContent.footerKeywords
+  - footer-about     # → textContent.footerAbout
+  - footer-about-link # → textContent.footerAboutLink
+  - about-tooltip    # → textContent.aboutTooltip | текст рядом с tooltip-иконкой в шапке
+  - fretboard-info   # → textContent.fretboardInfo | подпись под фретбордом
 
 data_container:
+  # Только контейнеры, которые запрашиваются в JS (ui.ts / render.ts).
+  # На tr-строках таблицы конфигуратора стоят data-container="center|interval|tones|degree" —
+  # это навигационные метки для HTML, в JS не используются и здесь не отслеживаются.
+  # "interval" на tr — краткое имя строки; "interval-step" на td — ячейки этой строки.
   - tonic           # ← stateScaleBuildParams(.tonic) → elTonicContainer
   - context         # ← stateResolvedScaleParams(.contextTargets) → elContextContainer
   - interval-step   # ← stateScaleBuildParams(.intervalPattern) → elIntervalContainers | var: intervalStep
@@ -93,11 +101,11 @@ data_container:
 
 data_instrument:
   - fretboard              # refs: elFretboard (tbody-контейнер строк)
-  - fretboard__string      # refs: elFretboardStrings (per-string tr)
-  - fretboard__string-number  # устанавливается в initFretboard через getElFretboardStringNumberContainer; refs нет
-  - fretboard__string-note    # TD-ячейка открытой ноты; refs нет; внутри — кнопка data-control="start-note"
+  - fretboard-string       # refs: elFretboardStrings (per-string tr)
+  - fretboard-string-number  # устанавливается в initFretboard через getElFretboardStringNumberContainer; refs нет
+  - fretboard-string-note    # TD-ячейка открытой ноты; refs нет; внутри — кнопка data-control="start-note"
   - keyboard               # нет refs
-  - keyboard__notes        # refs: elKeyboardNotes (td-ячейки строки нот)
+  - keyboard-notes         # refs: elKeyboardNotes (td-ячейки строки нот)
 
 # Типы из types/index.ts. Источник истины для именования переменных в render.ts и store.ts.
 # Если переменная или поле ссылается на концепцию, имя берётся отсюда, а не из позиции в DOM.
@@ -125,7 +133,9 @@ key_types:
 stores:
   - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide | → initStaticText
   - textContent      # type: i18n atom | namespace: content | ключи: pageTitle, pageDescription, sections... | → initStaticText
-  - textTooltips                    # type: i18n atom | ключи: hide, tonal, modal, degrees, center, context | → initTooltips (Tooltip.setContent)
+  - textTooltips     # type: i18n atom | ключи: tooltip,hide,tonal,modal,degrees,center,context,fretboard | → initTooltips (Tooltip.setContent)
+  - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8 | → popover content() в initFretboard
+  - textErrors       # type: i18n atom | namespace: errors | ключи: resolveError | → render.ts (сообщение ошибки контекста)
   - stateLocale                     # type: PersistentAtom<locale> | persistentAtom, инициализируется из getSavedValues() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
   - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
@@ -157,11 +167,12 @@ render_targets:
   - elResolveErrorContainer   # data-container="resolve-error" | ← stateResolvedScaleParams(.canApplyContext)
   - elKeyboardNotes           # data-instrument="keyboard__notes" td | ← stateResolvedScaleParams(.scale)
   - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard
-  - elFretboardStrings        # data-instrument="fretboard__string" (per-string tr) | ← stateFretboardStrings
+  - elFretboardStrings        # data-instrument="fretboard__string" (per-string tr) | строится в initFretboard из stateFretboardStartNotes
   - elFretboardStartNoteContainers  # data-control="start-note" в data-instrument="fretboard__string-note" | ← stateFretboardLayout
   - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
   - elFretboardString               # <template #template-fretboard__string> → клонируется в initFretboard
   - elFretboardNewStringNoteParams  # <template #template-fretboard__set-string-params> → клонируется в popover; note select заполняется нотами один раз в getDomRefs
+  - elDirectionControllers    # data-direction (кнопки up/down) | click → controlToOffset[control](offset) | все четыре контрола (tonic/modal/degree/context)
   # refs data-control
   - elThemeToggle             # data-control="theme-toggle" (logo-toggle button) | click → toggleTheme → document.body[data-bs-theme]
   # i18n refs (data-control)

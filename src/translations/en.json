@@ -46,7 +46,9 @@
     "sectionAudienceText": "This tool is designed for beginner musicians and anyone studying the basics of music theory, regardless of their instrument.",
     "sectionInstrumentsTitle": "Instrument Support",
     "sectionInstrumentsText": "Visualization is available for keyboard and string instruments. In the future, string instruments will support configuring the number of strings for bass, ukulele, and other instruments.",
-    "footerText": "Interactive Music Theory • Scales • Chords • Intervals",
+    "footerKeywords": "Interactive Music Theory • Scales • Chords • Intervals",
+    "footerAbout": "Project developed by",
+    "footerAboutLink": "Sergei Melodyn",
     "aboutTooltip": "— a red note is a tooltip with useful information. Works on hover and touch on mobile.",
     "fretboardInfo": "This is the guitar neck. The color indicates the octave of the note on the fret."
   },

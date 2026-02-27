@@ -98,17 +98,17 @@
         <table class="table table-sm table-borderless align-middle text-center w-auto my-0 mx-auto p-0 table-spacing-y">
           <thead class="align-middle">
             <tr class="height-30px fw-bold">
-              <td class="py-0 ps-0 pe-2 text-start" data-static-content="scale-params__offset"></td>
+              <td class="py-0 ps-0 pe-2 text-start" data-static-content="scale-params-offset"></td>
               <td class="p-0 text-nowrap" colspan="3">
                 <span data-tooltip="center" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__center"></span>
+                <span data-static-content="scale-params-center"></span>
               </td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px text-nowrap" colspan="4">
                 <span data-tooltip="context" data-tooltip-placement="left"></span>
-                <span data-static-content="scale-params__context"></span>
+                <span data-static-content="scale-params-context"></span>
               </td>
             </tr>
           </thead>
@@ -116,7 +116,7 @@
             <tr class="height-30px" data-container="center">
               <td class="py-0 ps-0 pe-2 text-start text-nowrap">
                 <span data-tooltip="tonal" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__tonal"></span>
+                <span data-static-content="scale-params-tonal"></span>
               </td>
               <td class="p-0 width-30px">
                 <button type="button" data-control="tonic-shift" data-direction="down"
@@ -151,7 +151,7 @@
             <tr class="height-30px" data-container="interval">
               <td class="py-0 ps-0 pe-2 text-start text-nowrap">
                 <span data-tooltip="modal" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__modal"></span>
+                <span data-static-content="scale-params-modal"></span>
               </td>
               <td class="p-0 width-30px">
                 <button type="button" data-control="modal-shift" data-direction="down"
@@ -177,7 +177,7 @@
             <tr class="height-30px" data-container="tones">
               <td class="py-0 ps-0 pe-2 text-start text-nowrap">
                 <span data-tooltip="degrees" data-tooltip-placement="right"></span>
-                <span class="pe-1" data-static-content="scale-params__degrees"></span>
+                <span class="pe-1" data-static-content="scale-params-degrees"></span>
               </td>
               <td class="p-0 width-30px">
                 <button type="button" data-control="degree-rotation" data-direction="down"
@@ -203,7 +203,7 @@
             <tr class="height-30px" data-container="degree">
               <td class="px-0 pb-0 pt-2 border-top text-start text-nowrap">
                 <span data-tooltip="hide" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params__hide"></span>
+                <span data-static-content="scale-params-hide"></span>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">&#9745;</td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
@@ -328,7 +328,7 @@
               <td class="bg-light border width-30px"></td>
             </tr>
 
-            <tr data-instrument="keyboard__notes">
+            <tr data-instrument="keyboard-notes">
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
               <td class="p-0 width-30px"></td>
@@ -388,7 +388,12 @@
     </main>
 
     <footer>
-      <p data-static-content="footer-text"></p>
+      <p data-static-content="footer-keywords"></p>
+      <p>
+        <span data-static-content="footer-about"></span>
+        <a href="https://t.me/the_young_manager" target="_blank" rel="noopener noreferrer"
+          data-static-content="footer-about-link"></a>
+      </p>
     </footer>
 
     <template id="template-tooltip">
@@ -401,10 +406,10 @@
       </button>
     </template>
 
-    <template id="template-fretboard__string">
-      <tr class="height-30px" data-instrument="fretboard__string">
-        <td class="p-0 text-secondary width-30px" data-instrument="fretboard__string-number"></td>
-        <td class="p-0 text-secondary width-30px position-relative" data-instrument="fretboard__string-note">
+    <template id="template-fretboard-string">
+      <tr class="height-30px" data-instrument="fretboard-string">
+        <td class="p-0 text-secondary width-30px" data-instrument="fretboard-string-number"></td>
+        <td class="p-0 text-secondary width-30px position-relative" data-instrument="fretboard-string-note">
           <button type="button"
             class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
             data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-control="start-note">
@@ -425,13 +430,13 @@
       </tr>
     </template>
 
-    <template id="template-fretboard__set-string-params">
-      <form id="fretboard__set-string-params">
+    <template id="template-fretboard-set-string-params">
+      <form id="fretboard-set-string-params">
         <div class="input-group input-group-sm">
-          <select id="fretboard__set-string-note" class="form-select">
+          <select id="fretboard-set-string-note" class="form-select">
             <option></option>
           </select>
-          <select id="fretboard__set-note-octave" class="form-select w-50 mx-1">
+          <select id="fretboard-set-note-octave" class="form-select w-50 mx-1">
             <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
