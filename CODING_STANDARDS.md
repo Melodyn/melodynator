@@ -98,12 +98,12 @@ const elFretboardString = <HTMLTableRowElement>refs.elFretboardString.cloneNode(
 ```typescript
 // ✗ — инлайн внутри forEach
 refs.elFretboardStrings.forEach(elFretboardString => {
-  elFretboardString.querySelector('[data-instrument="fretboard__string-number"]').textContent = ...
+  elFretboardString.querySelector('[data-instrument="fretboard-string-number"]').textContent = ...
 });
 
 // ✓ — именованная функция
 const getElFretboardStringNumberContainer = (elFretboardString: HTMLTableRowElement) =>
-  qs<HTMLTableCellElement>('[data-instrument="fretboard__string-number"]', elFretboardString);
+  qs<HTMLTableCellElement>('[data-instrument="fretboard-string-number"]', elFretboardString);
 ```
 
 ### `render.ts` — отрисовка
