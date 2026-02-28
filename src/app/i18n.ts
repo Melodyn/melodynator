@@ -66,6 +66,7 @@ export const textContent = i18n('content', {
   footerKeywords: 'Интерактивная музыкальная теория • Гаммы • Аккорды • Интервалы',
   footerAbout: 'Проект разработал',
   footerAboutLink: 'Сергей Мелодин',
+  footerGithubLink: 'Github',
   aboutTooltip: '— красная нота это подсказка с полезной информацией. Работает по наведению мыши и касанию на мобильных.',
   fretboardInfo: 'Это гриф гитары. Цвет означает октаву ноты на ладу.',
 });

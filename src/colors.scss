@@ -72,3 +72,9 @@ $theme-colors: map-merge($theme-colors,
   border-collapse: separate;
   border-spacing: 0 4px;
 }
+
+.dot-delimiter {
+  &::after {
+    content: ' • ';
+  }
+}
