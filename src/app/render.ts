@@ -1,7 +1,7 @@
 import type * as t from '../types';
 import * as mu from '../index';
 import * as c from '../constants';
-import { textErrors } from './i18n';
+import { textErrors, textIntervals } from './i18n';
 
 const selectedScaleParamsClasses = ['fw-bold', 'bg-secondary', 'bg-opacity-2'];
 
@@ -14,36 +14,29 @@ const removeOctaveClass = (elFretNote: HTMLTableCellElement) => {
 };
 
 export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
-  store.stateScaleBuildParams.subscribe(({ tonic, intervalPattern, modalShift }) => {
-    refs.elTonicContainer.textContent = tonic;
+  const getAltReduceMap = (scale: t.scale): t.altReduceMap => {
+    const isEnharmonicSimplify = store.stateIsEnharmonicSimplify.get();
+    if (!isEnharmonicSimplify) {
+      return new Map();
+    }
+    return new Map(scale.map(({ note, pitchClass }) => [note, c.ENHARMONIC_SIMPLE_NAMES[pitchClass]]));
+  };
 
-    refs.elIntervalContainers.forEach((el, index) => {
-      const intervalStep = index === 0 ? 0 : intervalPattern[index - 1];
-      el.textContent = intervalStep.toString();
+  const reduceAlt = (note: t.noteName, altReduceMap: t.altReduceMap): t.noteName =>
+    altReduceMap.get(note) || note;
 
-      el.classList.remove(...selectedScaleParamsClasses);
-      if (index === modalShift) {
-        el.classList.add(...selectedScaleParamsClasses);
-      }
+  const renderScaleTones = (resolvedScaleParams: t.resolvedScaleParams) => {
+    const altReduceMap = getAltReduceMap(resolvedScaleParams.scale);
+    refs.elScaleToneContainers.forEach((el, i) => {
+      const scaleTone = resolvedScaleParams.scale[i];
+      const prevIntervalSize = resolvedScaleParams.intervalPattern[i - 1];
+      const isZeroStep = i > 0 && prevIntervalSize === 0;
+      el.textContent = isZeroStep ? c.EMPTY_VALUE : reduceAlt(scaleTone.note, altReduceMap);
     });
-  });
+  };
 
-  store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
-    refs.elContextContainer.textContent = resolvedScaleParams.contextTargets.join('/');
-  });
-
-  store.theme.subscribe((theme) => {
-    document.body.dataset.bsTheme = theme;
-  });
-
-  store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
+  const renderKeyboard = (resolvedScaleParams: t.resolvedScaleParams) => {
     const hiddenDegrees = store.stateHiddenDegrees.get();
-
-    const centerNote = store.stateScaleBuildParams.get().tonic;
-
-    refs.elResolveErrorContainer.textContent = resolvedScaleParams.canApplyContext
-      ? c.EMPTY_VALUE
-      : textErrors.get().resolveError({ note: centerNote, targets: resolvedScaleParams.contextTargets.join('/') });
 
     if (!resolvedScaleParams.canApplyContext) {
       refs.elKeyboardNotes.forEach((key) => {
@@ -52,10 +45,13 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       return;
     }
 
+    const altReduceMap = getAltReduceMap(resolvedScaleParams.scale);
     const scaleMap = mu.scaleToMap(resolvedScaleParams.scale);
     const tonic = resolvedScaleParams.scale[0];
     const currentNoteChromaticIndex = store.stateCurrentNoteChromaticIndex.get();
-    const unwrapPitchClassForDisplay = tonic.pitchClass === 0 && currentNoteChromaticIndex > 1 ? c.OCTAVE_SIZE : tonic.pitchClass;
+    const unwrapPitchClassForDisplay = tonic.pitchClass === 0 && currentNoteChromaticIndex > 1
+      ? c.OCTAVE_SIZE
+      : tonic.pitchClass;
 
     const scaleLayouts = mu.mapScaleToLayout({ scaleMap, startNotes: [{ note: tonic.note, octave: 1 }] });
     const keyboardScaleLayout = scaleLayouts[0];
@@ -68,23 +64,147 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       if (keyIndex >= startKeyIndex && keyIndex < lastKeyIndex) {
         const noteIndex = keyIndex - startKeyIndex;
         const { note, degree } = keyboardScaleLayout[noteIndex];
-        if (!hiddenDegrees.has(degree)) {
-          elKey.textContent = note;
+        if (note && !hiddenDegrees.has(degree)) {
+          elKey.textContent = reduceAlt(note, altReduceMap);
         }
       }
     });
+  };
+
+  const renderFretboard = (scaleLayouts: ReadonlyArray<t.scaleLayout>) => {
+    const hiddenDegrees = store.stateHiddenDegrees.get();
+
+    refs.elFretboardStartNoteContainers.forEach((elFretboardStartNoteContainer) => {
+      elFretboardStartNoteContainer.textContent = c.EMPTY_VALUE;
+    });
+    refs.elFretboardStringFrets.forEach((elFretboardStringFret) => {
+      elFretboardStringFret.forEach((elFretNote) => {
+        elFretNote.textContent = c.EMPTY_VALUE;
+        removeOctaveClass(elFretNote);
+      });
+    });
+
+    const resolvedScaleParams = store.stateResolvedScaleParams.get();
+    const altReduceMap = getAltReduceMap(resolvedScaleParams.scale);
+
+    scaleLayouts.forEach((layout, stringIndex) => {
+      const elFretboardStartNoteContainer = refs.elFretboardStartNoteContainers[stringIndex];
+      const startNoteParams = layout[0];
+      const { note, degree } = startNoteParams;
+      const isVisible = note && !hiddenDegrees.has(degree);
+      elFretboardStartNoteContainer.textContent = isVisible
+        ? reduceAlt(note, altReduceMap)
+        : c.EMPTY_VALUE;
+
+      for (let fret = 1; fret <= c.OCTAVE_SIZE; fret++) {
+        const fretIndex = fret - 1;
+        const elFretNotes = refs.elFretboardStringFrets[stringIndex];
+        const elFretNote = elFretNotes[fretIndex];
+        const noteParams = layout[fret];
+        removeOctaveClass(elFretNote);
+        elFretNote.classList.add('text-black');
+
+        elFretNote.textContent = c.EMPTY_VALUE;
+        if (noteParams) {
+          const { note, degree, octave } = noteParams;
+          if (note && !hiddenDegrees.has(degree)) {
+            elFretNote.textContent = reduceAlt(note, altReduceMap);
+            elFretNote.classList.add(`bg-octave-${octave}`);
+          }
+        }
+      }
+    });
+  };
+
+  const renderIntervalContainers = () => {
+    const { intervalPattern, modalShift } = store.stateScaleBuildParams.get();
+    const displayMode = store.stateIntervalDisplayMode.get();
+    const intervals = textIntervals.get();
+
+    const getDisplayValue = (size: t.intervalSize): string => {
+      if (size === 0 || displayMode === 'digit') {
+        return size.toString();
+      }
+      if (size === 1) {
+        return intervals.halfStep[0].toUpperCase();
+      }
+      if (size === 2) {
+        return intervals.wholeStep[0].toUpperCase();
+      }
+      const name = intervals[<keyof typeof intervals>`interval${size}`];
+      return name[0].toLowerCase();
+    };
+
+    refs.elIntervalContainers.forEach((el, index) => {
+      if (index === 0) {
+        el.textContent = getDisplayValue(index);
+      } else {
+        const stepIndex = index - 1;
+        const intervalStep = intervalPattern[stepIndex];
+        const elIntervalStepButton = refs.elIntervalStepButtons[stepIndex];
+        elIntervalStepButton.textContent = getDisplayValue(intervalStep);
+      }
+      el.classList.remove(...selectedScaleParamsClasses);
+      if (index === modalShift) {
+        el.classList.add(...selectedScaleParamsClasses);
+      }
+    });
+  };
+
+  const renderIntervalDisplaySwitch = () => {
+    const mode = store.stateIntervalDisplayMode.get();
+    const intervals = textIntervals.get();
+    if (mode === 'letter') {
+      refs.elIntervalDisplaySwitch.textContent = intervals.digitModeLabel;
+    } else {
+      const halfStepLetter = intervals.halfStep[0].toUpperCase();
+      const wholeStepLetter = intervals.wholeStep[0].toUpperCase();
+      refs.elIntervalDisplaySwitch.textContent = `${halfStepLetter}/${wholeStepLetter}`;
+    }
+  };
+
+  store.stateScaleBuildParams.subscribe(({ tonic }) => {
+    refs.elTonicContainer.textContent = tonic;
+    renderIntervalContainers();
   });
 
-  store.stateUnshiftResolvedScaleParams.subscribe((resolvedScaleParams) => {
-    const scaleMap = mu.scaleToMap(resolvedScaleParams.scale);
-    const tonic = resolvedScaleParams.scale[0];
-    const scaleLayouts = mu.mapScaleToLayout({ scaleMap, startNotes: [{ note: tonic.note, octave: 1 }] });
-    const keyboardScaleLayout = scaleLayouts[0];
-    const keyboardScaleLayoutWithoutEmpty = keyboardScaleLayout.filter((n) => n.note !== '');
-    refs.elScaleToneContainers.forEach((el, i) => {
-      el.textContent = keyboardScaleLayoutWithoutEmpty[i].note;
-    });
+  store.stateIntervalDisplayMode.subscribe(renderIntervalContainers);
+  textIntervals.subscribe(renderIntervalContainers);
+
+  store.stateIntervalDisplayMode.subscribe(renderIntervalDisplaySwitch);
+  textIntervals.subscribe(renderIntervalDisplaySwitch);
+
+  store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
+    refs.elContextContainer.textContent = resolvedScaleParams.contextTargets.join('/');
   });
+
+  store.theme.subscribe((theme) => {
+    document.body.dataset.bsTheme = theme;
+  });
+
+  store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
+    refs.elDirectionControllers.forEach((el) => {
+      const { control } = el.dataset;
+      if (control === 'modal-shift' || control === 'context-shift' || control === 'degree-rotation') {
+        el.disabled = !resolvedScaleParams.canModalShift;
+      }
+    });
+
+    const texts = textErrors.get();
+    if (!resolvedScaleParams.canModalShift) {
+      refs.elResolveErrorContainer.textContent = texts.openPatternError;
+    } else if (!resolvedScaleParams.canApplyContext) {
+      const { tonic: centerNote } = store.stateScaleBuildParams.get();
+      const targets = resolvedScaleParams.contextTargets.join('/');
+      refs.elResolveErrorContainer.textContent = texts.resolveError({ note: centerNote, targets });
+    } else {
+      refs.elResolveErrorContainer.textContent = c.EMPTY_VALUE;
+    }
+
+    renderKeyboard(resolvedScaleParams);
+  });
+
+  store.stateUnshiftResolvedScaleParams.subscribe(renderScaleTones);
 
   store.stateDegreeRotation.subscribe((degreeRotation) => {
     refs.elScaleToneContainers.forEach((el, index) => {
@@ -96,42 +216,18 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.stateFretboardLayout.subscribe((scaleLayouts) => {
-    const hiddenDegrees = store.stateHiddenDegrees.get();
+    renderFretboard(scaleLayouts);
+  });
 
-    if (!scaleLayouts) {
-      refs.elFretboardStartNoteContainers.forEach((elFretboardStartNoteContainer) => {
-        elFretboardStartNoteContainer.textContent = c.EMPTY_VALUE;
-      });
-      refs.elFretboardStringFrets.forEach((elFretboardStringFret) => {
-        elFretboardStringFret.forEach((elFretNote) => {
-          elFretNote.textContent = c.EMPTY_VALUE;
-          removeOctaveClass(elFretNote);
-        });
-      });
-      return;
-    }
-
-    scaleLayouts.forEach((layout, stringIndex) => {
-      const elFretboardStartNoteContainer = refs.elFretboardStartNoteContainers[stringIndex];
-      const startNoteParams = layout[0];
-      elFretboardStartNoteContainer.textContent = (startNoteParams.note && !hiddenDegrees.has(startNoteParams.degree))
-        ? startNoteParams.note
-        : c.EMPTY_VALUE;
-
-      for (let fret = 1; fret <= c.OCTAVE_SIZE; fret++) {
-        const elFretNote = refs.elFretboardStringFrets[stringIndex][fret - 1];
-        const noteParams = layout[fret];
-        removeOctaveClass(elFretNote);
-        elFretNote.classList.add('text-black');
-
-        if (noteParams.note && !hiddenDegrees.has(noteParams.degree)) {
-          elFretNote.textContent = noteParams.note;
-          elFretNote.classList.add(`bg-octave-${noteParams.octave}`);
-        } else {
-          elFretNote.textContent = c.EMPTY_VALUE;
-        }
-      }
-    });
+  store.stateIsEnharmonicSimplify.subscribe(() => {
+    const isEnharmonicSimplify = store.stateIsEnharmonicSimplify.get();
+    const unshiftResolvedScaleParams = store.stateUnshiftResolvedScaleParams.get();
+    const resolvedScaleParams = store.stateResolvedScaleParams.get();
+    const fretboardLayout = store.stateFretboardLayout.get();
+    refs.elEnharmonicSimplifyToggle.checked = isEnharmonicSimplify;
+    renderScaleTones(unshiftResolvedScaleParams);
+    renderKeyboard(resolvedScaleParams);
+    renderFretboard(fretboardLayout);
   });
 
   store.stateHiddenDegrees.subscribe((cur, prev = new Set()) => {
@@ -167,11 +263,14 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
 
   textErrors.subscribe((texts) => {
     const resolvedScaleParams = store.stateResolvedScaleParams.get();
-    if (!resolvedScaleParams.canApplyContext) {
-      const centerNote = store.stateScaleBuildParams.get().tonic;
+    if (!resolvedScaleParams.canModalShift) {
+      refs.elResolveErrorContainer.textContent = texts.openPatternError;
+    } else if (!resolvedScaleParams.canApplyContext) {
+      const { tonic: centerNote } = store.stateScaleBuildParams.get();
+      const targets = resolvedScaleParams.contextTargets.join('/');
       refs.elResolveErrorContainer.textContent = texts.resolveError({
         note: centerNote,
-        targets: resolvedScaleParams.contextTargets.join('/'),
+        targets,
       });
     }
   });

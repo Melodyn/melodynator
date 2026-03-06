@@ -22,7 +22,7 @@ export const createStore = (): t.store => {
       { note: 'E', octave: 2 },
     ],
   };
-  const stateHiddenDegrees = n.atom<Set<t.noteParams['degree']>>(new Set());
+  const stateHiddenDegrees = n.atom<Set<t.degree>>(new Set());
   const stateFretboardStartNotes = n.atom<t.fretboardStartNoteParams[]>(defaultInstrumentParams.startNotes);
   const stateScaleBuildParams = n.map(defaultScaleBuildParams);
   const stateDegreeRotation = n.atom<t.degreeRotation>(0);
@@ -51,7 +51,7 @@ export const createStore = (): t.store => {
     [stateResolvedScaleParams, stateFretboardStartNotes],
     (resolvedScaleParams, startNotes) => {
       if (!resolvedScaleParams.canApplyContext) {
-        return null;
+        return [];
       }
       const scaleMap = mu.scaleToMap(resolvedScaleParams.scale);
       return mu.mapScaleToLayout({ scaleMap, startNotes });
@@ -74,15 +74,16 @@ export const createStore = (): t.store => {
 
   const offsetDegreeRotation: t.offsetScaleParam = (offset) => {
     const { intervalPattern } = stateScaleBuildParams.get();
-    const currentShift = stateDegreeRotation.get();
+    const currentRotation = stateDegreeRotation.get();
     const degreeCount = intervalPattern.length;
-    const newShift = (currentShift + offset + degreeCount) % degreeCount;
-    stateDegreeRotation.set(newShift);
+    const newRotation = (currentRotation + offset + degreeCount) % degreeCount;
+    stateDegreeRotation.set(newRotation);
   };
 
   const offsetContext: t.offsetScaleParam = (offset) => {
     const currentShift = stateContextOffset.get();
-    stateContextOffset.set(<t.contextOffset>((currentShift + c.OCTAVE_SIZE + offset) % c.OCTAVE_SIZE));
+    const newContextOffset = <t.contextOffset>((currentShift + c.OCTAVE_SIZE + offset) % c.OCTAVE_SIZE);
+    stateContextOffset.set(newContextOffset);
   };
 
   const switchDegreeVisibility: t.switchDegreeVisibility = (degree) => {
@@ -98,8 +99,17 @@ export const createStore = (): t.store => {
   const setFretboardStartNote: t.setFretboardStartNote = (startNoteParams) => {
     const { index: changeStringIndex, ...newStringParams } = startNoteParams;
     const currentStartNotes = stateFretboardStartNotes.get();
-    const newStartNotes = currentStartNotes.map((startNote: t.fretboardStartNoteParams, i: number) => i === changeStringIndex ? newStringParams : startNote);
+    const newStartNotes = currentStartNotes.map(
+      (startNote: t.fretboardStartNoteParams, i: number) => i === changeStringIndex ? newStringParams : startNote,
+    );
     stateFretboardStartNotes.set(newStartNotes);
+  };
+
+  const setIntervalStep: t.setIntervalStep = ({ degree, step }) => {
+    const { intervalPattern } = stateScaleBuildParams.get();
+    const degreeIndex = degree - 1;
+    const newPattern = intervalPattern.map((currentStep, i) => i === degreeIndex ? step : currentStep);
+    stateScaleBuildParams.setKey('intervalPattern', newPattern);
   };
 
   return {
@@ -118,5 +128,6 @@ export const createStore = (): t.store => {
     offsetContext,
     switchDegreeVisibility,
     setFretboardStartNote,
+    setIntervalStep,
   };
 };

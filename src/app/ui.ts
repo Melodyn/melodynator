@@ -4,7 +4,7 @@ import { persistentAtom } from '@nanostores/persistent';
 import { qs, qsa, getSavedValues } from '../commonUtils';
 import * as c from '../constants';
 import type * as t from '../types';
-import { localeStore, locale, textTooltips, textFretboard, textScaleParams, textContent } from './i18n';
+import { localeStore, locale, textTooltips, textFretboard, textScaleParams, textContent, textIntervals } from './i18n';
 
 export const createUiStore = (): t.uiStore => {
   const theme = persistentAtom<t.uiTheme>('theme', getSavedValues().theme);
@@ -19,11 +19,27 @@ export const createUiStore = (): t.uiStore => {
     localeStore.set(locale.get() === 'ru' ? 'en' : 'ru');
   };
 
+  const stateIntervalDisplayMode = n.atom<t.intervalDisplayMode>('digit');
+
+  const switchIntervalDisplayMode = () => {
+    stateIntervalDisplayMode.set(stateIntervalDisplayMode.get() === 'digit' ? 'letter' : 'digit');
+  };
+
+  const stateIsEnharmonicSimplify = n.atom<boolean>(false);
+
+  const switchEnharmonicSimplify = () => {
+    stateIsEnharmonicSimplify.set(!stateIsEnharmonicSimplify.get());
+  };
+
   return {
     theme,
     toggleTheme,
     stateLocale,
     switchLocale,
+    stateIntervalDisplayMode,
+    switchIntervalDisplayMode,
+    stateIsEnharmonicSimplify,
+    switchEnharmonicSimplify,
   };
 };
 
@@ -41,6 +57,10 @@ const getDomRefs = (): t.domRefs => {
   const elTonicContainer = qs<HTMLTableCellElement>('[data-container="tonic"]');
   const elContextContainer = qs<HTMLTableCellElement>('[data-container="context"]');
   const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
+  const elIntervalStepButtons = Array.from(qsa<HTMLButtonElement>('[data-control="interval-step"]'));
+  const elIntervalDisplaySwitch = qs<HTMLButtonElement>('[data-control="interval-display-switch"]');
+  const elIntervalStepParamsTemplate = qs<HTMLTemplateElement>('#template-interval-step-params');
+  const elIntervalStepParams = <HTMLFormElement>elIntervalStepParamsTemplate.content.firstElementChild;
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   const elSwitchDegreeContainers = qsa<HTMLInputElement>('[data-container="switch-degree"]');
   //
@@ -67,6 +87,7 @@ const getDomRefs = (): t.domRefs => {
   });
 
   const elLocaleSwitch = qs<HTMLButtonElement>('[data-control="locale-switch"]');
+  const elEnharmonicSimplifyToggle = qs<HTMLInputElement>('[data-control="enharmonic-simplify"]');
 
   return {
     elThemeToggle,
@@ -78,6 +99,10 @@ const getDomRefs = (): t.domRefs => {
     elTonicContainer,
     elContextContainer,
     elIntervalContainers,
+    elIntervalStepButtons,
+    elIntervalDisplaySwitch,
+    elIntervalStepParams,
+    elEnharmonicSimplifyToggle,
     elScaleToneContainers,
     elSwitchDegreeContainers,
     //
@@ -89,6 +114,65 @@ const getDomRefs = (): t.domRefs => {
     elFretboardString,
     elFretboardNewStringNoteParams,
   };
+};
+
+const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
+  refs.elIntervalStepButtons.forEach((elButton, buttonIndex) => {
+    const degree = buttonIndex + 1;
+
+    const makePopover = () => new Popover(elButton, {
+      html: true,
+      sanitize: false,
+      content: () => {
+        const form = <HTMLFormElement>refs.elIntervalStepParams.cloneNode(true);
+        const select = qs<HTMLSelectElement>('#interval-step-value', form);
+        const optionProto = <HTMLOptionElement>select.firstElementChild;
+        const intervals = textIntervals.get();
+
+        const { intervalPattern } = appStore.stateScaleBuildParams.get();
+        const prevAbsolute = intervalPattern.slice(0, buttonIndex).reduce<number>((sum, s) => sum + s, 0);
+
+        c.allIntervalSizes.forEach((relativeStep, i) => {
+          const absolutePos = prevAbsolute + relativeStep;
+          const wrappedPos = absolutePos > c.OCTAVE_SIZE ? absolutePos % c.OCTAVE_SIZE : absolutePos;
+          const opt = i === 0
+            ? optionProto
+            : <HTMLOptionElement>optionProto.cloneNode();
+          opt.value = relativeStep.toString();
+          const absoluteName = intervals[<keyof typeof intervals>`interval${wrappedPos}`];
+          const intervalName = relativeStep === 1
+            ? `${intervals.halfStep} / ${absoluteName}`
+            : relativeStep === 2
+              ? `${intervals.wholeStep} / ${absoluteName}`
+              : absoluteName;
+          opt.textContent = `${relativeStep} / ${intervalName}`;
+          if (i > 0) {
+            select.appendChild(opt);
+          }
+        });
+
+        select.value = intervalPattern[buttonIndex].toString();
+
+        select.addEventListener('change', () => {
+          appStore.setIntervalStep({ degree, step: <t.intervalSize>Number(select.value) });
+          const popover = Popover.getInstance(elButton);
+          if (popover) {
+            popover.hide();
+          }
+        });
+
+        return form;
+      },
+    });
+
+    textIntervals.subscribe(() => {
+      const existing = Popover.getInstance(elButton);
+      if (existing) {
+        existing.dispose();
+      }
+      makePopover();
+    });
+  });
 };
 
 const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
@@ -209,6 +293,7 @@ const initStaticText = (): void => {
 export const initUI = (appStore: t.appStore): t.domRefs => {
   const refs = getDomRefs();
 
+  initIntervalSteps(refs, appStore);
   initFretboard(refs, appStore);
   initTooltips(refs);
   initStaticText();
@@ -243,6 +328,15 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
 
       offsetScaleParam(offset);
     });
+  });
+
+  // Interval display mode switch
+  refs.elIntervalDisplaySwitch.addEventListener('click', () => {
+    appStore.switchIntervalDisplayMode();
+  });
+
+  refs.elEnharmonicSimplifyToggle.addEventListener('change', () => {
+    appStore.switchEnharmonicSimplify();
   });
 
   refs.elSwitchDegreeContainers.forEach((el) => {

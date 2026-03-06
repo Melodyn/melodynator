@@ -38,7 +38,10 @@ data_control:
   - context-shift   # → offsetContext → stateContextOffset → elContextContainer
   - theme-toggle    # → toggleTheme → uiStore.theme → document.body
   - locale-switch   # → switchLocale → stateLocale → elLocaleSwitch
-  - start-note      # → setFretboardStartNote → stateFretboardStartNotes → elFretboardStartNoteButtons
+  - start-note             # → setFretboardStartNote → stateFretboardStartNotes → elFretboardStartNoteButtons
+  - interval-step          # → setIntervalStep → stateScaleBuildParams(.intervalPattern) | degree=1–7; popover-форма
+  - interval-display-switch # → switchIntervalDisplayMode → stateIntervalDisplayMode
+  - enharmonic-simplify    # → switchEnharmonicSimplify → stateIsEnharmonicSimplify | checkbox ♭=♯
 
 data_tooltip:
   # Атрибут data-tooltip="key" — на плейсхолдере <span>. Ключ совпадает с ключом в textTooltips.
@@ -129,13 +132,18 @@ key_types:
   - uiTheme              # type: 'light' | 'dark' | persistentAtom в ui.ts, инициализируется из getSavedValues()
   - savedValues          # getSavedValues() в commonUtils.ts — единственная точка чтения начального состояния
   - appStore             # store & uiStore — полный стор приложения
+  - intervalDisplayMode  # type: 'digit' | 'letter' | store: stateIntervalDisplayMode
+  - setIntervalStep      # action: degree (1-based) + intervalSize → stateScaleBuildParams(.intervalPattern)
+  - altReduceMap         # Map<noteName, noteName> — карта замены нот на энгармонические эквиваленты с меньшим числом альтераций | render.ts: buildAltReduceMap, getAltReduceMap, reduceAlt
 
 stores:
   - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide | → initStaticText
   - textContent      # type: i18n atom | namespace: content | ключи: pageTitle, pageDescription, sections... | → initStaticText
   - textTooltips     # type: i18n atom | ключи: tooltip,hide,tonal,modal,degrees,center,context,fretboard | → initTooltips (Tooltip.setContent)
   - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8 | → popover content() в initFretboard
-  - textErrors       # type: i18n atom | namespace: errors | ключи: resolveError | → render.ts (сообщение ошибки контекста)
+  - textErrors       # type: i18n atom | namespace: errors | ключи: resolveError, openPatternError | → render.ts (сообщение ошибки)
+  - textIntervals    # type: i18n atom | namespace: intervals | ключи: halfStep, wholeStep, interval0–12, digitModeLabel | → render.ts, ui.ts (popover)
+  - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elIntervalStepButtons, elIntervalDisplaySwitch
   - stateLocale                     # type: PersistentAtom<locale> | persistentAtom, инициализируется из getSavedValues() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
   - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
@@ -146,6 +154,7 @@ stores:
   - stateHiddenDegrees              # type: Atom<Set<degree>> | ← switch-degree | → elSwitchDegreeContainers, elKeyboardNotes, renderFretboard
   - stateFretboardStartNotes        # type: Atom<fretboardStartNoteParams[]> | ← start-note | → stateFretboardLayout
   - stateFretboardLayout            # computed: [stateResolvedScaleParams, stateFretboardStartNotes] → scaleLayouts | null | → renderFretboard
+  - stateIsEnharmonicSimplify         # type: Atom<boolean> | ← enharmonic-simplify (change) | → renderScaleTones, renderKeyboard, renderFretboard | lookup: ENHARMONIC_SIMPLE_NAMES
 
 actions:
   - offsetTonicShift          # ← data-control="tonic-shift" | → stateScaleBuildParams(.tonic)
@@ -156,27 +165,34 @@ actions:
   - setFretboardStartNote     # ← data-control="start-note" (popover-форма) | → stateFretboardStartNotes
   - toggleTheme               # ← data-control="theme-toggle" | → uiStore.theme
   - switchLocale              # ← data-control="locale-switch" | → stateLocale (через persistentAtom)
+  - setIntervalStep           # ← data-control="interval-step" (popover select.change) | params: { degree, step } | → stateScaleBuildParams(.intervalPattern)
+  - switchIntervalDisplayMode # ← data-control="interval-display-switch" | → stateIntervalDisplayMode
+  - switchEnharmonicSimplify  # ← data-control="enharmonic-simplify" (change) | → stateIsEnharmonicSimplify
 
 render_targets:
   - elTooltipTemplate         # <template id="template-tooltip"> | клонируется в initTooltips → кнопка с SVG-иконкой
   - elTonicContainer          # data-container="tonic" | ← stateScaleBuildParams(.tonic)
   - elContextContainer        # data-container="context" | ← stateResolvedScaleParams(.contextTargets)
-  - elIntervalContainers      # data-container="interval-step" | ← stateScaleBuildParams(.intervalPattern, .modalShift)
+  - elIntervalContainers      # data-container="interval-step" | ← stateScaleBuildParams(.intervalPattern, .modalShift) | ячейка 0 — «0» на td; ячейки 1–7 — кнопки
+  - elIntervalStepButtons     # data-control="interval-step" (7 кнопок) | ← intervalPattern, stateIntervalDisplayMode; текст обновляется в renderIntervalContainers
+  - elIntervalDisplaySwitch   # data-control="interval-display-switch" | ← stateIntervalDisplayMode, textIntervals; кнопка-переключатель digit/letter
+  - elIntervalStepParams      # <template #template-interval-step-params> → клонируется в popover content() initIntervalSteps; select заполняется интервалами при каждом открытии
   - elScaleToneContainers     # data-container="scale-tone" | ← stateUnshiftResolvedScaleParams(.scale), stateDegreeRotation
   - elSwitchDegreeContainers  # data-container="switch-degree" | ← stateHiddenDegrees (labels стилизуются)
   - elResolveErrorContainer   # data-container="resolve-error" | ← stateResolvedScaleParams(.canApplyContext)
-  - elKeyboardNotes           # data-instrument="keyboard__notes" td | ← stateResolvedScaleParams(.scale)
+  - elKeyboardNotes           # data-instrument="keyboard-notes" td | ← stateResolvedScaleParams(.scale)
   - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard
-  - elFretboardStrings        # data-instrument="fretboard__string" (per-string tr) | строится в initFretboard из stateFretboardStartNotes
-  - elFretboardStartNoteContainers  # data-control="start-note" в data-instrument="fretboard__string-note" | ← stateFretboardLayout
+  - elFretboardStrings        # data-instrument="fretboard-string" (per-string tr) | строится в initFretboard из stateFretboardStartNotes
+  - elFretboardStartNoteContainers  # data-control="start-note" в data-instrument="fretboard-string-note" | ← stateFretboardLayout
   - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
-  - elFretboardString               # <template #template-fretboard__string> → клонируется в initFretboard
-  - elFretboardNewStringNoteParams  # <template #template-fretboard__set-string-params> → клонируется в popover; note select заполняется нотами один раз в getDomRefs
-  - elDirectionControllers    # data-direction (кнопки up/down) | click → controlToOffset[control](offset) | все четыре контрола (tonic/modal/degree/context)
+  - elFretboardString               # <template #template-fretboard-string> → клонируется в initFretboard
+  - elFretboardNewStringNoteParams  # <template #template-fretboard-set-string-params> → клонируется в popover; note select заполняется нотами один раз в getDomRefs
+  - elDirectionControllers    # data-direction (кнопки up/down) | click → controlToOffset[control](offset) | все четыре контрола (tonic/modal/degree/context) | modal-shift, context-shift и degree-rotation disabled при !canModalShift
   # refs data-control
   - elThemeToggle             # data-control="theme-toggle" (logo-toggle button) | click → toggleTheme → document.body[data-bs-theme]
   # i18n refs (data-control)
   - elLocaleSwitch            # data-control="locale-switch" | ← stateLocale (кнопка с текущим не-активным языком)
+  - elEnharmonicSimplifyToggle # data-control="enharmonic-simplify" (checkbox) | ← stateIsEnharmonicSimplify (.checked)
   # статичные тексты — через initStaticText() по data-static-content, refs не нужны
 
 scale_build_params:
@@ -187,6 +203,6 @@ scale_build_params:
 resolved_scale_params:
   - scale          # → elScaleToneContainers, elKeyboardNotes, renderFretboard
   - intervalPattern  # (readonly после resolveScale, не отображается напрямую)
-  - canModalShift    # (не используется в render.ts)
+  - canModalShift    # → elDirectionControllers (disabled при false: modal-shift, context-shift, degree-rotation) | → elResolveErrorContainer
   - canApplyContext  # → elResolveErrorContainer (условие отрисовки)
   - contextTargets   # → elContextContainer

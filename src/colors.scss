@@ -21,6 +21,11 @@ $theme-colors: map-merge($theme-colors,
   width: 30px;
 }
 
+.width-40px {
+  min-width: 40px;
+  width: 40px;
+}
+
 .height-30px {
   height: 30px;
 }

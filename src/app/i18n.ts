@@ -73,4 +73,24 @@ export const textContent = i18n('content', {
 
 export const textErrors = i18n('errors', {
   resolveError: params('Центр {note} не входит в гамму {targets}'),
+  openPatternError: 'Интервальная схема не замкнута',
+});
+
+export const textIntervals = i18n('intervals', {
+  halfStep: 'полутон',
+  wholeStep: 'тон',
+  interval0: 'унисон / чистая прима',
+  interval1: 'малая секунда / увеличенная прима',
+  interval2: 'большая секунда / уменьшённая терция',
+  interval3: 'малая терция / увеличенная секунда',
+  interval4: 'большая терция / уменьшённая кварта',
+  interval5: 'чистая кварта / увеличенная терция',
+  interval6: 'тритон / увеличенная кварта / уменьшённая квинта',
+  interval7: 'чистая квинта / уменьшённая секста',
+  interval8: 'малая секста / увеличенная квинта',
+  interval9: 'большая секста / уменьшённая септима',
+  interval10: 'малая септима / увеличенная секста',
+  interval11: 'большая септима / уменьшённая октава',
+  interval12: 'чистая октава',
+  digitModeLabel: '1/2',
 });

@@ -24,7 +24,8 @@ export type noteParams = {
   pitchClass: number
 };
 
-export type intervalSize = 1 | 2; // количество полутонов для построения интервала
+export type intervalSize = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12; // количество полутонов для построения интервала
+export type intervalDisplayMode = 'digit' | 'letter';
 export type contextOffset = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 export type degreeRotation = number;
 
@@ -38,6 +39,7 @@ export type scaleBuildParams = {
 
 export type scale = noteParams[];
 export type scaleMap = Map<noteParams['pitchClass'], noteParams>;
+export type altReduceMap = Map<noteName, noteName>;
 export type scaleToMap = (scale: scale) => scaleMap;
 
 export type resolvedScaleParams = {
@@ -81,6 +83,7 @@ export type scaleLayouts = scaleLayout[];
 export type mapScaleToLayout = (layoutParams: { scaleMap: scaleMap, startNotes: fretboardStartNoteParams[] }) => scaleLayouts;
 
 // UI level (user intention)
+export type setIntervalStep = (params: { degree: degree, step: intervalSize }) => void;
 export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'context-shift';
 
 export type controlDirection = 'up' | 'down';
@@ -101,13 +104,14 @@ export type store = {
   stateDegreeRotation: Atom<number>
   stateHiddenDegrees: Atom<Set<degree>>
   stateFretboardStartNotes: Atom<fretboardStartNoteParams[]>
-  stateFretboardLayout: Atom<scaleLayouts | null>
+  stateFretboardLayout: Atom<scaleLayouts>
   offsetTonicShift: offsetScaleParam
   offsetModalShift: offsetScaleParam
   offsetDegreeRotation: offsetScaleParam
   offsetContext: offsetScaleParam
   switchDegreeVisibility: switchDegreeVisibility
   setFretboardStartNote: setFretboardStartNote
+  setIntervalStep: setIntervalStep
 };
 
 export type domRefs = {
@@ -120,6 +124,10 @@ export type domRefs = {
   elTonicContainer: HTMLTableCellElement
   elContextContainer: HTMLTableCellElement
   elIntervalContainers: NodeListOf<HTMLTableCellElement>
+  elIntervalStepButtons: HTMLButtonElement[]
+  elIntervalDisplaySwitch: HTMLButtonElement
+  elIntervalStepParams: HTMLFormElement
+  elEnharmonicSimplifyToggle: HTMLInputElement
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
   elSwitchDegreeContainers: NodeListOf<HTMLInputElement>
   //
@@ -146,6 +154,10 @@ export type uiStore = {
   toggleTheme: () => void
   stateLocale: Atom<locale>
   switchLocale: () => void
+  stateIntervalDisplayMode: Atom<intervalDisplayMode>
+  switchIntervalDisplayMode: () => void
+  stateIsEnharmonicSimplify: Atom<boolean>
+  switchEnharmonicSimplify: () => void
 };
 
 export type appStore = store & uiStore;

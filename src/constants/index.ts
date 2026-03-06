@@ -23,3 +23,10 @@ export const naturalNotesParams: t.naturalNoteParams[] = [
 ];
 
 export const allNotesNames: t.noteName[] = naturalNotesParams.flatMap<t.noteName>(({ note }) => [`${note}${FLAT_SYMBOL}`, note, `${note}${SHARP_SYMBOL}`]);
+
+export const allIntervalSizes: t.intervalSize[] = <t.intervalSize[]>Array.from({ length: OCTAVE_SIZE + 1 }, (_, i) => i);
+
+// Простейшее имя ноты по pitchClass (смешанная классическая конвенция: C♯ D E♭ F♯ A♭ B♭)
+export const ENHARMONIC_SIMPLE_NAMES: t.noteName[] = [
+  'C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B',
+];

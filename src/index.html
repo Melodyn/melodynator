@@ -107,6 +107,7 @@
                 <span data-tooltip="context" data-tooltip-placement="left"></span>
                 <span data-static-content="scale-params-context"></span>
               </td>
+              <td class="p-0"></td>
             </tr>
           </thead>
           <tbody class="align-middle">
@@ -144,6 +145,7 @@
                   &#8594;
                 </button>
               </td>
+              <td></td>
             </tr>
             <tr class="height-30px" data-container="interval">
               <td class="py-0 ps-0 pe-2 text-start text-nowrap">
@@ -157,18 +159,57 @@
                 </button>
               </td>
               <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px text-secondary" data-container="interval-step"></td>
+              <td class="p-0 width-30px position-relative" data-container="interval-step">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                  data-control="interval-step"></button>
+              </td>
+              <td class="p-0 width-30px position-relative" data-container="interval-step">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                  data-control="interval-step"></button>
+              </td>
+              <td class="p-0 width-30px position-relative" data-container="interval-step">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                  data-control="interval-step"></button>
+              </td>
+              <td class="p-0 width-30px position-relative" data-container="interval-step">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                  data-control="interval-step"></button>
+              </td>
+              <td class="p-0 width-30px position-relative" data-container="interval-step">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                  data-control="interval-step"></button>
+              </td>
+              <td class="p-0 width-30px position-relative" data-container="interval-step">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                  data-control="interval-step"></button>
+              </td>
+              <td class="p-0 width-30px position-relative" data-container="interval-step">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-secondary"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                  data-control="interval-step"></button>
+              </td>
               <td class="p-0 text-start">
                 <button type="button" data-control="modal-shift" data-direction="up"
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
+              </td>
+              <td class="p-0 text-start width-40px">
+                <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
+                  data-control="interval-display-switch"></button>
               </td>
             </tr>
             <tr class="height-30px" data-container="tones">
@@ -195,6 +236,12 @@
                   class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                   &#8594;
                 </button>
+              </td>
+              <td class="p-0 text-start">
+                <input class="btn-check btn-focusable" id="enharmonic-simplify" type="checkbox"
+                  data-control="enharmonic-simplify" />
+                <label class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
+                  for="enharmonic-simplify">&#9837;=&#9839;</label>
               </td>
             </tr>
             <tr class="height-30px" data-container="degree">
@@ -240,6 +287,7 @@
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">8</td>
               <td class="px-0 pb-0 pt-1 border-top"></td>
+              <td class="border-top"></td>
             </tr>
           </tbody>
         </table>
@@ -407,6 +455,14 @@
           <path d="m48.19 62.57l-32.1 32.1 32.1 32.09 32.09-32.09v-29.18l32.1-29.18-37.93-35.02-5.84 2.92v78.79z" />
         </svg>
       </button>
+    </template>
+
+    <template id="template-interval-step-params">
+      <form id="interval-step-params">
+        <select id="interval-step-value" class="form-select form-select-sm">
+          <option></option>
+        </select>
+      </form>
     </template>
 
     <template id="template-fretboard-string">
