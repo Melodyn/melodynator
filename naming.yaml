@@ -42,6 +42,8 @@ data_control:
   - interval-step          # → setIntervalStep → stateScaleBuildParams(.intervalPattern) | degree=1–7; popover-форма
   - interval-display-switch # → switchIntervalDisplayMode → stateIntervalDisplayMode
   - enharmonic-simplify    # → switchEnharmonicSimplify → stateIsEnharmonicSimplify | checkbox ♭=♯
+  - add-fretboard-string   # → addFretboardString → stateFretboardStartNotes | кнопка в tfoot; popover с подтверждением
+  - remove-fretboard-string # → removeFretboardString → stateFretboardStartNotes | кнопка в td номера строки; popover с подтверждением
 
 data_tooltip:
   # Атрибут data-tooltip="key" — на плейсхолдере <span>. Ключ совпадает с ключом в textTooltips.
@@ -105,8 +107,9 @@ data_container:
 data_instrument:
   - fretboard              # refs: elFretboard (tbody-контейнер строк)
   - fretboard-string       # refs: elFretboardStrings (per-string tr)
-  - fretboard-string-number  # устанавливается в initFretboard через getElFretboardStringNumberContainer; refs нет
+  - fretboard-string-number  # кнопка data-control="remove-fretboard-string"; getElFretboardStringNumberButton; refs нет
   - fretboard-string-note    # TD-ячейка открытой ноты; refs нет; внутри — кнопка data-control="start-note"
+  - fretboard-string-fret    # TD-ячейка лада (1–12); refs: elFretboardStringFrets (per-string); getElFretboardStringFrets
   - keyboard               # нет refs
   - keyboard-notes         # refs: elKeyboardNotes (td-ячейки строки нот)
 
@@ -135,15 +138,17 @@ key_types:
   - intervalDisplayMode  # type: 'digit' | 'letter' | store: stateIntervalDisplayMode
   - setIntervalStep      # action: degree (1-based) + intervalSize → stateScaleBuildParams(.intervalPattern)
   - altReduceMap         # Map<noteName, noteName> — карта замены нот на энгармонические эквиваленты с меньшим числом альтераций | render.ts: buildAltReduceMap, getAltReduceMap, reduceAlt
+  - addFretboardString   # action type: () => void | добавляет строку кварту ниже последней, max=MAX_FRETBOARD_STRINGS
+  - removeFretboardString # action type: (index: number) => void | удаляет строку по индексу, min=MIN_FRETBOARD_STRINGS
 
 stores:
   - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide | → initStaticText
   - textContent      # type: i18n atom | namespace: content | ключи: pageTitle, pageDescription, sections... | → initStaticText
   - textTooltips     # type: i18n atom | ключи: tooltip,hide,tonal,modal,degrees,center,context,fretboard | → initTooltips (Tooltip.setContent)
-  - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8 | → popover content() в initFretboard
+  - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8, addStringLabel, removeStringLabel | → popover content() в initFretboard
   - textErrors       # type: i18n atom | namespace: errors | ключи: resolveError, openPatternError | → render.ts (сообщение ошибки)
   - textIntervals    # type: i18n atom | namespace: intervals | ключи: halfStep, wholeStep, interval0–12, digitModeLabel | → render.ts, ui.ts (popover)
-  - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elIntervalStepButtons, elIntervalDisplaySwitch
+  - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elSetIntervalSteps, elIntervalDisplaySwitch
   - stateLocale                     # type: PersistentAtom<locale> | persistentAtom, инициализируется из getSavedValues() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
   - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
@@ -153,7 +158,7 @@ stores:
   - stateDegreeRotation             # type: Atom<degreeRotation> | ← degree-rotation | → elScaleToneContainers
   - stateHiddenDegrees              # type: Atom<Set<degree>> | ← switch-degree | → elSwitchDegreeContainers, elKeyboardNotes, renderFretboard
   - stateFretboardStartNotes        # type: Atom<fretboardStartNoteParams[]> | ← start-note | → stateFretboardLayout
-  - stateFretboardLayout            # computed: [stateResolvedScaleParams, stateFretboardStartNotes] → scaleLayouts | null | → renderFretboard
+  - stateFretboardLayout            # computed: [stateResolvedScaleParams, stateFretboardStartNotes] → scaleLayouts (пустой массив если !canApplyContext) | → renderFretboard
   - stateIsEnharmonicSimplify         # type: Atom<boolean> | ← enharmonic-simplify (change) | → renderScaleTones, renderKeyboard, renderFretboard | lookup: ENHARMONIC_SIMPLE_NAMES
 
 actions:
@@ -168,13 +173,15 @@ actions:
   - setIntervalStep           # ← data-control="interval-step" (popover select.change) | params: { degree, step } | → stateScaleBuildParams(.intervalPattern)
   - switchIntervalDisplayMode # ← data-control="interval-display-switch" | → stateIntervalDisplayMode
   - switchEnharmonicSimplify  # ← data-control="enharmonic-simplify" (change) | → stateIsEnharmonicSimplify
+  - addFretboardString        # ← data-control="add-fretboard-string" (popover) | → stateFretboardStartNotes (append)
+  - removeFretboardString     # ← data-control="remove-fretboard-string" (popover) | params: index | → stateFretboardStartNotes (filter)
 
 render_targets:
   - elTooltipTemplate         # <template id="template-tooltip"> | клонируется в initTooltips → кнопка с SVG-иконкой
   - elTonicContainer          # data-container="tonic" | ← stateScaleBuildParams(.tonic)
   - elContextContainer        # data-container="context" | ← stateResolvedScaleParams(.contextTargets)
   - elIntervalContainers      # data-container="interval-step" | ← stateScaleBuildParams(.intervalPattern, .modalShift) | ячейка 0 — «0» на td; ячейки 1–7 — кнопки
-  - elIntervalStepButtons     # data-control="interval-step" (7 кнопок) | ← intervalPattern, stateIntervalDisplayMode; текст обновляется в renderIntervalContainers
+  - elSetIntervalSteps     # data-control="interval-step" (7 кнопок) | ← intervalPattern, stateIntervalDisplayMode; текст обновляется в renderIntervalContainers
   - elIntervalDisplaySwitch   # data-control="interval-display-switch" | ← stateIntervalDisplayMode, textIntervals; кнопка-переключатель digit/letter
   - elIntervalStepParams      # <template #template-interval-step-params> → клонируется в popover content() initIntervalSteps; select заполняется интервалами при каждом открытии
   - elScaleToneContainers     # data-container="scale-tone" | ← stateUnshiftResolvedScaleParams(.scale), stateDegreeRotation
@@ -187,6 +194,9 @@ render_targets:
   - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
   - elFretboardString               # <template #template-fretboard-string> → клонируется в initFretboard
   - elFretboardNewStringNoteParams  # <template #template-fretboard-set-string-params> → клонируется в popover; note select заполняется нотами один раз в getDomRefs
+  - elAddFretboardString      # data-control="add-fretboard-string" (кнопка в tfoot) | popover → addFretboardString
+  - elAddFretboardStringConfirm    # <template #template-add-fretboard-string-confirm> → клонируется в popover content()
+  - elRemoveFretboardStringConfirm # <template #template-remove-fretboard-string-confirm> → клонируется в popover content()
   - elDirectionControllers    # data-direction (кнопки up/down) | click → controlToOffset[control](offset) | все четыре контрола (tonic/modal/degree/context) | modal-shift, context-shift и degree-rotation disabled при !canModalShift
   # refs data-control
   - elThemeToggle             # data-control="theme-toggle" (logo-toggle button) | click → toggleTheme → document.body[data-bs-theme]
@@ -206,3 +216,11 @@ resolved_scale_params:
   - canModalShift    # → elDirectionControllers (disabled при false: modal-shift, context-shift, degree-rotation) | → elResolveErrorContainer
   - canApplyContext  # → elResolveErrorContainer (условие отрисовки)
   - contextTargets   # → elContextContainer
+
+key_constants:
+  - OCTAVE_SIZE              # 12 — полутонов в октаве (modulo для pitchClass)
+  - MAX_PITCH_CLASS_OFFSET   # 6 — максимальное смещение pitchClass при нормализации (квинтовый круг)
+  - MIN_FRETBOARD_STRINGS    # 4 — минимальное количество струн фретборда
+  - MAX_FRETBOARD_STRINGS    # 12 — максимальное количество струн фретборда
+  - FRETBOARD_STRING_INTERVAL # 5 — интервал между струнами по умолчанию (кварта = 5 полутонов)
+  - ENHARMONIC_SIMPLE_NAMES  # noteName[12] — канонические имена нот по pitchClass (C C♯ D E♭ … B)

@@ -105,6 +105,32 @@ export const createStore = (): t.store => {
     stateFretboardStartNotes.set(newStartNotes);
   };
 
+  const addFretboardString: t.addFretboardString = () => {
+    const currentStartNotes = stateFretboardStartNotes.get();
+    if (currentStartNotes.length >= c.MAX_FRETBOARD_STRINGS) {
+      return;
+    }
+    const lastString = currentStartNotes[currentStartNotes.length - 1];
+    const naturalClasses: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+    const letter = lastString.note[0];
+    const accidental = lastString.note.slice(1);
+    const modifier = accidental === c.SHARP_SYMBOL ? 1 : accidental === c.FLAT_SYMBOL ? -1 : 0;
+    const lastPitchClass = (naturalClasses[letter] + modifier + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
+    const newPitchClass = (lastPitchClass - c.FRETBOARD_STRING_INTERVAL + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
+    const newNote = c.ENHARMONIC_SIMPLE_NAMES[newPitchClass];
+    const newOctave = newPitchClass > lastPitchClass ? Math.max(0, lastString.octave - 1) : lastString.octave;
+    stateFretboardStartNotes.set([...currentStartNotes, { note: newNote, octave: newOctave }]);
+  };
+
+  const removeFretboardString: t.removeFretboardString = (index) => {
+    const currentStartNotes = stateFretboardStartNotes.get();
+    if (currentStartNotes.length <= c.MIN_FRETBOARD_STRINGS) {
+      return;
+    }
+    const newStartNotes = currentStartNotes.filter((_, i) => i !== index);
+    stateFretboardStartNotes.set(newStartNotes);
+  };
+
   const setIntervalStep: t.setIntervalStep = ({ degree, step }) => {
     const { intervalPattern } = stateScaleBuildParams.get();
     const degreeIndex = degree - 1;
@@ -128,6 +154,8 @@ export const createStore = (): t.store => {
     offsetContext,
     switchDegreeVisibility,
     setFretboardStartNote,
+    addFretboardString,
+    removeFretboardString,
     setIntervalStep,
   };
 };

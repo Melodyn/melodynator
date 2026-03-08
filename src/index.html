@@ -197,7 +197,7 @@
               </td>
               <td class="p-0 width-30px position-relative" data-container="interval-step">
                 <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-secondary"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0"
                   data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
                   data-control="interval-step"></button>
               </td>
@@ -322,7 +322,13 @@
           </tbody>
           <tfoot>
             <tr class="height-30px">
-              <td class="p-0 text-secondary width-30px"></td>
+              <td class="p-0 width-30px position-relative">
+                <button type="button"
+                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
+                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right"
+                  data-control="add-fretboard-string">+
+                </button>
+              </td>
               <td class="p-0 text-secondary width-30px">12</td>
               <td class="p-0 text-secondary width-30px">13</td>
               <td class="p-0 text-secondary width-30px">14</td>
@@ -467,26 +473,39 @@
 
     <template id="template-fretboard-string">
       <tr class="height-30px" data-instrument="fretboard-string">
-        <td class="p-0 text-secondary width-30px" data-instrument="fretboard-string-number"></td>
+        <td class="p-0 text-secondary width-30px position-relative" data-instrument="fretboard-string-number">
+          <button type="button"
+            class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
+            data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right"
+            data-control="remove-fretboard-string">
+          </button>
+        </td>
         <td class="p-0 text-secondary width-30px position-relative" data-instrument="fretboard-string-note">
           <button type="button"
             class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
             data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-control="start-note">
           </button>
         </td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
-        <td class="p-0 width-30px"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
+        <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
       </tr>
+    </template>
+
+    <template id="template-add-fretboard-string-confirm">
+      <button type="button" class="btn btn-sm btn-outline-primary"></button>
+    </template>
+    <template id="template-remove-fretboard-string-confirm">
+      <button type="button" class="btn btn-sm btn-outline-danger"></button>
     </template>
 
     <template id="template-fretboard-set-string-params">

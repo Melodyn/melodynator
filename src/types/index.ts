@@ -94,6 +94,8 @@ export type controlDirectionHandler = (control: control, direction: controlDirec
 export type offsetScaleParam = (offset: number) => void;
 export type switchDegreeVisibility = (degree: degree) => void;
 export type setFretboardStartNote = (startNoteParams: fretboardStartNoteParams & { index: number }) => void;
+export type addFretboardString = () => void;
+export type removeFretboardString = (index: number) => void;
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
@@ -111,6 +113,8 @@ export type store = {
   offsetContext: offsetScaleParam
   switchDegreeVisibility: switchDegreeVisibility
   setFretboardStartNote: setFretboardStartNote
+  addFretboardString: addFretboardString
+  removeFretboardString: removeFretboardString
   setIntervalStep: setIntervalStep
 };
 
@@ -124,7 +128,7 @@ export type domRefs = {
   elTonicContainer: HTMLTableCellElement
   elContextContainer: HTMLTableCellElement
   elIntervalContainers: NodeListOf<HTMLTableCellElement>
-  elIntervalStepButtons: HTMLButtonElement[]
+  elSetIntervalSteps: HTMLButtonElement[]
   elIntervalDisplaySwitch: HTMLButtonElement
   elIntervalStepParams: HTMLFormElement
   elEnharmonicSimplifyToggle: HTMLInputElement
@@ -138,6 +142,9 @@ export type domRefs = {
   elFretboardStringFrets: HTMLTableCellElement[][]
   elFretboardString: HTMLTableRowElement
   elFretboardNewStringNoteParams: HTMLFormElement
+  elAddFretboardString: HTMLButtonElement
+  elAddFretboardStringConfirm: HTMLButtonElement
+  elRemoveFretboardStringConfirm: HTMLButtonElement
 };
 
 export type uiTheme = 'light' | 'dark';

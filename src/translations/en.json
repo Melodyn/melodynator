@@ -30,7 +30,9 @@
     "octaveName5": "two-lined",
     "octaveName6": "three-lined",
     "octaveName7": "four-lined",
-    "octaveName8": "five-lined"
+    "octaveName8": "five-lined",
+    "addStringLabel": "Add",
+    "removeStringLabel": "Remove"
   },
   "content": {
     "pageTitle": "Scales and Chords Online",

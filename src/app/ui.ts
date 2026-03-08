@@ -43,10 +43,10 @@ export const createUiStore = (): t.uiStore => {
   };
 };
 
-const getElFretboardStringNumberContainer = (elFretboardString: HTMLTableRowElement) => qs<HTMLTableCellElement>('[data-instrument="fretboard-string-number"]', elFretboardString);
+const getElFretboardStringNumberButton = (elFretboardString: HTMLTableRowElement) => qs<HTMLButtonElement>('[data-control="remove-fretboard-string"]', elFretboardString);
 const getElFretboardStartNoteContainer = (elFretboardString: HTMLTableRowElement) => qs<HTMLButtonElement>('[data-control="start-note"]', elFretboardString);
 const getElFretboardStringFrets = (elFretboardString: HTMLTableRowElement): HTMLTableCellElement[] =>
-  Array.from(elFretboardString.querySelectorAll<HTMLTableCellElement>('td')).slice(2);
+  Array.from(qsa<HTMLTableCellElement>('[data-instrument="fretboard-string-fret"]', elFretboardString));
 
 const getDomRefs = (): t.domRefs => {
   const elThemeToggle = qs<HTMLButtonElement>('[data-control="theme-toggle"]');
@@ -57,7 +57,7 @@ const getDomRefs = (): t.domRefs => {
   const elTonicContainer = qs<HTMLTableCellElement>('[data-container="tonic"]');
   const elContextContainer = qs<HTMLTableCellElement>('[data-container="context"]');
   const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
-  const elIntervalStepButtons = Array.from(qsa<HTMLButtonElement>('[data-control="interval-step"]'));
+  const elSetIntervalSteps = Array.from(qsa<HTMLButtonElement>('[data-control="interval-step"]'));
   const elIntervalDisplaySwitch = qs<HTMLButtonElement>('[data-control="interval-display-switch"]');
   const elIntervalStepParamsTemplate = qs<HTMLTemplateElement>('#template-interval-step-params');
   const elIntervalStepParams = <HTMLFormElement>elIntervalStepParamsTemplate.content.firstElementChild;
@@ -88,6 +88,9 @@ const getDomRefs = (): t.domRefs => {
 
   const elLocaleSwitch = qs<HTMLButtonElement>('[data-control="locale-switch"]');
   const elEnharmonicSimplifyToggle = qs<HTMLInputElement>('[data-control="enharmonic-simplify"]');
+  const elAddFretboardString = qs<HTMLButtonElement>('[data-control="add-fretboard-string"]');
+  const elAddFretboardStringConfirm = <HTMLButtonElement>qs<HTMLTemplateElement>('#template-add-fretboard-string-confirm').content.firstElementChild;
+  const elRemoveFretboardStringConfirm = <HTMLButtonElement>qs<HTMLTemplateElement>('#template-remove-fretboard-string-confirm').content.firstElementChild;
 
   return {
     elThemeToggle,
@@ -99,7 +102,7 @@ const getDomRefs = (): t.domRefs => {
     elTonicContainer,
     elContextContainer,
     elIntervalContainers,
-    elIntervalStepButtons,
+    elSetIntervalSteps,
     elIntervalDisplaySwitch,
     elIntervalStepParams,
     elEnharmonicSimplifyToggle,
@@ -113,14 +116,17 @@ const getDomRefs = (): t.domRefs => {
     elFretboardStringFrets,
     elFretboardString,
     elFretboardNewStringNoteParams,
+    elAddFretboardString,
+    elAddFretboardStringConfirm,
+    elRemoveFretboardStringConfirm,
   };
 };
 
 const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
-  refs.elIntervalStepButtons.forEach((elButton, buttonIndex) => {
-    const degree = buttonIndex + 1;
+  refs.elSetIntervalSteps.forEach((elSetIntervalStep, index) => {
+    const degree = index + 1;
 
-    const makePopover = () => new Popover(elButton, {
+    const makePopover = () => new Popover(elSetIntervalStep, {
       html: true,
       sanitize: false,
       content: () => {
@@ -130,7 +136,7 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
         const intervals = textIntervals.get();
 
         const { intervalPattern } = appStore.stateScaleBuildParams.get();
-        const prevAbsolute = intervalPattern.slice(0, buttonIndex).reduce<number>((sum, s) => sum + s, 0);
+        const prevAbsolute = intervalPattern.slice(0, index).reduce<number>((sum, s) => sum + s, 0);
 
         c.allIntervalSizes.forEach((relativeStep, i) => {
           const absolutePos = prevAbsolute + relativeStep;
@@ -151,11 +157,11 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
           }
         });
 
-        select.value = intervalPattern[buttonIndex].toString();
+        select.value = intervalPattern[index].toString();
 
         select.addEventListener('change', () => {
           appStore.setIntervalStep({ degree, step: <t.intervalSize>Number(select.value) });
-          const popover = Popover.getInstance(elButton);
+          const popover = Popover.getInstance(elSetIntervalStep);
           if (popover) {
             popover.hide();
           }
@@ -166,7 +172,7 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
     });
 
     textIntervals.subscribe(() => {
-      const existing = Popover.getInstance(elButton);
+      const existing = Popover.getInstance(elSetIntervalStep);
       if (existing) {
         existing.dispose();
       }
@@ -176,14 +182,74 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
 };
 
 const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
-  const startNotes = appStore.stateFretboardStartNotes.get();
+  const updateStringNumbers = (): void => {
+    refs.elFretboardStrings.slice(c.MIN_FRETBOARD_STRINGS).forEach((elString, i) => {
+      const btn = getElFretboardStringNumberButton(elString);
+      btn.textContent = `${c.MIN_FRETBOARD_STRINGS + i + 1}`;
+    });
+  };
 
-  startNotes.forEach((_startNote, stringIndex) => {
+  const removeStringRow = (index: number): void => {
+    const elFretboardString = refs.elFretboardStrings[index];
+    const elStartNoteButton = refs.elFretboardStartNoteContainers[index];
+    const elNumberButton = getElFretboardStringNumberButton(elFretboardString);
+    const startNotePopover = Popover.getInstance(elStartNoteButton);
+    if (startNotePopover) {
+      startNotePopover.dispose();
+    }
+    const numberPopover = Popover.getInstance(elNumberButton);
+    if (numberPopover) {
+      numberPopover.dispose();
+    }
+    elFretboardString.remove();
+    refs.elFretboardStrings.splice(index, 1);
+    refs.elFretboardStartNoteContainers.splice(index, 1);
+    refs.elFretboardStringFrets.splice(index, 1);
+    updateStringNumbers();
+  };
+
+  const addStringRow = (): void => {
     const elFretboardString = <HTMLTableRowElement>refs.elFretboardString.cloneNode(true);
-    const elFretboardStringNumberContainer = getElFretboardStringNumberContainer(elFretboardString);
     const elFretboardStartNoteContainer = getElFretboardStartNoteContainer(elFretboardString);
+    const stringIndex = refs.elFretboardStrings.length;
 
-    const makePopover = () => new Popover(elFretboardStartNoteContainer, {
+    if (stringIndex < c.MIN_FRETBOARD_STRINGS) {
+      const elNumberButton = getElFretboardStringNumberButton(elFretboardString);
+      const elNumberTd = <HTMLTableCellElement>elNumberButton.parentElement;
+      elNumberButton.remove();
+      elNumberTd.textContent = `${stringIndex + 1}`;
+    } else {
+      const elFretboardStringNumberButton = getElFretboardStringNumberButton(elFretboardString);
+      elFretboardStringNumberButton.textContent = `${stringIndex + 1}`;
+
+      const makeRemovePopover = () => new Popover(elFretboardStringNumberButton, {
+        html: true,
+        sanitize: false,
+        content: () => {
+          const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
+          const btn = <HTMLButtonElement>refs.elRemoveFretboardStringConfirm.cloneNode(true);
+          btn.textContent = textFretboard.get().removeStringLabel;
+          btn.addEventListener('click', () => {
+            appStore.removeFretboardString(currentIndex);
+            const popover = Popover.getInstance(elFretboardStringNumberButton);
+            if (popover) {
+              popover.hide();
+            }
+          });
+          return btn;
+        },
+      });
+
+      textFretboard.subscribe(() => {
+        const existingRemove = Popover.getInstance(elFretboardStringNumberButton);
+        if (existingRemove) {
+          existingRemove.dispose();
+        }
+        makeRemovePopover();
+      });
+    }
+
+    const makeStartNotePopover = () => new Popover(elFretboardStartNoteContainer, {
       html: true,
       sanitize: false,
       content: () => {
@@ -203,14 +269,15 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
           opt.textContent = `${opt.value} — ${octaveNames[i]}`;
         });
 
-        const startNotes = appStore.stateFretboardStartNotes.get();
-        const currentStartNote = startNotes[stringIndex];
+        const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
+        const currentStartNote = appStore.stateFretboardStartNotes.get()[currentIndex];
         noteSelect.value = currentStartNote.note;
         octaveSelect.value = `${currentStartNote.octave}`;
 
         form.addEventListener('submit', (e) => {
           e.preventDefault();
-          appStore.setFretboardStartNote({ note: <t.noteName>noteSelect.value, octave: Number(octaveSelect.value), index: stringIndex });
+          const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
+          appStore.setFretboardStartNote({ note: <t.noteName>noteSelect.value, octave: Number(octaveSelect.value), index: currentIndex });
           const popover = Popover.getInstance(elFretboardStartNoteContainer);
           if (popover) {
             popover.hide();
@@ -222,18 +289,53 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
     });
 
     textFretboard.subscribe(() => {
-      const existing = Popover.getInstance(elFretboardStartNoteContainer);
-      if (existing) {
-        existing.dispose();
+      const existingStartNote = Popover.getInstance(elFretboardStartNoteContainer);
+      if (existingStartNote) {
+        existingStartNote.dispose();
       }
-      makePopover();
+      makeStartNotePopover();
     });
 
-    elFretboardStringNumberContainer.textContent = `${stringIndex + 1}`;
     refs.elFretboard.appendChild(elFretboardString);
     refs.elFretboardStrings.push(elFretboardString);
     refs.elFretboardStartNoteContainers.push(elFretboardStartNoteContainer);
     refs.elFretboardStringFrets.push(getElFretboardStringFrets(elFretboardString));
+    updateStringNumbers();
+  };
+
+  const initialStartNotes = appStore.stateFretboardStartNotes.get();
+  initialStartNotes.forEach(() => {
+    addStringRow();
+  });
+
+  new Popover(refs.elAddFretboardString, {
+    html: true,
+    sanitize: false,
+    content: () => {
+      const btn = <HTMLButtonElement>refs.elAddFretboardStringConfirm.cloneNode(true);
+      btn.textContent = textFretboard.get().addStringLabel;
+      btn.addEventListener('click', () => {
+        appStore.addFretboardString();
+        const popover = Popover.getInstance(refs.elAddFretboardString);
+        if (popover) {
+          popover.hide();
+        }
+      });
+      return btn;
+    },
+  });
+
+  appStore.stateFretboardStartNotes.subscribe((startNotes, prevStartNotes) => {
+    refs.elAddFretboardString.disabled = startNotes.length >= c.MAX_FRETBOARD_STRINGS;
+    if (prevStartNotes === undefined) {
+      return;
+    }
+    if (startNotes.length > prevStartNotes.length) {
+      addStringRow();
+    } else if (startNotes.length < prevStartNotes.length) {
+      const removedIndex = prevStartNotes.findIndex((_prev, i) => i >= startNotes.length || startNotes[i] !== prevStartNotes[i]);
+      removeStringRow(removedIndex);
+    }
   });
 };
 

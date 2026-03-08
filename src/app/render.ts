@@ -3,7 +3,7 @@ import * as mu from '../index';
 import * as c from '../constants';
 import { textErrors, textIntervals } from './i18n';
 
-const selectedScaleParamsClasses = ['fw-bold', 'bg-secondary', 'bg-opacity-2'];
+const selectedScaleParamsClasses = ['fw-bold', 'bg-secondary', 'bg-opacity-2', 'rounded-circle'];
 
 const removeOctaveClass = (elFretNote: HTMLTableCellElement) => {
   elFretNote.classList.forEach((className) => {
@@ -141,8 +141,8 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       } else {
         const stepIndex = index - 1;
         const intervalStep = intervalPattern[stepIndex];
-        const elIntervalStepButton = refs.elIntervalStepButtons[stepIndex];
-        elIntervalStepButton.textContent = getDisplayValue(intervalStep);
+        const elSetIntervalStep = refs.elSetIntervalSteps[stepIndex];
+        elSetIntervalStep.textContent = getDisplayValue(intervalStep);
       }
       el.classList.remove(...selectedScaleParamsClasses);
       if (index === modalShift) {
