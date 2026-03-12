@@ -1,17 +1,15 @@
-// import HawkCatcher from '@hawk.so/javascript';
+import HawkCatcher from '@hawk.so/javascript';
 
 import * as t from './types';
 import * as c from './constants';
 import * as cu from './commonUtils';
 
-// const hawk = new HawkCatcher({
-//   token: 'eyJpbnRlZ3JhdGlvbklkIjoiOTYxYTk2NWMtNDI0Mi00YjE0LWIzZDctYzc3MGRkNzQ2MDYxIiwic2VjcmV0IjoiNDg0ZWY0MTktMjgzNi00NjlhLWEwMDUtNjFjOTAzODUzODI2In0=',
-//   context: {
-//     env: 'development',
-//   },
-// });
-
-// hawk.test();
+new HawkCatcher({
+  token: 'eyJpbnRlZ3JhdGlvbklkIjoiOTYxYTk2NWMtNDI0Mi00YjE0LWIzZDctYzc3MGRkNzQ2MDYxIiwic2VjcmV0IjoiNDg0ZWY0MTktMjgzNi00NjlhLWEwMDUtNjFjOTAzODUzODI2In0=',
+  context: {
+    env: window.location.hostname === 'localhost' ? 'development' : 'production',
+  },
+});
 
 export const getNaturalNoteParams = (noteName: t.noteName): t.naturalNoteParams => cu.
   find(c.naturalNotesParams, ({ note }) => note === noteName[0]);

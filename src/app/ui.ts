@@ -1,22 +1,17 @@
 import { Popover, Tooltip } from 'bootstrap';
 import * as n from 'nanostores';
-import { persistentAtom } from '@nanostores/persistent';
-import { qs, qsa, getSavedValues } from '../commonUtils';
+import { qs, qsa } from '../commonUtils';
 import * as c from '../constants';
 import type * as t from '../types';
-import { localeStore, locale, textTooltips, textFretboard, textScaleParams, textContent, textIntervals } from './i18n';
+import { StorageService } from './StorageService';
 
-export const createUiStore = (): t.uiStore => {
-  const theme = persistentAtom<t.uiTheme>('theme', getSavedValues().theme);
+export const createUiStore = (theme: t.uiTheme, storageService: StorageService): t.uiStore => {
+  const themeStore = n.atom<t.uiTheme>(theme);
+
+  themeStore.listen(v => storageService.insert('theme', v));
 
   const toggleTheme = () => {
-    theme.set(theme.get() === 'dark' ? 'light' : 'dark');
-  };
-
-  const stateLocale = <n.Atom<t.locale>><unknown>locale;
-
-  const switchLocale = () => {
-    localeStore.set(locale.get() === 'ru' ? 'en' : 'ru');
+    themeStore.set(themeStore.get() === 'dark' ? 'light' : 'dark');
   };
 
   const stateIntervalDisplayMode = n.atom<t.intervalDisplayMode>('digit');
@@ -32,10 +27,8 @@ export const createUiStore = (): t.uiStore => {
   };
 
   return {
-    theme,
+    theme: themeStore,
     toggleTheme,
-    stateLocale,
-    switchLocale,
     stateIntervalDisplayMode,
     switchIntervalDisplayMode,
     stateIsEnharmonicSimplify,
@@ -133,7 +126,7 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
         const form = <HTMLFormElement>refs.elIntervalStepParams.cloneNode(true);
         const select = qs<HTMLSelectElement>('#interval-step-value', form);
         const optionProto = <HTMLOptionElement>select.firstElementChild;
-        const intervals = textIntervals.get();
+        const intervals = appStore.textIntervals.get();
 
         const { intervalPattern } = appStore.stateScaleBuildParams.get();
         const prevAbsolute = intervalPattern.slice(0, index).reduce<number>((sum, s) => sum + s, 0);
@@ -171,7 +164,7 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
       },
     });
 
-    textIntervals.subscribe(() => {
+    appStore.textIntervals.subscribe(() => {
       const existing = Popover.getInstance(elSetIntervalStep);
       if (existing) {
         existing.dispose();
@@ -228,7 +221,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
         content: () => {
           const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
           const btn = <HTMLButtonElement>refs.elRemoveFretboardStringConfirm.cloneNode(true);
-          btn.textContent = textFretboard.get().removeStringLabel;
+          btn.textContent = appStore.textFretboard.get().removeStringLabel;
           btn.addEventListener('click', () => {
             appStore.removeFretboardString(currentIndex);
             const popover = Popover.getInstance(elFretboardStringNumberButton);
@@ -240,7 +233,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
         },
       });
 
-      textFretboard.subscribe(() => {
+      appStore.textFretboard.subscribe(() => {
         const existingRemove = Popover.getInstance(elFretboardStringNumberButton);
         if (existingRemove) {
           existingRemove.dispose();
@@ -257,7 +250,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
         const noteSelect = qs<HTMLSelectElement>('#fretboard-set-string-note', form);
         const octaveSelect = qs<HTMLSelectElement>('#fretboard-set-note-octave', form);
 
-        const fretboardTexts = textFretboard.get();
+        const fretboardTexts = appStore.textFretboard.get();
         noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
         octaveSelect.ariaLabel = fretboardTexts.octaveLabel;
         const octaveNames = [
@@ -288,7 +281,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
       },
     });
 
-    textFretboard.subscribe(() => {
+    appStore.textFretboard.subscribe(() => {
       const existingStartNote = Popover.getInstance(elFretboardStartNoteContainer);
       if (existingStartNote) {
         existingStartNote.dispose();
@@ -313,7 +306,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
     sanitize: false,
     content: () => {
       const btn = <HTMLButtonElement>refs.elAddFretboardStringConfirm.cloneNode(true);
-      btn.textContent = textFretboard.get().addStringLabel;
+      btn.textContent = appStore.textFretboard.get().addStringLabel;
       btn.addEventListener('click', () => {
         appStore.addFretboardString();
         const popover = Popover.getInstance(refs.elAddFretboardString);
@@ -339,7 +332,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
-const initTooltips = (refs: t.domRefs): void => {
+const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
   const tooltipInstances = new Map<string, Tooltip>();
   const tooltipPlaceholders = qsa<HTMLElement>('[data-tooltip]');
   const elTooltipButton = <HTMLButtonElement>refs.elTooltipTemplate.content.firstElementChild;
@@ -351,23 +344,21 @@ const initTooltips = (refs: t.domRefs): void => {
     button.dataset.bsPlacement = <string>placeholder.dataset.tooltipPlacement;
     placeholder.replaceWith(button);
 
-    const tooltipTexts = textTooltips.get();
+    const tooltipTexts = appStore.textTooltips.get();
     const instance = new Tooltip(button, {
       title: tooltipTexts[<keyof typeof tooltipTexts>key],
     });
     tooltipInstances.set(key, instance);
   });
 
-  textTooltips.subscribe((texts) => {
+  appStore.textTooltips.subscribe((texts) => {
     tooltipInstances.forEach((instance, key) => {
       instance.setContent({ '.tooltip-inner': texts[<keyof typeof texts>key] });
     });
   });
 };
 
-const initStaticText = (): void => {
-  type i18nTextAtom = n.ReadableAtom<Record<string, string>>;
-
+const initStaticText = (appStore: t.appStore): void => {
   const kebabToCamel = (s: string): string =>
     s.replace(/[-_]+([a-z])/g, (_, c: string) => c.toUpperCase());
 
@@ -375,16 +366,16 @@ const initStaticText = (): void => {
 
   qsa<HTMLElement>('[data-static-content]').forEach((el) => {
     const value = <string>el.dataset.staticContent;
-    let store: i18nTextAtom;
+    let atom: t.i18nTextAtom;
     let key: string;
     if (value.startsWith(SCALE_PARAMS_PREFIX)) {
-      store = <i18nTextAtom><unknown>textScaleParams;
+      atom = appStore.textScaleParams;
       key = kebabToCamel(value.slice(SCALE_PARAMS_PREFIX.length));
     } else {
-      store = <i18nTextAtom><unknown>textContent;
+      atom = appStore.textContent;
       key = kebabToCamel(value);
     }
-    store.subscribe((texts) => {
+    atom.subscribe((texts) => {
       if (key in texts) {
         el.textContent = texts[key];
       }
@@ -397,8 +388,8 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
 
   initIntervalSteps(refs, appStore);
   initFretboard(refs, appStore);
-  initTooltips(refs);
-  initStaticText();
+  initTooltips(refs, appStore);
+  initStaticText(appStore);
 
   // Locale switch
   refs.elLocaleSwitch.addEventListener('click', () => {

@@ -3,30 +3,17 @@ import * as t from '../types';
 import * as c from '../constants';
 import * as cu from '../commonUtils';
 import * as mu from '../index';
+import { StorageService } from './StorageService';
 
-export const createStore = (): t.store => {
+export const createStore = (saved: t.savedValues, storageService: StorageService): t.store => {
   const chromaticNotesCount = c.allNotesNames.length;
-  const defaultScaleBuildParams: t.scaleBuildParams = {
-    tonic: 'C',
-    intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-    modalShift: 0,
-  };
-  const defaultInstrumentParams: t.fretboardParams = {
-    name: 'guitar',
-    startNotes: [
-      { note: 'E', octave: 4 },
-      { note: 'B', octave: 3 },
-      { note: 'G', octave: 3 },
-      { note: 'D', octave: 3 },
-      { note: 'A', octave: 2 },
-      { note: 'E', octave: 2 },
-    ],
-  };
-  const stateHiddenDegrees = n.atom<Set<t.degree>>(new Set());
-  const stateFretboardStartNotes = n.atom<t.fretboardStartNoteParams[]>(defaultInstrumentParams.startNotes);
-  const stateScaleBuildParams = n.map(defaultScaleBuildParams);
-  const stateDegreeRotation = n.atom<t.degreeRotation>(0);
-  const stateContextOffset = n.atom<t.contextOffset>(0);
+  const stateHiddenDegrees = n.atom<Set<t.degree>>(new Set(saved.hiddenDegrees));
+  const stateFretboardStartNotes = n.atom<t.fretboardStartNoteParams[]>(saved.startNotes);
+  const stateScaleBuildParams = n.map<t.scaleBuildParams>({ tonic: saved.tonic, intervalPattern: saved.intervalPattern, modalShift: saved.modalShift });
+  const stateDegreeRotation = n.atom<t.degreeRotation>(saved.degreeRotation);
+  const stateContextOffset = n.atom<t.contextOffset>(saved.contextOffset);
+  const stateActiveScalePresetId = n.atom<number>(saved.activeScalePresetId);
+  const stateActiveFretboardPresetId = n.atom<number>(saved.activeFretboardPresetId);
   const stateCurrentNoteChromaticIndex = n.computed(
     stateScaleBuildParams,
     ({ tonic }) => cu.findIndex(c.allNotesNames, (noteName) => noteName === tonic),
@@ -111,11 +98,10 @@ export const createStore = (): t.store => {
       return;
     }
     const lastString = currentStartNotes[currentStartNotes.length - 1];
-    const naturalClasses: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
-    const letter = lastString.note[0];
+    const naturalNoteName = <t.naturalNoteName>lastString.note[0];
     const accidental = lastString.note.slice(1);
     const modifier = accidental === c.SHARP_SYMBOL ? 1 : accidental === c.FLAT_SYMBOL ? -1 : 0;
-    const lastPitchClass = (naturalClasses[letter] + modifier + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
+    const lastPitchClass = (c.NATURAL_PITCH_CLASSES[naturalNoteName] + modifier + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
     const newPitchClass = (lastPitchClass - c.FRETBOARD_STRING_INTERVAL + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
     const newNote = c.ENHARMONIC_SIMPLE_NAMES[newPitchClass];
     const newOctave = newPitchClass > lastPitchClass ? Math.max(0, lastString.octave - 1) : lastString.octave;
@@ -138,6 +124,18 @@ export const createStore = (): t.store => {
     stateScaleBuildParams.setKey('intervalPattern', newPattern);
   };
 
+  stateScaleBuildParams.listen(({ tonic, intervalPattern, modalShift }) => {
+    storageService.insert('tonic', tonic);
+    storageService.insert('intervalPattern', intervalPattern);
+    storageService.insert('modalShift', modalShift);
+  });
+  stateDegreeRotation.listen(v => storageService.insert('degreeRotation', v));
+  stateContextOffset.listen(v => storageService.insert('contextOffset', v));
+  stateHiddenDegrees.listen(v => storageService.insert('hiddenDegrees', [...v]));
+  stateFretboardStartNotes.listen(v => storageService.insert('startNotes', [...v]));
+  stateActiveScalePresetId.listen(v => storageService.insert('activeScalePresetId', v));
+  stateActiveFretboardPresetId.listen(v => storageService.insert('activeFretboardPresetId', v));
+
   return {
     stateScaleBuildParams,
     stateContextOffset,
@@ -157,5 +155,7 @@ export const createStore = (): t.store => {
     addFretboardString,
     removeFretboardString,
     setIntervalStep,
+    stateActiveScalePresetId,
+    stateActiveFretboardPresetId,
   };
 };

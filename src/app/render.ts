@@ -1,7 +1,6 @@
 import type * as t from '../types';
 import * as mu from '../index';
 import * as c from '../constants';
-import { textErrors, textIntervals } from './i18n';
 
 const selectedScaleParamsClasses = ['fw-bold', 'bg-secondary', 'bg-opacity-2', 'rounded-circle'];
 
@@ -119,7 +118,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   const renderIntervalContainers = () => {
     const { intervalPattern, modalShift } = store.stateScaleBuildParams.get();
     const displayMode = store.stateIntervalDisplayMode.get();
-    const intervals = textIntervals.get();
+    const intervals = store.textIntervals.get();
 
     const getDisplayValue = (size: t.intervalSize): string => {
       if (size === 0 || displayMode === 'digit') {
@@ -153,7 +152,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
 
   const renderIntervalDisplaySwitch = () => {
     const mode = store.stateIntervalDisplayMode.get();
-    const intervals = textIntervals.get();
+    const intervals = store.textIntervals.get();
     if (mode === 'letter') {
       refs.elIntervalDisplaySwitch.textContent = intervals.digitModeLabel;
     } else {
@@ -169,10 +168,10 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.stateIntervalDisplayMode.subscribe(renderIntervalContainers);
-  textIntervals.subscribe(renderIntervalContainers);
+  store.textIntervals.subscribe(renderIntervalContainers);
 
   store.stateIntervalDisplayMode.subscribe(renderIntervalDisplaySwitch);
-  textIntervals.subscribe(renderIntervalDisplaySwitch);
+  store.textIntervals.subscribe(renderIntervalDisplaySwitch);
 
   store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
     refs.elContextContainer.textContent = resolvedScaleParams.contextTargets.join('/');
@@ -190,7 +189,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       }
     });
 
-    const texts = textErrors.get();
+    const texts = store.textErrors.get();
     if (!resolvedScaleParams.canModalShift) {
       refs.elResolveErrorContainer.textContent = texts.openPatternError;
     } else if (!resolvedScaleParams.canApplyContext) {
@@ -261,7 +260,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     refs.elLocaleSwitch.textContent = locale === 'ru' ? 'EN' : 'RU';
   });
 
-  textErrors.subscribe((texts) => {
+  store.textErrors.subscribe((texts) => {
     const resolvedScaleParams = store.stateResolvedScaleParams.get();
     if (!resolvedScaleParams.canModalShift) {
       refs.elResolveErrorContainer.textContent = texts.openPatternError;

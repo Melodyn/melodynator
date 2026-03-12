@@ -1,4 +1,4 @@
-import type { Atom, MapStore } from 'nanostores';
+import type { Atom, MapStore, ReadableAtom } from 'nanostores';
 
 export type naturalNoteName = 'C' | 'D' | 'E' | 'F' | 'G' | 'A' | 'B';
 export type flatSymbol = '♭';
@@ -71,9 +71,25 @@ export type fretboardNoteParams = {
   degree: degree
 };
 
-export type fretboardParams = {
+export type presetInstrument = {
+  id: number
   name: string
+  tuning: string
   startNotes: fretboardStartNoteParams[]
+};
+
+export type presetScale = {
+  id: number
+  name: string
+  scaleType: string
+  tonic: noteName
+  intervalPattern: intervalPattern
+  modalShift: number
+  contextOffset: number
+  degreeRotation: number
+  hiddenDegrees: degree[]
+  mood: string
+  family: string
 };
 
 export type scaleLayout = fretboardNoteParams[];
@@ -116,6 +132,8 @@ export type store = {
   addFretboardString: addFretboardString
   removeFretboardString: removeFretboardString
   setIntervalStep: setIntervalStep
+  stateActiveScalePresetId: Atom<number>
+  stateActiveFretboardPresetId: Atom<number>
 };
 
 export type domRefs = {
@@ -154,17 +172,44 @@ export type locale = 'ru' | 'en';
 export type savedValues = {
   theme: uiTheme
   locale: locale
+  tonic: noteName
+  intervalPattern: intervalPattern
+  modalShift: number
+  contextOffset: contextOffset
+  degreeRotation: number
+  hiddenDegrees: degree[]
+  startNotes: fretboardStartNoteParams[]
+  activeScalePresetId: number
+  activeFretboardPresetId: number
 };
+
+export type savedKeys = keyof savedValues;
 
 export type uiStore = {
   theme: Atom<uiTheme>
   toggleTheme: () => void
-  stateLocale: Atom<locale>
-  switchLocale: () => void
   stateIntervalDisplayMode: Atom<intervalDisplayMode>
   switchIntervalDisplayMode: () => void
   stateIsEnharmonicSimplify: Atom<boolean>
   switchEnharmonicSimplify: () => void
 };
 
-export type appStore = store & uiStore;
+export type i18nTextAtom = ReadableAtom<Record<string, string>>;
+
+export type i18nErrors = {
+  resolveError: (params: Record<string, string>) => string
+  openPatternError: string
+};
+
+export type i18nStore = {
+  stateLocale: Atom<locale>
+  switchLocale: () => void
+  textScaleParams: i18nTextAtom
+  textTooltips: i18nTextAtom
+  textFretboard: i18nTextAtom
+  textContent: i18nTextAtom
+  textErrors: ReadableAtom<i18nErrors>
+  textIntervals: i18nTextAtom
+};
+
+export type appStore = store & uiStore & i18nStore;

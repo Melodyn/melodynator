@@ -32,7 +32,11 @@
     "octaveName7": "four-lined",
     "octaveName8": "five-lined",
     "addStringLabel": "Add",
-    "removeStringLabel": "Remove"
+    "removeStringLabel": "Remove",
+    "presetName": "Name",
+    "presetNotes": "Notes",
+    "presetTuning": "Tuning",
+    "presetComment": "Comment"
   },
   "content": {
     "pageTitle": "Scales and Chords Online",
@@ -60,21 +64,21 @@
     "openPatternError": "Interval pattern is not a closed octave"
   },
   "intervals": {
-    "halfStep":       "Half step",
-    "wholeStep":      "Whole step",
-    "interval0":      "Perfect Unison",
-    "interval1":      "Minor Second / Augmented Unison",
-    "interval2":      "Major Second / Diminished Third",
-    "interval3":      "Minor Third / Augmented Second",
-    "interval4":      "Major Third / Diminished Fourth",
-    "interval5":      "Perfect Fourth / Augmented Third",
-    "interval6":      "Tritone / Augmented Fourth / Diminished Fifth",
-    "interval7":      "Perfect Fifth / Diminished Sixth",
-    "interval8":      "Minor Sixth / Augmented Fifth",
-    "interval9":      "Major Sixth / Diminished Seventh",
-    "interval10":     "Minor Seventh / Augmented Sixth",
-    "interval11":     "Major Seventh / Diminished Octave",
-    "interval12":     "Perfect Octave",
+    "halfStep": "Half step",
+    "wholeStep": "Whole step",
+    "interval0": "Perfect Unison",
+    "interval1": "Minor Second / Augmented Unison",
+    "interval2": "Major Second / Diminished Third",
+    "interval3": "Minor Third / Augmented Second",
+    "interval4": "Major Third / Diminished Fourth",
+    "interval5": "Perfect Fourth / Augmented Third",
+    "interval6": "Tritone / Augmented Fourth / Diminished Fifth",
+    "interval7": "Perfect Fifth / Diminished Sixth",
+    "interval8": "Minor Sixth / Augmented Fifth",
+    "interval9": "Major Sixth / Diminished Seventh",
+    "interval10": "Minor Seventh / Augmented Sixth",
+    "interval11": "Major Seventh / Diminished Octave",
+    "interval12": "Perfect Octave",
     "digitModeLabel": "1/2"
   }
 }

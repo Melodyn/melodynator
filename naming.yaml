@@ -126,18 +126,19 @@ key_types:
   - fretboardStartNoteParams  # store: stateFretboardStartNotes (элемент) | action: setFretboardStartNote | var: startNote, не openNote и не fret0
   - scaleLayouts              # type: scaleLayout[] | store: stateFretboardLayout | результат mapScaleToLayout всех струн
   - fretboardNoteParams       # нота на конкретном ладу | var: noteParams | элемент scaleLayout[fretIndex]
-  - fretboardParams      # тип для defaultInstrumentParams в store.ts
   - scaleLayout          # type: fretboardNoteParams[] | var: layout | результат mapScaleToLayout одной струны
   - locale               # type: 'ru' | 'en' | store: stateLocale | action: switchLocale | data-control="locale-switch"
   - domRefs              # собирается в getDomRefs() в ui.ts
   - store                # t.store — базовый тип стора (без UI)
-  - uiStore              # t.uiStore — тема + toggleTheme + локаль + switchLocale
-  - uiTheme              # type: 'light' | 'dark' | persistentAtom в ui.ts, инициализируется из getSavedValues()
-  - savedValues          # getSavedValues() в commonUtils.ts — единственная точка чтения начального состояния
+  - uiStore              # t.uiStore — тема + toggleTheme
+  - uiTheme              # type: 'light' | 'dark' | atom в ui.ts, инициализируется из storageService.selectAll()
+  - savedValues          # t.savedValues | StorageService.selectAll() в app/index.ts — единственная точка чтения начального состояния | поля: theme, locale, tonic, intervalPattern, modalShift, contextOffset, degreeRotation, hiddenDegrees, startNotes, activeScalePresetId, activeFretboardPresetId
   - appStore             # store & uiStore — полный стор приложения
   - intervalDisplayMode  # type: 'digit' | 'letter' | store: stateIntervalDisplayMode
   - setIntervalStep      # action: degree (1-based) + intervalSize → stateScaleBuildParams(.intervalPattern)
   - altReduceMap         # Map<noteName, noteName> — карта замены нот на энгармонические эквиваленты с меньшим числом альтераций | render.ts: buildAltReduceMap, getAltReduceMap, reduceAlt
+  - presetScale          # { id, name, scaleType, tonic, intervalPattern, modalShift, contextOffset, degreeRotation, hiddenDegrees, mood, family } | хранится в textPresetsScale (i18n, оба локаля)
+  - presetInstrument     # { id, name, tuning, startNotes } | хранится в textPresetsFretboard (i18n, оба локаля)
   - addFretboardString   # action type: () => void | добавляет строку кварту ниже последней, max=MAX_FRETBOARD_STRINGS
   - removeFretboardString # action type: (index: number) => void | удаляет строку по индексу, min=MIN_FRETBOARD_STRINGS
 
@@ -145,11 +146,13 @@ stores:
   - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide | → initStaticText
   - textContent      # type: i18n atom | namespace: content | ключи: pageTitle, pageDescription, sections... | → initStaticText
   - textTooltips     # type: i18n atom | ключи: tooltip,hide,tonal,modal,degrees,center,context,fretboard | → initTooltips (Tooltip.setContent)
-  - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8, addStringLabel, removeStringLabel | → popover content() в initFretboard
+  - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8, addStringLabel, removeStringLabel, presetName, presetNotes, presetTuning, presetComment | → popover content() в initFretboard
   - textErrors       # type: i18n atom | namespace: errors | ключи: resolveError, openPatternError | → render.ts (сообщение ошибки)
   - textIntervals    # type: i18n atom | namespace: intervals | ключи: halfStep, wholeStep, interval0–12, digitModeLabel | → render.ts, ui.ts (popover)
+  - textPresetsScale     # type: i18n atom<presetScale[]> | namespace: presetsScale | 18 пресетов гамм | → будущий UI пресетов
+  - textPresetsFretboard # type: i18n atom<presetInstrument[]> | namespace: presetsFretboard | 8 пресетов инструментов | → будущий UI пресетов
   - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elSetIntervalSteps, elIntervalDisplaySwitch
-  - stateLocale                     # type: PersistentAtom<locale> | persistentAtom, инициализируется из getSavedValues() | → elLocaleSwitch
+  - stateLocale                     # type: Atom<locale> | atom, инициализируется из storageService.selectAll() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
   - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
   - stateCurrentNoteChromaticIndex  # computed: stateScaleBuildParams(.tonic) → chromaticIndex (для offsetTonicShift)
@@ -159,6 +162,8 @@ stores:
   - stateHiddenDegrees              # type: Atom<Set<degree>> | ← switch-degree | → elSwitchDegreeContainers, elKeyboardNotes, renderFretboard
   - stateFretboardStartNotes        # type: Atom<fretboardStartNoteParams[]> | ← start-note | → stateFretboardLayout
   - stateFretboardLayout            # computed: [stateResolvedScaleParams, stateFretboardStartNotes] → scaleLayouts (пустой массив если !canApplyContext) | → renderFretboard
+  - stateActiveScalePresetId        # type: Atom<number> | инициализируется из storageService.selectAll() | персистентен через storageService.insert
+  - stateActiveFretboardPresetId    # type: Atom<number> | инициализируется из storageService.selectAll() | персистентен через storageService.insert
   - stateIsEnharmonicSimplify         # type: Atom<boolean> | ← enharmonic-simplify (change) | → renderScaleTones, renderKeyboard, renderFretboard | lookup: ENHARMONIC_SIMPLE_NAMES
 
 actions:
@@ -169,7 +174,7 @@ actions:
   - switchDegreeVisibility    # ← data-container="switch-degree" (click) | → stateHiddenDegrees
   - setFretboardStartNote     # ← data-control="start-note" (popover-форма) | → stateFretboardStartNotes
   - toggleTheme               # ← data-control="theme-toggle" | → uiStore.theme
-  - switchLocale              # ← data-control="locale-switch" | → stateLocale (через persistentAtom)
+  - switchLocale              # ← data-control="locale-switch" | → stateLocale (atom + storageService.insert)
   - setIntervalStep           # ← data-control="interval-step" (popover select.change) | params: { degree, step } | → stateScaleBuildParams(.intervalPattern)
   - switchIntervalDisplayMode # ← data-control="interval-display-switch" | → stateIntervalDisplayMode
   - switchEnharmonicSimplify  # ← data-control="enharmonic-simplify" (change) | → stateIsEnharmonicSimplify
@@ -224,3 +229,5 @@ key_constants:
   - MAX_FRETBOARD_STRINGS    # 12 — максимальное количество струн фретборда
   - FRETBOARD_STRING_INTERVAL # 5 — интервал между струнами по умолчанию (кварта = 5 полутонов)
   - ENHARMONIC_SIMPLE_NAMES  # noteName[12] — канонические имена нот по pitchClass (C C♯ D E♭ … B)
+  - DEFAULT_SCALE_PRESET_ID     # 1 — Ионийский лад (C major), дефолтный id при первом запуске
+  - DEFAULT_FRETBOARD_PRESET_ID # 6 — Гитара 6 струн стандарт, дефолтный id при первом запуске

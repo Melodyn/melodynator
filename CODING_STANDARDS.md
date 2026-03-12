@@ -227,32 +227,44 @@ qs('[data-control="start-note"]', elFretboardString)
 
 ---
 
-## 5. Начальные значения и localStorage
+## 5. Начальные значения и хранилище
 
-### getSavedValues()
+### StorageService
 
-`getSavedValues()` в `src/commonUtils.ts` — единственная точка чтения сохранённого состояния. Возвращает гарантированно типизированный объект: из localStorage (если значение валидно) или дефолт из кода. Дефолты и списки допустимых значений — в `src/constants/index.ts` (`DEFAULT_SAVED_VALUES`, `VALID_THEMES`, `VALID_LOCALES`).
+`StorageService` в `src/app/StorageService.ts` — единственная абстракция над хранилищем. Инкапсулирует работу с `localStorage` и предоставляет типизированный API:
 
-Весь остальной код берёт начальные значения только из неё — не читает localStorage напрямую, не пишет `n.atom('light')` с хардкодом.
+- `select(key)` — читает значение по ключу; при отсутствии записывает дефолт и возвращает его
+- `insert(key, value)` — записывает значение
+- `selectAll()` — читает все ключи из `t.savedValues`
+
+Создаётся один раз в `app/index.ts` с дефолтными значениями и передаётся в `createStore`, `createUiStore`, `initI18n`. Начальное состояние — `storageService.selectAll()`.
+
+**Чтение** — только через `storageService.selectAll()` в `index.ts`. Сторы не читают localStorage напрямую.
+
+**Запись** — через подписку `listen` в момент изменения стора. Так же, как с любым другим side-эффектом состояния.
 
 ```typescript
-// ✗ — хардкод дефолта в сторе; localStorage не читается
-const theme = n.atom<t.uiTheme>('light');
+// ✗ — прямое обращение к localStorage в сторе
+if (typeof localStorage !== 'undefined') {
+  stateTheme.listen(v => localStorage.setItem('theme', v));
+}
 
-// ✗ — прямое чтение localStorage в сторе
-const storedTheme = <t.uiTheme>(localStorage.getItem('theme') ?? 'light');
-const theme = n.atom<t.uiTheme>(storedTheme);
+// ✗ — запись в storage внутри action-функции (смешение уровней)
+const toggleTheme = () => {
+  themeStore.set(newTheme);
+  storageService.insert('theme', newTheme); // storage-логика в action
+};
 
-// ✓ — начальное значение из единой точки чтения
-const savedValues = getSavedValues();
-const theme = persistentAtom<t.uiTheme>('theme', savedValues.theme);
+// ✓ — listen отделяет персистентность от action
+const themeStore = n.atom<t.uiTheme>(saved.theme);
+themeStore.listen(v => storageService.insert('theme', v));
+
+const toggleTheme = () => {
+  themeStore.set(themeStore.get() === 'dark' ? 'light' : 'dark');
+};
 ```
 
-Запись в localStorage — через `persistentAtom` (автоматически при `.set()`). `getSavedValues()` отвечает только за чтение.
-
-Когда понадобится заменить localStorage на backend или URL-параметр — меняется только `getSavedValues()`, сторы не трогаются.
-
-Функция должна корректно работать в не-браузерном окружении (Node.js, тесты): при отсутствии `localStorage` возвращает дефолты.
+`StorageService` корректно работает в не-браузерном окружении: при отсутствии `localStorage` использует `Map` в памяти. Код снаружи об этом не знает.
 
 ---
 

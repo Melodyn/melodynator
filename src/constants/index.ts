@@ -8,10 +8,6 @@ export const FLAT_SYMBOL: t.flatSymbol = '♭';
 export const SHARP_SYMBOL: t.sharpSymbol = '♯';
 export const EMPTY_VALUE = '\u00A0';
 
-export const DEFAULT_SAVED_VALUES: t.savedValues = { theme: 'light', locale: 'ru' };
-export const VALID_THEMES: t.uiTheme[] = ['light', 'dark'];
-export const VALID_LOCALES: t.locale[] = ['ru', 'en'];
-
 export const MIN_FRETBOARD_STRINGS = 4;
 export const MAX_FRETBOARD_STRINGS = 12;
 export const FRETBOARD_STRING_INTERVAL = 5; // кварта вниз = 5 полутонов
@@ -27,6 +23,10 @@ export const naturalNotesParams: t.naturalNoteParams[] = [
 ];
 
 export const allNotesNames: t.noteName[] = naturalNotesParams.flatMap<t.noteName>(({ note }) => [`${note}${FLAT_SYMBOL}`, note, `${note}${SHARP_SYMBOL}`]);
+
+export const NATURAL_PITCH_CLASSES = <Record<t.naturalNoteName, number>>Object.fromEntries(
+  naturalNotesParams.map(({ note, naturalPitchClass }) => [note, naturalPitchClass]),
+);
 
 export const allIntervalSizes: t.intervalSize[] = <t.intervalSize[]>Array.from({ length: OCTAVE_SIZE + 1 }, (_, i) => i);
 
