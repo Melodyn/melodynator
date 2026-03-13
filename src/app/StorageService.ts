@@ -37,6 +37,10 @@ export class StorageService {
 
   select<K extends t.savedKeys>(key: K): t.savedValues[K] {
     let savedValue = this.storage.getItem(key);
+    if (savedValue && !savedValue.startsWith('{')) {
+      this.storage.removeItem(key);
+      savedValue = null;
+    }
     if (savedValue === null) {
       savedValue = JSON.stringify({ data: this.savedValues[key] });
       this.storage.setItem(key, savedValue);
