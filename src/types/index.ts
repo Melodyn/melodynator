@@ -29,7 +29,7 @@ export type intervalDisplayMode = 'digit' | 'letter';
 export type contextOffset = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 export type degreeRotation = number;
 
-export type intervalPattern = intervalSize[];
+export type intervalPattern = [intervalSize, intervalSize, intervalSize, intervalSize, intervalSize, intervalSize, intervalSize];
 
 export type scaleBuildParams = {
   tonic: noteName
@@ -75,8 +75,11 @@ export type presetInstrument = {
   id: number
   name: string
   tuning: string
+  comment: string
   startNotes: fretboardStartNoteParams[]
 };
+
+export type presetInstruments = presetInstrument[];
 
 export type presetScale = {
   id: number
@@ -91,6 +94,8 @@ export type presetScale = {
   mood: string
   family: string
 };
+
+export type presetScales = presetScale[];
 
 export type scaleLayout = fretboardNoteParams[];
 
@@ -137,22 +142,22 @@ export type store = {
 };
 
 export type domRefs = {
-  elThemeToggle: HTMLButtonElement
+  elThemeSwitch: HTMLButtonElement
   elLocaleSwitch: HTMLButtonElement
   elTooltipTemplate: HTMLTemplateElement
+  elTooltipPlaceholders: NodeListOf<HTMLElement>
+  elStaticContentElements: NodeListOf<HTMLElement>
   elDirectionControllers: NodeListOf<HTMLButtonElement>
   elResolveErrorContainer: HTMLParagraphElement
-  //
   elTonicContainer: HTMLTableCellElement
   elContextContainer: HTMLTableCellElement
   elIntervalContainers: NodeListOf<HTMLTableCellElement>
   elSetIntervalSteps: HTMLButtonElement[]
   elIntervalDisplaySwitch: HTMLButtonElement
   elIntervalStepParams: HTMLFormElement
-  elEnharmonicSimplifyToggle: HTMLInputElement
+  elEnharmonicSimplifySwitch: HTMLButtonElement
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
-  elSwitchDegreeContainers: NodeListOf<HTMLInputElement>
-  //
+  elDegreeSwitchContainers: NodeListOf<HTMLInputElement>
   elKeyboardNotes: NodeListOf<HTMLTableCellElement>
   elFretboard: HTMLTableSectionElement
   elFretboardStrings: HTMLTableRowElement[]
@@ -163,6 +168,12 @@ export type domRefs = {
   elAddFretboardString: HTMLButtonElement
   elAddFretboardStringConfirm: HTMLButtonElement
   elRemoveFretboardStringConfirm: HTMLButtonElement
+  getElFretboardStringNumberButton: (el: HTMLTableRowElement) => HTMLButtonElement
+  getElFretboardStartNoteContainer: (el: HTMLTableRowElement) => HTMLButtonElement
+  getElFretboardStringFrets: (el: HTMLTableRowElement) => HTMLTableCellElement[]
+  getElIntervalStepSelect: (form: HTMLFormElement) => HTMLSelectElement
+  getElFretboardStringNoteSelect: (form: HTMLFormElement) => HTMLSelectElement
+  getElFretboardNoteOctaveSelect: (form: HTMLFormElement) => HTMLSelectElement
 };
 
 export type uiTheme = 'light' | 'dark';
@@ -181,6 +192,8 @@ export type savedValues = {
   startNotes: fretboardStartNoteParams[]
   activeScalePresetId: number
   activeFretboardPresetId: number
+  isEnharmonicSimplify: boolean
+  intervalDisplayMode: intervalDisplayMode
 };
 
 export type savedKeys = keyof savedValues;
@@ -213,3 +226,7 @@ export type i18nStore = {
 };
 
 export type appStore = store & uiStore & i18nStore;
+
+export type i18nData<T> = {
+  [key in locale]: T
+};

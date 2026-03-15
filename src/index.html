@@ -72,7 +72,7 @@
     <!-- Visible SEO content -->
     <header>
       <div class="d-flex align-items-center">
-        <button type="button" data-control="theme-toggle"
+        <button type="button" data-control="theme-switch"
           class="btn border-0 bg-transparent p-0 me-2 mb-2 align-text-top logo-toggle" aria-label="Переключить тему">
           <svg width="40" height="40" viewBox="0 0 128 128" fill="currentColor" class="text-body logo"
             xmlns="http://www.w3.org/2000/svg">
@@ -238,10 +238,8 @@
                 </button>
               </td>
               <td class="p-0 text-start">
-                <input class="btn-check btn-focusable" id="enharmonic-simplify" type="checkbox"
-                  data-control="enharmonic-simplify" />
-                <label class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
-                  for="enharmonic-simplify">&#9837;=&#9839;</label>
+                <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
+                  data-control="enharmonic-simplify">&#9837;=&#9839;</button>
               </td>
             </tr>
             <tr class="height-30px" data-container="degree">
@@ -252,37 +250,37 @@
               <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">&#9745;</td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
                 <input class="btn-check btn-focusable" id="switch-degree-1" value="1" type="checkbox"
-                  data-container="switch-degree" />
+                  data-container="degree-switch" />
                 <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-1">1</label>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
                 <input class="btn-check btn-focusable" id="switch-degree-2" value="2" type="checkbox"
-                  data-container="switch-degree" />
+                  data-container="degree-switch" />
                 <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-2">2</label>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
                 <input class="btn-check btn-focusable" id="switch-degree-3" value="3" type="checkbox"
-                  data-container="switch-degree" />
+                  data-container="degree-switch" />
                 <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-3">3</label>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
                 <input class="btn-check btn-focusable" id="switch-degree-4" value="4" type="checkbox"
-                  data-container="switch-degree" />
+                  data-container="degree-switch" />
                 <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-4">4</label>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
                 <input class="btn-check btn-focusable" id="switch-degree-5" value="5" type="checkbox"
-                  data-container="switch-degree" />
+                  data-container="degree-switch" />
                 <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-5">5</label>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
                 <input class="btn-check btn-focusable" id="switch-degree-6" value="6" type="checkbox"
-                  data-container="switch-degree" />
+                  data-container="degree-switch" />
                 <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-6">6</label>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px">
                 <input class="btn-check btn-focusable" id="switch-degree-7" value="7" type="checkbox"
-                  data-container="switch-degree" />
+                  data-container="degree-switch" />
                 <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-7">7</label>
               </td>
               <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">8</td>
@@ -380,30 +378,30 @@
             </tr>
 
             <tr data-instrument="keyboard-notes">
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
             </tr>
           </tbody>
         </table>
@@ -453,7 +451,7 @@
       </p>
     </footer>
 
-    <template id="template-tooltip">
+    <template id="template-tooltip" data-template="tooltip">
       <button type="button" class="icon-faded border-0 bg-transparent p-0 align-middle text-body"
         data-bs-custom-class="tooltip-mw-300" data-bs-toggle="tooltip">
         <svg width="16" height="16" viewBox="0 0 128 128" fill="currentColor" class="text-danger align-text-top"
@@ -463,15 +461,15 @@
       </button>
     </template>
 
-    <template id="template-interval-step-params">
+    <template id="template-interval-step-params" data-template="interval-step-params">
       <form id="interval-step-params">
-        <select id="interval-step-value" class="form-select form-select-sm">
+        <select id="interval-step-value" data-select="interval-step-value" class="form-select form-select-sm">
           <option></option>
         </select>
       </form>
     </template>
 
-    <template id="template-fretboard-string">
+    <template id="template-fretboard-string" data-template="fretboard-string">
       <tr class="height-30px" data-instrument="fretboard-string">
         <td class="p-0 text-secondary width-30px position-relative" data-instrument="fretboard-string-number">
           <button type="button"
@@ -501,20 +499,20 @@
       </tr>
     </template>
 
-    <template id="template-add-fretboard-string-confirm">
+    <template id="template-add-fretboard-string-confirm" data-template="add-fretboard-string-confirm">
       <button type="button" class="btn btn-sm btn-outline-primary"></button>
     </template>
-    <template id="template-remove-fretboard-string-confirm">
+    <template id="template-remove-fretboard-string-confirm" data-template="remove-fretboard-string-confirm">
       <button type="button" class="btn btn-sm btn-outline-danger"></button>
     </template>
 
-    <template id="template-fretboard-set-string-params">
+    <template id="template-fretboard-set-string-params" data-template="fretboard-set-string-params">
       <form id="fretboard-set-string-params">
         <div class="input-group input-group-sm">
-          <select id="fretboard-set-string-note" class="form-select">
+          <select id="fretboard-set-string-note" data-select="fretboard-string-note" class="form-select">
             <option></option>
           </select>
-          <select id="fretboard-set-note-octave" class="form-select w-50 mx-1">
+          <select id="fretboard-set-note-octave" data-select="fretboard-note-octave" class="form-select w-50 mx-1">
             <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>

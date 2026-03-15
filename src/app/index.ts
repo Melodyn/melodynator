@@ -8,13 +8,16 @@ import * as d from '../constants/defaults';
 import * as t from '../types';
 
 export const run = () => {
+  const locale = StorageService.selectOrDefault('locale', d.DEFAULT_LOCALE);
+
   const activeScalePresetId = d.DEFAULT_SCALE_PRESET_ID;
   const activeFretboardPresetId = d.DEFAULT_FRETBOARD_PRESET_ID;
-  const scale = cu.find(d.SCALE_PRESETS, p => p.id === activeScalePresetId);
-  const fretboard = cu.find(d.FRETBOARD_PRESETS, p => p.id === activeFretboardPresetId);
+  const scale = cu.find(d.SCALE_PRESETS[locale], p => p.id === activeScalePresetId);
+  const fretboard = cu.find(d.FRETBOARD_PRESETS[locale], p => p.id === activeFretboardPresetId);
+
   const storageService = new StorageService({
+    locale,
     theme: d.DEFAULT_THEME,
-    locale: d.DEFAULT_LOCALE,
     tonic: scale.tonic,
     intervalPattern: scale.intervalPattern,
     modalShift: scale.modalShift,
@@ -24,11 +27,13 @@ export const run = () => {
     startNotes: fretboard.startNotes,
     activeScalePresetId,
     activeFretboardPresetId,
+    isEnharmonicSimplify: d.DEFAULT_IS_ENHARMONIC_SIMPLIFY,
+    intervalDisplayMode: d.DEFAULT_INTERVAL_DISPLAY_MODE,
   });
   const saved = storageService.selectAll();
 
   const i18nStore = initI18n(saved.locale, storageService);
-  const uiStore = createUiStore(saved.theme, storageService);
+  const uiStore = createUiStore(saved.theme, saved.isEnharmonicSimplify, saved.intervalDisplayMode, storageService);
   const store = createStore(saved, storageService);
   const appStore = { ...store, ...uiStore, ...i18nStore };
   const refs = initUI(appStore);

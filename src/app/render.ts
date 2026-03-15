@@ -28,6 +28,10 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     const altReduceMap = getAltReduceMap(resolvedScaleParams.scale);
     refs.elScaleToneContainers.forEach((el, i) => {
       const scaleTone = resolvedScaleParams.scale[i];
+      if (!scaleTone) {
+        el.textContent = c.EMPTY_VALUE;
+        return;
+      }
       const prevIntervalSize = resolvedScaleParams.intervalPattern[i - 1];
       const isZeroStep = i > 0 && prevIntervalSize === 0;
       el.textContent = isZeroStep ? c.EMPTY_VALUE : reduceAlt(scaleTone.note, altReduceMap);
@@ -120,7 +124,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     const displayMode = store.stateIntervalDisplayMode.get();
     const intervals = store.textIntervals.get();
 
-    const getDisplayValue = (size: t.intervalSize): string => {
+    const getDisplayValue = (size: t.intervalSize, absoluteSize?: t.intervalSize): string => {
       if (size === 0 || displayMode === 'digit') {
         return size.toString();
       }
@@ -130,21 +134,25 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       if (size === 2) {
         return intervals.wholeStep[0].toUpperCase();
       }
-      const name = intervals[<keyof typeof intervals>`interval${size}`];
-      return name[0].toLowerCase();
+      const name = intervals[<keyof typeof intervals>`interval${absoluteSize ?? size}`];
+      return name.split(' / ')[0].split(' ').slice(0, 2).map(w => w[0]).join('').toLowerCase();
     };
 
     refs.elIntervalContainers.forEach((el, index) => {
+      const isActive = index <= intervalPattern.length;
+      el.classList.remove(...selectedScaleParamsClasses);
       if (index === 0) {
         el.textContent = getDisplayValue(index);
       } else {
         const stepIndex = index - 1;
-        const intervalStep = intervalPattern[stepIndex];
+        const intervalStep = isActive ? intervalPattern[stepIndex] : 0;
+        const cumulativeInterval = isActive
+          ? <t.intervalSize>intervalPattern.slice(0, stepIndex + 1).reduce<number>((a, b) => a + b, 0)
+          : 0;
         const elSetIntervalStep = refs.elSetIntervalSteps[stepIndex];
-        elSetIntervalStep.textContent = getDisplayValue(intervalStep);
+        elSetIntervalStep.textContent = getDisplayValue(intervalStep, cumulativeInterval);
       }
-      el.classList.remove(...selectedScaleParamsClasses);
-      if (index === modalShift) {
+      if (isActive && index === modalShift) {
         el.classList.add(...selectedScaleParamsClasses);
       }
     });
@@ -223,7 +231,8 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     const unshiftResolvedScaleParams = store.stateUnshiftResolvedScaleParams.get();
     const resolvedScaleParams = store.stateResolvedScaleParams.get();
     const fretboardLayout = store.stateFretboardLayout.get();
-    refs.elEnharmonicSimplifyToggle.checked = isEnharmonicSimplify;
+    refs.elEnharmonicSimplifySwitch.classList.toggle('btn-secondary', isEnharmonicSimplify);
+    refs.elEnharmonicSimplifySwitch.classList.toggle('btn-outline-secondary', !isEnharmonicSimplify);
     renderScaleTones(unshiftResolvedScaleParams);
     renderKeyboard(resolvedScaleParams);
     renderFretboard(fretboardLayout);
@@ -237,7 +246,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       }
     });
     visibleDegrees.forEach((degree) => {
-      const elSwitchDegreeContainer = refs.elSwitchDegreeContainers[degree - 1];
+      const elSwitchDegreeContainer = refs.elDegreeSwitchContainers[degree - 1];
       const [elLabel] = elSwitchDegreeContainer.labels || [];
       if (elLabel) {
         elLabel.classList.remove('text-secondary', 'text-decoration-line-through');
@@ -245,7 +254,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       }
     });
     cur.forEach((degree) => {
-      const elSwitchDegreeContainer = refs.elSwitchDegreeContainers[degree - 1];
+      const elSwitchDegreeContainer = refs.elDegreeSwitchContainers[degree - 1];
       const [elLabel] = elSwitchDegreeContainer.labels || [];
       if (elLabel) {
         elLabel.classList.add('text-secondary', 'text-decoration-line-through');

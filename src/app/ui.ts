@@ -1,11 +1,11 @@
 import { Popover, Tooltip } from 'bootstrap';
 import * as n from 'nanostores';
-import { qs, qsa } from '../commonUtils';
 import * as c from '../constants';
 import type * as t from '../types';
 import { StorageService } from './StorageService';
+import { getDomRefs } from './domRefs';
 
-export const createUiStore = (theme: t.uiTheme, storageService: StorageService): t.uiStore => {
+export const createUiStore = (theme: t.uiTheme, isEnharmonicSimplify: boolean, intervalDisplayMode: t.intervalDisplayMode, storageService: StorageService): t.uiStore => {
   const themeStore = n.atom<t.uiTheme>(theme);
 
   themeStore.listen(v => storageService.insert('theme', v));
@@ -14,13 +14,17 @@ export const createUiStore = (theme: t.uiTheme, storageService: StorageService):
     themeStore.set(themeStore.get() === 'dark' ? 'light' : 'dark');
   };
 
-  const stateIntervalDisplayMode = n.atom<t.intervalDisplayMode>('digit');
+  const stateIntervalDisplayMode = n.atom<t.intervalDisplayMode>(intervalDisplayMode);
+
+  stateIntervalDisplayMode.listen(v => storageService.insert('intervalDisplayMode', v));
 
   const switchIntervalDisplayMode = () => {
     stateIntervalDisplayMode.set(stateIntervalDisplayMode.get() === 'digit' ? 'letter' : 'digit');
   };
 
-  const stateIsEnharmonicSimplify = n.atom<boolean>(false);
+  const stateIsEnharmonicSimplify = n.atom<boolean>(isEnharmonicSimplify);
+
+  stateIsEnharmonicSimplify.listen(v => storageService.insert('isEnharmonicSimplify', v));
 
   const switchEnharmonicSimplify = () => {
     stateIsEnharmonicSimplify.set(!stateIsEnharmonicSimplify.get());
@@ -36,85 +40,6 @@ export const createUiStore = (theme: t.uiTheme, storageService: StorageService):
   };
 };
 
-const getElFretboardStringNumberButton = (elFretboardString: HTMLTableRowElement) => qs<HTMLButtonElement>('[data-control="remove-fretboard-string"]', elFretboardString);
-const getElFretboardStartNoteContainer = (elFretboardString: HTMLTableRowElement) => qs<HTMLButtonElement>('[data-control="start-note"]', elFretboardString);
-const getElFretboardStringFrets = (elFretboardString: HTMLTableRowElement): HTMLTableCellElement[] =>
-  Array.from(qsa<HTMLTableCellElement>('[data-instrument="fretboard-string-fret"]', elFretboardString));
-
-const getDomRefs = (): t.domRefs => {
-  const elThemeToggle = qs<HTMLButtonElement>('[data-control="theme-toggle"]');
-  const elTooltipTemplate = qs<HTMLTemplateElement>('#template-tooltip');
-  const elDirectionControllers = qsa<HTMLButtonElement>('[data-direction]');
-  const elResolveErrorContainer = qs<HTMLParagraphElement>('[data-container="resolve-error"]');
-  //
-  const elTonicContainer = qs<HTMLTableCellElement>('[data-container="tonic"]');
-  const elContextContainer = qs<HTMLTableCellElement>('[data-container="context"]');
-  const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
-  const elSetIntervalSteps = Array.from(qsa<HTMLButtonElement>('[data-control="interval-step"]'));
-  const elIntervalDisplaySwitch = qs<HTMLButtonElement>('[data-control="interval-display-switch"]');
-  const elIntervalStepParamsTemplate = qs<HTMLTemplateElement>('#template-interval-step-params');
-  const elIntervalStepParams = <HTMLFormElement>elIntervalStepParamsTemplate.content.firstElementChild;
-  const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
-  const elSwitchDegreeContainers = qsa<HTMLInputElement>('[data-container="switch-degree"]');
-  //
-  const elKeyboardNotes = qsa<HTMLTableCellElement>('[data-instrument="keyboard-notes"] td');
-
-  const elFretboardStringTemplate = qs<HTMLTemplateElement>('#template-fretboard-string');
-  const elFretboardNewStringNoteParamsTemplate = qs<HTMLTemplateElement>('#template-fretboard-set-string-params');
-
-  const elFretboard = qs<HTMLTableSectionElement>('[data-instrument="fretboard"]');
-  const elFretboardStrings: HTMLTableRowElement[] = [];
-  const elFretboardStartNoteContainers: HTMLButtonElement[] = [];
-  const elFretboardStringFrets: HTMLTableCellElement[][] = [];
-  const elFretboardString = <HTMLTableRowElement>elFretboardStringTemplate.content.firstElementChild;
-  const elFretboardNewStringNoteParams = <HTMLFormElement>elFretboardNewStringNoteParamsTemplate.content.firstElementChild;
-  const noteSelect = qs<HTMLSelectElement>('#fretboard-set-string-note', elFretboardNewStringNoteParams);
-  const optionProto = <HTMLOptionElement>noteSelect.firstElementChild;
-  c.allNotesNames.forEach((name, i) => {
-    const opt = i === 0 ? optionProto : <HTMLOptionElement>optionProto.cloneNode();
-    opt.value = name;
-    opt.textContent = name;
-    if (i > 0) {
-      noteSelect.appendChild(opt);
-    }
-  });
-
-  const elLocaleSwitch = qs<HTMLButtonElement>('[data-control="locale-switch"]');
-  const elEnharmonicSimplifyToggle = qs<HTMLInputElement>('[data-control="enharmonic-simplify"]');
-  const elAddFretboardString = qs<HTMLButtonElement>('[data-control="add-fretboard-string"]');
-  const elAddFretboardStringConfirm = <HTMLButtonElement>qs<HTMLTemplateElement>('#template-add-fretboard-string-confirm').content.firstElementChild;
-  const elRemoveFretboardStringConfirm = <HTMLButtonElement>qs<HTMLTemplateElement>('#template-remove-fretboard-string-confirm').content.firstElementChild;
-
-  return {
-    elThemeToggle,
-    elLocaleSwitch,
-    elTooltipTemplate,
-    elDirectionControllers,
-    elResolveErrorContainer,
-    //
-    elTonicContainer,
-    elContextContainer,
-    elIntervalContainers,
-    elSetIntervalSteps,
-    elIntervalDisplaySwitch,
-    elIntervalStepParams,
-    elEnharmonicSimplifyToggle,
-    elScaleToneContainers,
-    elSwitchDegreeContainers,
-    //
-    elKeyboardNotes,
-    elFretboard,
-    elFretboardStrings,
-    elFretboardStartNoteContainers,
-    elFretboardStringFrets,
-    elFretboardString,
-    elFretboardNewStringNoteParams,
-    elAddFretboardString,
-    elAddFretboardStringConfirm,
-    elRemoveFretboardStringConfirm,
-  };
-};
-
 const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
   refs.elSetIntervalSteps.forEach((elSetIntervalStep, index) => {
     const degree = index + 1;
@@ -124,7 +49,7 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
       sanitize: false,
       content: () => {
         const form = <HTMLFormElement>refs.elIntervalStepParams.cloneNode(true);
-        const select = qs<HTMLSelectElement>('#interval-step-value', form);
+        const select = refs.getElIntervalStepSelect(form);
         const optionProto = <HTMLOptionElement>select.firstElementChild;
         const intervals = appStore.textIntervals.get();
 
@@ -177,7 +102,7 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
 const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   const updateStringNumbers = (): void => {
     refs.elFretboardStrings.slice(c.MIN_FRETBOARD_STRINGS).forEach((elString, i) => {
-      const btn = getElFretboardStringNumberButton(elString);
+      const btn = refs.getElFretboardStringNumberButton(elString);
       btn.textContent = `${c.MIN_FRETBOARD_STRINGS + i + 1}`;
     });
   };
@@ -185,7 +110,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   const removeStringRow = (index: number): void => {
     const elFretboardString = refs.elFretboardStrings[index];
     const elStartNoteButton = refs.elFretboardStartNoteContainers[index];
-    const elNumberButton = getElFretboardStringNumberButton(elFretboardString);
+    const elNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
     const startNotePopover = Popover.getInstance(elStartNoteButton);
     if (startNotePopover) {
       startNotePopover.dispose();
@@ -203,16 +128,16 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
 
   const addStringRow = (): void => {
     const elFretboardString = <HTMLTableRowElement>refs.elFretboardString.cloneNode(true);
-    const elFretboardStartNoteContainer = getElFretboardStartNoteContainer(elFretboardString);
+    const elFretboardStartNoteContainer = refs.getElFretboardStartNoteContainer(elFretboardString);
     const stringIndex = refs.elFretboardStrings.length;
 
     if (stringIndex < c.MIN_FRETBOARD_STRINGS) {
-      const elNumberButton = getElFretboardStringNumberButton(elFretboardString);
+      const elNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
       const elNumberTd = <HTMLTableCellElement>elNumberButton.parentElement;
       elNumberButton.remove();
       elNumberTd.textContent = `${stringIndex + 1}`;
     } else {
-      const elFretboardStringNumberButton = getElFretboardStringNumberButton(elFretboardString);
+      const elFretboardStringNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
       elFretboardStringNumberButton.textContent = `${stringIndex + 1}`;
 
       const makeRemovePopover = () => new Popover(elFretboardStringNumberButton, {
@@ -247,8 +172,8 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
       sanitize: false,
       content: () => {
         const form = <HTMLFormElement>refs.elFretboardNewStringNoteParams.cloneNode(true);
-        const noteSelect = qs<HTMLSelectElement>('#fretboard-set-string-note', form);
-        const octaveSelect = qs<HTMLSelectElement>('#fretboard-set-note-octave', form);
+        const noteSelect = refs.getElFretboardStringNoteSelect(form);
+        const octaveSelect = refs.getElFretboardNoteOctaveSelect(form);
 
         const fretboardTexts = appStore.textFretboard.get();
         noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
@@ -292,7 +217,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
     refs.elFretboard.appendChild(elFretboardString);
     refs.elFretboardStrings.push(elFretboardString);
     refs.elFretboardStartNoteContainers.push(elFretboardStartNoteContainer);
-    refs.elFretboardStringFrets.push(getElFretboardStringFrets(elFretboardString));
+    refs.elFretboardStringFrets.push(refs.getElFretboardStringFrets(elFretboardString));
     updateStringNumbers();
   };
 
@@ -334,10 +259,9 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
 
 const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
   const tooltipInstances = new Map<string, Tooltip>();
-  const tooltipPlaceholders = qsa<HTMLElement>('[data-tooltip]');
   const elTooltipButton = <HTMLButtonElement>refs.elTooltipTemplate.content.firstElementChild;
 
-  tooltipPlaceholders.forEach((placeholder) => {
+  refs.elTooltipPlaceholders.forEach((placeholder) => {
     const key = <string>placeholder.dataset.tooltip;
     const button = <HTMLButtonElement>elTooltipButton.cloneNode(true);
     button.dataset.tooltip = key;
@@ -358,13 +282,13 @@ const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
-const initStaticText = (appStore: t.appStore): void => {
+const initStaticText = (refs: t.domRefs, appStore: t.appStore): void => {
   const kebabToCamel = (s: string): string =>
     s.replace(/[-_]+([a-z])/g, (_, c: string) => c.toUpperCase());
 
   const SCALE_PARAMS_PREFIX = 'scale-params-';
 
-  qsa<HTMLElement>('[data-static-content]').forEach((el) => {
+  refs.elStaticContentElements.forEach((el) => {
     const value = <string>el.dataset.staticContent;
     let atom: t.i18nTextAtom;
     let key: string;
@@ -389,15 +313,15 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
   initIntervalSteps(refs, appStore);
   initFretboard(refs, appStore);
   initTooltips(refs, appStore);
-  initStaticText(appStore);
+  initStaticText(refs, appStore);
 
   // Locale switch
   refs.elLocaleSwitch.addEventListener('click', () => {
     appStore.switchLocale();
   });
 
-  // Theme toggle
-  refs.elThemeToggle.addEventListener('click', () => {
+  // Theme switch
+  refs.elThemeSwitch.addEventListener('click', () => {
     appStore.toggleTheme();
   });
 
@@ -428,11 +352,11 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
     appStore.switchIntervalDisplayMode();
   });
 
-  refs.elEnharmonicSimplifyToggle.addEventListener('change', () => {
+  refs.elEnharmonicSimplifySwitch.addEventListener('click', () => {
     appStore.switchEnharmonicSimplify();
   });
 
-  refs.elSwitchDegreeContainers.forEach((el) => {
+  refs.elDegreeSwitchContainers.forEach((el) => {
     el.addEventListener('click', () => {
       appStore.switchDegreeVisibility(Number(el.value));
     });

@@ -48,6 +48,17 @@ export class StorageService {
     return JSON.parse(savedValue).data;
   }
 
+  static selectOrDefault<K extends t.savedKeys>(key: K, defaultValue: t.savedValues[K]): t.savedValues[K] {
+    if (typeof localStorage === 'undefined') {
+      return defaultValue;
+    }
+    const savedValue = localStorage.getItem(key);
+    if (savedValue === null || !savedValue.startsWith('{')) {
+      return defaultValue;
+    }
+    return JSON.parse(savedValue).data;
+  }
+
   insert<K extends t.savedKeys>(key: K, value: t.savedValues[K]): void {
     const savedValue = JSON.stringify({ data: value });
     this.storage.setItem(key, savedValue);
