@@ -58,7 +58,10 @@ export const getDomRefs = (): t.domRefs => {
   const getElFretboardNoteOctaveSelect = (form: HTMLFormElement) =>
     qs<HTMLSelectElement>('[data-select="fretboard-note-octave"]', form);
 
+  const elBody = document.body;
+
   return {
+    elBody,
     elThemeSwitch,
     elLocaleSwitch,
     elTooltipTemplate,

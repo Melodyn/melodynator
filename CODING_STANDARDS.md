@@ -77,9 +77,13 @@ const elFretboardStringFret = elFretboardStringFrets[fretIndex - 1];
 
 Содержит только nanostores-атомы и функции, меняющие их. **Не знает про HTML.**
 
+### `domRefs.ts` — сбор DOM-ссылок
+
+Единственное место, где вызываются `querySelector` / `querySelectorAll`. Экспортирует `getDomRefs(): t.domRefs` — функцию, которая собирает все ссылки на DOM-элементы и возвращает объект `domRefs`. Вызывается один раз в `index.ts`, результат передаётся в `ui.ts` и `render.ts`.
+
 ### `ui.ts` — DOM
 
-Все обращения к DOM — только здесь. `querySelector` — только здесь. Формирует `domRefs` и передаёт его в `render.ts`. Если `render.ts` нужен DOM-элемент — он должен приходить через `refs`, а не запрашиваться напрямую.
+Все обращения к DOM через поведение — только здесь. Получает готовый `domRefs` из `index.ts` и передаёт его в `render.ts`. Если `render.ts` нужен DOM-элемент — он должен приходить через `refs`, а не запрашиваться напрямую.
 
 Весь DOM-контент создаётся через HTML-шаблоны (`<template>`). Создавать структурные DOM-элементы через `document.createElement` — антипаттерн: это возвращает компонентный подход, от которого проект намеренно отказался.
 
@@ -178,12 +182,13 @@ $theme-colors: map-merge($theme-colors, (
 ));
 ```
 
-DOM-выборка строится по `id` или `data`-атрибутам с именами из предметной области — не по тегам, не по Bootstrap-классам. Это делает выборки независимыми от изменений разметки и библиотеки.
+DOM-выборка строится **только по `data`-атрибутам** предметной области — не по тегам, не по `id`, не по Bootstrap-классам. Атрибут `id` остаётся в HTML исключительно для `<label for>` (доступность). Это делает выборки независимыми от изменений разметки и библиотеки.
 
 ```typescript
-// ✗ — по тегу или Bootstrap-классу
+// ✗ — по тегу, Bootstrap-классу или id
 qs('td.form-select')
 qs('.btn-outline-primary')
+qs('#theme-toggle')
 
 // ✓ — по data-атрибуту предметной области
 qs('[data-container="tonic"]')
@@ -191,6 +196,19 @@ qs('[data-control="start-note"]', elFretboardString)
 ```
 
 Исключение: Bootstrap JS-компоненты (Tooltip, Popover) инициализируются по `data-bs-*` — это их API, а не наша выборка.
+
+**Неймспейсы `data`-атрибутов:**
+
+| Атрибут | Назначение | Пример |
+|---|---|---|
+| `data-control` | Интерактивный элемент управления | `data-control="tonic-shift"` |
+| `data-container` | Контейнер для отображения данных | `data-container="scale-tone"` |
+| `data-instrument` | Элемент инструмента (фретборд, клавиатура) | `data-instrument="fretboard-string-fret"` |
+| `data-static-content` | Статичный i18n-текст | `data-static-content="page-title"` |
+| `data-tooltip` | Плейсхолдер для Bootstrap Tooltip | `data-tooltip="fretboard"` |
+| `data-template` | `<template>`-элемент для клонирования | `data-template="fretboard-string"` |
+| `data-select` | `<select>` внутри template-формы | `data-select="interval-step-value"` |
+| `data-direction` | Кнопка направления (up/down) | `data-direction="up"` |
 
 `.row` используется только вместе с `.col` — только для сетки Bootstrap. Для центрирования отдельных элементов — `mx-auto` (block-level) или `d-flex justify-content-center`. Таблицы шире вьюпорта оборачиваются в `overflow-x-auto`, не в `.row.justify-content-center` (flex-center шире вьюпорта выталкивает левый край в отрицательные координаты — недоступно без горизонтального скролла).
 

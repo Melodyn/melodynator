@@ -80,8 +80,8 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     refs.elFretboardStartNoteContainers.forEach((elFretboardStartNoteContainer) => {
       elFretboardStartNoteContainer.textContent = c.EMPTY_VALUE;
     });
-    refs.elFretboardStringFrets.forEach((elFretboardStringFret) => {
-      elFretboardStringFret.forEach((elFretNote) => {
+    refs.elFretboardStringFrets.forEach((elFretboardStringFrets) => {
+      elFretboardStringFrets.forEach((elFretNote) => {
         elFretNote.textContent = c.EMPTY_VALUE;
         removeOctaveClass(elFretNote);
       });
@@ -186,7 +186,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.theme.subscribe((theme) => {
-    document.body.dataset.bsTheme = theme;
+    refs.elBody.dataset.bsTheme = theme;
   });
 
   store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
@@ -246,16 +246,16 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
       }
     });
     visibleDegrees.forEach((degree) => {
-      const elSwitchDegreeContainer = refs.elDegreeSwitchContainers[degree - 1];
-      const [elLabel] = elSwitchDegreeContainer.labels || [];
+      const elDegreeSwitchContainer = refs.elDegreeSwitchContainers[degree - 1];
+      const [elLabel] = elDegreeSwitchContainer.labels || [];
       if (elLabel) {
         elLabel.classList.remove('text-secondary', 'text-decoration-line-through');
         elLabel.classList.add('border-dark-subtle');
       }
     });
     cur.forEach((degree) => {
-      const elSwitchDegreeContainer = refs.elDegreeSwitchContainers[degree - 1];
-      const [elLabel] = elSwitchDegreeContainer.labels || [];
+      const elDegreeSwitchContainer = refs.elDegreeSwitchContainers[degree - 1];
+      const [elLabel] = elDegreeSwitchContainer.labels || [];
       if (elLabel) {
         elLabel.classList.add('text-secondary', 'text-decoration-line-through');
         elLabel.classList.remove('border-dark-subtle');

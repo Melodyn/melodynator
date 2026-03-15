@@ -48,9 +48,9 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
       html: true,
       sanitize: false,
       content: () => {
-        const form = <HTMLFormElement>refs.elIntervalStepParams.cloneNode(true);
-        const select = refs.getElIntervalStepSelect(form);
-        const optionProto = <HTMLOptionElement>select.firstElementChild;
+        const elIntervalStepParams = <HTMLFormElement>refs.elIntervalStepParams.cloneNode(true);
+        const elIntervalStepSelect = refs.getElIntervalStepSelect(elIntervalStepParams);
+        const elIntervalListItem = <HTMLOptionElement>elIntervalStepSelect.firstElementChild;
         const intervals = appStore.textIntervals.get();
 
         const { intervalPattern } = appStore.stateScaleBuildParams.get();
@@ -59,33 +59,33 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
         c.allIntervalSizes.forEach((relativeStep, i) => {
           const absolutePos = prevAbsolute + relativeStep;
           const wrappedPos = absolutePos > c.OCTAVE_SIZE ? absolutePos % c.OCTAVE_SIZE : absolutePos;
-          const opt = i === 0
-            ? optionProto
-            : <HTMLOptionElement>optionProto.cloneNode();
-          opt.value = relativeStep.toString();
+          const elIntervalStepOption = i === 0
+            ? elIntervalListItem
+            : <HTMLOptionElement>elIntervalListItem.cloneNode();
+          elIntervalStepOption.value = relativeStep.toString();
           const absoluteName = intervals[<keyof typeof intervals>`interval${wrappedPos}`];
           const intervalName = relativeStep === 1
             ? `${intervals.halfStep} / ${absoluteName}`
             : relativeStep === 2
               ? `${intervals.wholeStep} / ${absoluteName}`
               : absoluteName;
-          opt.textContent = `${relativeStep} / ${intervalName}`;
+          elIntervalStepOption.textContent = `${relativeStep} / ${intervalName}`;
           if (i > 0) {
-            select.appendChild(opt);
+            elIntervalStepSelect.appendChild(elIntervalStepOption);
           }
         });
 
-        select.value = intervalPattern[index].toString();
+        elIntervalStepSelect.value = intervalPattern[index].toString();
 
-        select.addEventListener('change', () => {
-          appStore.setIntervalStep({ degree, step: <t.intervalSize>Number(select.value) });
+        elIntervalStepSelect.addEventListener('change', () => {
+          appStore.setIntervalStep({ degree, step: <t.intervalSize>Number(elIntervalStepSelect.value) });
           const popover = Popover.getInstance(elSetIntervalStep);
           if (popover) {
             popover.hide();
           }
         });
 
-        return form;
+        return elIntervalStepParams;
       },
     });
 
@@ -133,9 +133,9 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
 
     if (stringIndex < c.MIN_FRETBOARD_STRINGS) {
       const elNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
-      const elNumberTd = <HTMLTableCellElement>elNumberButton.parentElement;
+      const elFretboardStringNumberContainer = <HTMLTableCellElement>elNumberButton.parentElement;
       elNumberButton.remove();
-      elNumberTd.textContent = `${stringIndex + 1}`;
+      elFretboardStringNumberContainer.textContent = `${stringIndex + 1}`;
     } else {
       const elFretboardStringNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
       elFretboardStringNumberButton.textContent = `${stringIndex + 1}`;
@@ -145,16 +145,16 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
         sanitize: false,
         content: () => {
           const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
-          const btn = <HTMLButtonElement>refs.elRemoveFretboardStringConfirm.cloneNode(true);
-          btn.textContent = appStore.textFretboard.get().removeStringLabel;
-          btn.addEventListener('click', () => {
+          const elRemoveFretboardStringConfirm = <HTMLButtonElement>refs.elRemoveFretboardStringConfirm.cloneNode(true);
+          elRemoveFretboardStringConfirm.textContent = appStore.textFretboard.get().removeStringLabel;
+          elRemoveFretboardStringConfirm.addEventListener('click', () => {
             appStore.removeFretboardString(currentIndex);
             const popover = Popover.getInstance(elFretboardStringNumberButton);
             if (popover) {
               popover.hide();
             }
           });
-          return btn;
+          return elRemoveFretboardStringConfirm;
         },
       });
 
@@ -171,38 +171,38 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
       html: true,
       sanitize: false,
       content: () => {
-        const form = <HTMLFormElement>refs.elFretboardNewStringNoteParams.cloneNode(true);
-        const noteSelect = refs.getElFretboardStringNoteSelect(form);
-        const octaveSelect = refs.getElFretboardNoteOctaveSelect(form);
+        const elFretboardNewStringNoteParams = <HTMLFormElement>refs.elFretboardNewStringNoteParams.cloneNode(true);
+        const elFretboardStringNoteSelect = refs.getElFretboardStringNoteSelect(elFretboardNewStringNoteParams);
+        const elFretboardNoteOctaveSelect = refs.getElFretboardNoteOctaveSelect(elFretboardNewStringNoteParams);
 
         const fretboardTexts = appStore.textFretboard.get();
-        noteSelect.ariaLabel = fretboardTexts.openNoteLabel;
-        octaveSelect.ariaLabel = fretboardTexts.octaveLabel;
+        elFretboardStringNoteSelect.ariaLabel = fretboardTexts.openNoteLabel;
+        elFretboardNoteOctaveSelect.ariaLabel = fretboardTexts.octaveLabel;
         const octaveNames = [
           fretboardTexts.octaveName0, fretboardTexts.octaveName1, fretboardTexts.octaveName2,
           fretboardTexts.octaveName3, fretboardTexts.octaveName4, fretboardTexts.octaveName5,
           fretboardTexts.octaveName6, fretboardTexts.octaveName7, fretboardTexts.octaveName8,
         ];
-        Array.from(octaveSelect.options).forEach((opt, i) => {
+        Array.from(elFretboardNoteOctaveSelect.options).forEach((opt, i) => {
           opt.textContent = `${opt.value} — ${octaveNames[i]}`;
         });
 
         const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
         const currentStartNote = appStore.stateFretboardStartNotes.get()[currentIndex];
-        noteSelect.value = currentStartNote.note;
-        octaveSelect.value = `${currentStartNote.octave}`;
+        elFretboardStringNoteSelect.value = currentStartNote.note;
+        elFretboardNoteOctaveSelect.value = `${currentStartNote.octave}`;
 
-        form.addEventListener('submit', (e) => {
+        elFretboardNewStringNoteParams.addEventListener('submit', (e) => {
           e.preventDefault();
           const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
-          appStore.setFretboardStartNote({ note: <t.noteName>noteSelect.value, octave: Number(octaveSelect.value), index: currentIndex });
+          appStore.setFretboardStartNote({ note: <t.noteName>elFretboardStringNoteSelect.value, octave: Number(elFretboardNoteOctaveSelect.value), index: currentIndex });
           const popover = Popover.getInstance(elFretboardStartNoteContainer);
           if (popover) {
             popover.hide();
           }
         });
 
-        return form;
+        return elFretboardNewStringNoteParams;
       },
     });
 
@@ -230,16 +230,16 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
     html: true,
     sanitize: false,
     content: () => {
-      const btn = <HTMLButtonElement>refs.elAddFretboardStringConfirm.cloneNode(true);
-      btn.textContent = appStore.textFretboard.get().addStringLabel;
-      btn.addEventListener('click', () => {
+      const elAddFretboardStringConfirm = <HTMLButtonElement>refs.elAddFretboardStringConfirm.cloneNode(true);
+      elAddFretboardStringConfirm.textContent = appStore.textFretboard.get().addStringLabel;
+      elAddFretboardStringConfirm.addEventListener('click', () => {
         appStore.addFretboardString();
         const popover = Popover.getInstance(refs.elAddFretboardString);
         if (popover) {
           popover.hide();
         }
       });
-      return btn;
+      return elAddFretboardStringConfirm;
     },
   });
 

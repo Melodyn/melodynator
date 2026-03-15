@@ -6,7 +6,6 @@ import * as mu from '../index';
 import { StorageService } from './StorageService';
 
 export const createStore = (saved: t.savedValues, storageService: StorageService): t.store => {
-  const chromaticNotesCount = c.allNotesNames.length;
   const stateHiddenDegrees = n.atom<Set<t.degree>>(new Set(saved.hiddenDegrees));
   const stateFretboardStartNotes = n.atom<t.fretboardStartNoteParams[]>(saved.startNotes);
   const stateScaleBuildParams = n.map<t.scaleBuildParams>({ tonic: saved.tonic, intervalPattern: saved.intervalPattern, modalShift: saved.modalShift });
@@ -47,7 +46,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
 
   const offsetTonicShift: t.offsetScaleParam = (offset) => {
     const currentTonicIndex = stateCurrentNoteChromaticIndex.get();
-    const newTonicIndex = (currentTonicIndex + chromaticNotesCount + offset) % chromaticNotesCount;
+    const newTonicIndex = (currentTonicIndex + c.allNotesNames.length + offset) % c.allNotesNames.length;
     const newTonic = c.allNotesNames[newTonicIndex];
     stateScaleBuildParams.setKey('tonic', newTonic);
   };
@@ -97,14 +96,14 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     if (currentStartNotes.length >= c.MAX_FRETBOARD_STRINGS) {
       return;
     }
-    const lastString = currentStartNotes[currentStartNotes.length - 1];
-    const naturalNoteName = <t.naturalNoteName>lastString.note[0];
-    const accidental = lastString.note.slice(1);
+    const lastStartNote = currentStartNotes[currentStartNotes.length - 1];
+    const naturalNote = <t.naturalNoteName>lastStartNote.note[0];
+    const accidental = lastStartNote.note.slice(1);
     const modifier = accidental === c.SHARP_SYMBOL ? 1 : accidental === c.FLAT_SYMBOL ? -1 : 0;
-    const lastPitchClass = (c.NATURAL_PITCH_CLASSES[naturalNoteName] + modifier + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
+    const lastPitchClass = (c.NATURAL_PITCH_CLASSES[naturalNote] + modifier + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
     const newPitchClass = (lastPitchClass - c.FRETBOARD_STRING_INTERVAL + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
     const newNote = c.ENHARMONIC_SIMPLE_NAMES[newPitchClass];
-    const newOctave = newPitchClass > lastPitchClass ? Math.max(0, lastString.octave - 1) : lastString.octave;
+    const newOctave = newPitchClass > lastPitchClass ? Math.max(0, lastStartNote.octave - 1) : lastStartNote.octave;
     stateFretboardStartNotes.set([...currentStartNotes, { note: newNote, octave: newOctave }]);
   };
 
@@ -120,7 +119,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
   const setIntervalStep: t.setIntervalStep = ({ degree, step }) => {
     const { intervalPattern } = stateScaleBuildParams.get();
     const degreeIndex = degree - 1;
-    const newPattern = intervalPattern.map((currentStep, i) => i === degreeIndex ? step : currentStep);
+    const newPattern = <t.intervalPattern>intervalPattern.map((currentStep, i) => i === degreeIndex ? step : currentStep);
     stateScaleBuildParams.setKey('intervalPattern', newPattern);
   };
 

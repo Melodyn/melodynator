@@ -142,6 +142,7 @@ export type store = {
 };
 
 export type domRefs = {
+  elBody: HTMLElement
   elThemeSwitch: HTMLButtonElement
   elLocaleSwitch: HTMLButtonElement
   elTooltipTemplate: HTMLTemplateElement
