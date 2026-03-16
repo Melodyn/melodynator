@@ -7,7 +7,8 @@
 **Архитектура:**
 - `store.ts` — только состояние и действия, ничего про HTML
 - `i18n.ts` — locale, i18n factory, все text-сторы. Не знает про DOM и store. Импортируется в `ui.ts` и `render.ts`
-- `ui.ts` — весь DOM: querySelector, querySelectorAll, шаблоны, domRefs. Любой DOM API в других файлах — ошибка
+- `domRefs.ts` — querySelector, querySelectorAll, getDomRefs(). Единственное место DOM-выборки. Экспортирует t.domRefs
+- `ui.ts` — обработчики событий, Bootstrap-компоненты, шаблоны. Получает refs из domRefs.ts. DOM-выборка в этом файле — ошибка
 - `render.ts` — читает store и text-сторы, обновляет DOM **только через refs**. Не мутирует состояние. Никакого DOM API. Переменные именуются по типам из `types/index.ts` — не по позиции в DOM
 - `src/types/index.ts` — типы, как один из источников правды. Обязательно типы должны быть в `naming.yaml`. Нужно обращать внимание автора, если тип используется, например, только в одном месте, хотя должен бы быть более широко используемым.
 
