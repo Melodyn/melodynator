@@ -65,7 +65,7 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
   });
 
   const textContent = <t.i18nTextAtom><unknown>i18n('content', {
-    pageTitle: 'Гаммы и аккорды онлайн',
+    pageTitle: 'Мелодинатор',
     pageDescription: 'Обучающий музыкальный калькулятор для понимания гамм, аккордов и интервальных схем.',
     sectionTheoryTitle: 'Музыкальная теория — наглядно',
     sectionTheoryText: 'Сервис помогает изучать музыкальную теорию через визуализацию. Выберите тонику, соберите интервальную схему и посмотрите, как выглядят гаммы и аккорды на разных инструментах.',

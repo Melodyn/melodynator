@@ -1,0 +1,229 @@
+import * as t from './types';
+import * as c from './constants';
+import * as cu from './commonUtils';
+
+export const getNaturalNoteParams = (noteName: t.noteName): t.naturalNoteParams => cu.
+  find(c.naturalNotesParams, ({ note }) => note === noteName[0]);
+
+export const applyModalShift: t.applyModalShift = (intervalPattern, modalShift) =>
+  <t.intervalPattern>cu.rotate(intervalPattern, modalShift);
+
+export const checkCanModeShift = (intervalPattern: t.intervalPattern): boolean => cu.sum(intervalPattern) === c.OCTAVE_SIZE;
+
+export const calcOffsetPC = (note: t.noteName): -1 | 0 | 1 => {
+  if (note.length === 1) {
+    return 0;
+  }
+  return note[1] === c.SHARP_SYMBOL ? 1 : -1;
+};
+
+export const alterAccidentalBySemitone = (noteName: t.noteName, direction: 'up' | 'down'): t.noteName => {
+  if (noteName.length === 1) {
+    const targetAccidental: t.accidental = direction === 'up' ? c.SHARP_SYMBOL : c.FLAT_SYMBOL;
+    return <t.noteName>`${noteName}${targetAccidental}`;
+  }
+
+  const hasNoteSharpAccidental = noteName[1] === c.SHARP_SYMBOL;
+  if (direction === 'up') {
+    if (hasNoteSharpAccidental) {
+      return <t.noteName>`${noteName}${c.SHARP_SYMBOL}`;
+    }
+    return <t.noteName>noteName.slice(0, noteName.length - 1);
+  }
+
+  if (!hasNoteSharpAccidental) {
+    return <t.noteName>`${noteName}${c.FLAT_SYMBOL}`;
+  }
+  return <t.noteName>noteName.slice(0, noteName.length - 1);
+};
+
+export const removeDegrees = (scale: t.scale, degreesForRemove: number[]) => scale.filter(n => !degreesForRemove.includes(n.degree));
+
+// строим по логике диатоники, даже если не диатоника
+export const buildDiatonicScale: t.buildDiatonicScale = ({ tonic, intervalPattern }) => {
+  const tonicParams = getNaturalNoteParams(tonic);
+  const tonicOffsetPC = calcOffsetPC(tonic);
+  // + c.OCTAVE_SIZE нужен, чтобы для Cb получился pitchClass 11, а не -1
+  let currentPC: number = (tonicParams.naturalPitchClass + tonicOffsetPC + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
+  let currentNaturalNoteIndex = tonicParams.degree - 1;
+  let currentDegree = 1;
+
+  const scale: t.noteParams[] = [{ note: tonic, degree: currentDegree, pitchClass: currentPC }];
+
+  for (const interval of intervalPattern) {
+    const targetNaturalNoteIndex = (currentNaturalNoteIndex + 1) % c.naturalNotesParams.length;
+    const targetNaturalNoteParams = c.naturalNotesParams[targetNaturalNoteIndex];
+    const targetDegree = currentDegree + 1;
+    const targetNPC = targetNaturalNoteParams.naturalPitchClass;
+    const targetPC = (currentPC + interval) % c.OCTAVE_SIZE;
+
+    // смещение натуральной ноты до целевого pitch class
+    const diff = targetPC - targetNPC;
+    let pitchClassOffset = diff;
+    if (diff > c.MAX_PITCH_CLASS_OFFSET) {
+      pitchClassOffset = diff - c.OCTAVE_SIZE;
+    }
+    if (diff < -c.MAX_PITCH_CLASS_OFFSET) {
+      pitchClassOffset = diff + c.OCTAVE_SIZE;
+    }
+
+    let accidental: t.accidental = '';
+    if (pitchClassOffset !== 0) {
+      accidental = <t.accidental>(pitchClassOffset > 0 ? c.SHARP_SYMBOL : c.FLAT_SYMBOL)
+        .repeat(Math.abs(pitchClassOffset));
+    }
+
+    scale.push({
+      note: `${targetNaturalNoteParams.note}${accidental}`,
+      degree: targetDegree,
+      pitchClass: targetPC,
+    });
+
+    currentPC = targetPC;
+    currentNaturalNoteIndex = targetNaturalNoteIndex;
+    currentDegree = targetDegree;
+  }
+
+  return scale;
+};
+
+export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modalShift }) => {
+  const canModalShift = checkCanModeShift(intervalPattern);
+  const shiftedIntervalPattern = (canModalShift && modalShift > 0)
+    ? applyModalShift(intervalPattern, modalShift)
+    : intervalPattern;
+  const scale = buildDiatonicScale({ tonic, intervalPattern: shiftedIntervalPattern });
+
+  const resolvedScaleParams: t.resolvedScaleParams = {
+    scale,
+    intervalPattern: shiftedIntervalPattern,
+    canModalShift,
+    canApplyContext: true,
+    contextTargets: [tonic],
+  };
+
+  return resolvedScaleParams;
+};
+
+export const applyDegreeRotation: t.applyDegreeRotation = (resolvedScaleParams, degreeRotation) => {
+  if (!resolvedScaleParams.canModalShift || degreeRotation === 0) {
+    return resolvedScaleParams;
+  }
+
+  const scaleBody = resolvedScaleParams.scale.slice(0, resolvedScaleParams.scale.length - 1);
+  const rotatedBody = cu.rotate(scaleBody, degreeRotation);
+  const renumbered = rotatedBody.map((n, i) => ({ ...n, degree: i + 1 }));
+  const octaveNote = { ...renumbered[0], degree: renumbered.length + 1 };
+  return { ...resolvedScaleParams, scale: [...renumbered, octaveNote] };
+};
+
+const anchorScaleToCenter = (scale: t.scale, centerPitchClass: number): t.scale => {
+  const scaleBody = scale.slice(0, scale.length - 1);
+  const centerIndex = cu.findIndex(scaleBody, (n) => n.pitchClass === centerPitchClass);
+  const rotatedBody = cu.rotate(scaleBody, centerIndex);
+  const renumbered = rotatedBody.map((n, i) => ({ ...n, degree: i + 1 }));
+  const octaveNote = { ...renumbered[0], degree: renumbered.length + 1 };
+  return [...renumbered, octaveNote];
+};
+
+export const applyContextTransform: t.applyContextTransform = (resolvedScaleParams, contextOffset) => {
+  if (contextOffset === 0) {
+    return resolvedScaleParams;
+  }
+
+  const homeCenterNoteParams: t.noteParams = resolvedScaleParams.scale[0];
+  const targetTonicPC = (homeCenterNoteParams.pitchClass + contextOffset) % c.OCTAVE_SIZE;
+  const targetTonicInHomeScale = resolvedScaleParams.scale.find((n) => n.pitchClass === targetTonicPC);
+
+  const resolveScaleByTonic = (tonic: t.noteName) => resolveScale({
+    tonic,
+    intervalPattern: resolvedScaleParams.intervalPattern,
+    modalShift: 0,
+  });
+
+  // нота содержится в текущей гамме?
+  if (targetTonicInHomeScale) {
+    const targetResolvedScaleParams = resolveScaleByTonic(targetTonicInHomeScale.note);
+    const homeCenterInTargetScale = targetResolvedScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
+    if (homeCenterInTargetScale) {
+      const anchoredScale = anchorScaleToCenter(targetResolvedScaleParams.scale, homeCenterNoteParams.pitchClass);
+      return {
+        ...targetResolvedScaleParams,
+        scale: anchoredScale,
+        contextTargets: [targetTonicInHomeScale.note],
+      };
+    }
+    return {
+      ...targetResolvedScaleParams,
+      canApplyContext: false,
+      contextTargets: [targetTonicInHomeScale.note],
+    };
+  }
+
+  // если нет, ищем в нотах с именами повышенной (C#) и пониженной (Db) альтерации
+  // предпочитаем нижнюю хроматическую (более простая нотация, напр. A вместо B♭♭)
+  const chromaticLowerTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === (targetTonicPC + c.OCTAVE_SIZE - 1) % c.OCTAVE_SIZE);
+  const chromaticLowerTonicName = alterAccidentalBySemitone(chromaticLowerTonicParams.note, 'up');
+  const chromaticLowerScaleParams = resolveScaleByTonic(chromaticLowerTonicName);
+
+  const chromaticUpperTonicParams = cu.find(resolvedScaleParams.scale, (n) => n.pitchClass === (targetTonicPC + 1) % c.OCTAVE_SIZE);
+  const chromaticUpperTonicName = alterAccidentalBySemitone(chromaticUpperTonicParams.note, 'down');
+
+  const contextTargets: t.noteName[] = [chromaticLowerTonicName, chromaticUpperTonicName];
+
+  const homeCenterInLowerTargetScale = chromaticLowerScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
+  if (homeCenterInLowerTargetScale) {
+    const anchoredScale = anchorScaleToCenter(chromaticLowerScaleParams.scale, homeCenterNoteParams.pitchClass);
+    return {
+      ...chromaticLowerScaleParams,
+      scale: anchoredScale,
+      contextTargets,
+    };
+  }
+
+  const chromaticUpperScaleParams = resolveScaleByTonic(chromaticUpperTonicName);
+  const homeCenterInUpperTargetScale = chromaticUpperScaleParams.scale.find(n => n.note === homeCenterNoteParams.note);
+  if (homeCenterInUpperTargetScale) {
+    const anchoredScale = anchorScaleToCenter(chromaticUpperScaleParams.scale, homeCenterNoteParams.pitchClass);
+    return {
+      ...chromaticUpperScaleParams,
+      scale: anchoredScale,
+      contextTargets,
+    };
+  }
+
+  return {
+    ...chromaticLowerScaleParams,
+    canApplyContext: false,
+    contextTargets,
+  };
+};
+
+export const scaleToMap: t.scaleToMap = (scale) => scale
+  .reduce((m, n) => {
+    const { pitchClass } = n;
+    if (!m.has(pitchClass)) {
+      m.set(pitchClass, n);
+    }
+    return m;
+  }, new Map());
+
+export const mapScaleToLayout: t.mapScaleToLayout = ({ startNotes, scaleMap }) => startNotes.map(({ note, octave }) => {
+  const scaleLayout: t.scaleLayout = [];
+  const startNoteNaturalParams = getNaturalNoteParams(note);
+  const startNoteOffsetPC = calcOffsetPC(note);
+  const startNotePC = startNoteNaturalParams.naturalPitchClass + startNoteOffsetPC + c.OCTAVE_SIZE;
+  let currentOctave = octave;
+
+  for (let semitoneIndex = 0; semitoneIndex <= c.OCTAVE_SIZE; semitoneIndex += 1) {
+    const currentPC = (startNotePC + semitoneIndex) % c.OCTAVE_SIZE;
+    const scaleNoteParams = scaleMap.get(currentPC);
+    const currentNote = scaleNoteParams === undefined ? '' : scaleNoteParams.note;
+    currentOctave = currentOctave + Number(semitoneIndex > 0 && currentPC === 0);
+    const degree = scaleNoteParams ? scaleNoteParams.degree : 0;
+
+    scaleLayout.push({ note: currentNote, octave: currentOctave, degree });
+  }
+
+  return scaleLayout;
+});

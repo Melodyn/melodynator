@@ -150,7 +150,7 @@ key_types:
   - store                # t.store — базовый тип стора (без UI)
   - uiStore              # t.uiStore — тема + toggleTheme
   - uiTheme              # type: 'light' | 'dark' | atom в ui.ts, инициализируется из storageService.selectAll()
-  - savedValues          # t.savedValues | StorageService.selectAll() в app/index.ts — единственная точка чтения начального состояния | поля: theme, locale, tonic, intervalPattern, modalShift, contextOffset, degreeRotation, hiddenDegrees, startNotes, activeScalePresetId, activeFretboardPresetId, isEnharmonicSimplify, intervalDisplayMode
+  - savedValues          # t.savedValues | StorageService.selectAll() в src/index.ts — единственная точка чтения начального состояния | поля: theme, locale, tonic, intervalPattern, modalShift, contextOffset, degreeRotation, hiddenDegrees, startNotes, activeScalePresetId, activeFretboardPresetId, isEnharmonicSimplify, intervalDisplayMode
   - appStore             # store & uiStore — полный стор приложения
   - intervalDisplayMode  # type: 'digit' | 'letter' | store: stateIntervalDisplayMode
   - setIntervalStep      # action: degree (1-based) + intervalSize → stateScaleBuildParams(.intervalPattern)
@@ -211,7 +211,8 @@ render_targets:
   - elIntervalDisplaySwitch   # data-control="interval-display-switch" | ← stateIntervalDisplayMode, textIntervals; кнопка-переключатель digit/letter
   - elIntervalStepParams      # data-template="interval-step-params" → клонируется в popover content() initIntervalSteps; select заполняется интервалами при каждом открытии
   - elScaleToneContainers     # data-container="scale-tone" | ← stateUnshiftResolvedScaleParams(.scale), stateDegreeRotation
-  - elDegreeSwitchContainers  # data-container="degree-switch" | ← stateHiddenDegrees (labels стилизуются)
+  - elDegreeSwitchContainers  # data-container="degree-switch" | ← stateHiddenDegrees (input-переключатели)
+  - elDegreeSwitchLabels      # labels для data-container="degree-switch" | ← stateHiddenDegrees (стилизация label без DOM API в render.ts)
   - elResolveErrorContainer   # data-container="resolve-error" | ← stateResolvedScaleParams(.canApplyContext)
   - elKeyboardNotes           # data-instrument="keyboard-note" (td-ячейки) | ← stateResolvedScaleParams(.scale)
   - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard

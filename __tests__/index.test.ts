@@ -1,7 +1,8 @@
 import { expect, test, describe } from 'vitest';
 import * as t from '../src/types';
-import { resolveScale, scaleToMap, mapScaleToLayout, applyContextTransform, applyDegreeRotation } from '../src';
+import { resolveScale, scaleToMap, mapScaleToLayout, applyContextTransform, applyDegreeRotation } from '../src/core';
 import { initI18n } from '../src/app/i18n';
+import { StorageService } from '../src/app/StorageService';
 import enJson from '../src/translations/en.json';
 
 const keys = (obj: object) => Object.keys(obj).sort();
@@ -208,7 +209,22 @@ describe('mapScaleToLayout', () => {
 });
 
 describe('en.json completeness', () => {
-  const i18n = initI18n('ru');
+  const storageService = new StorageService({
+    theme: 'light',
+    locale: 'ru',
+    tonic: 'C',
+    intervalPattern: [2, 2, 1, 2, 2, 2, 1],
+    modalShift: 0,
+    contextOffset: 0,
+    degreeRotation: 0,
+    hiddenDegrees: [],
+    startNotes: [{ note: 'C', octave: 4 }],
+    activeScalePresetId: 1,
+    activeFretboardPresetId: 1,
+    isEnharmonicSimplify: false,
+    intervalDisplayMode: 'digit',
+  });
+  const i18n = initI18n('ru', storageService);
 
   test('scaleParams keys match base locale', () => {
     expect(keys(enJson.scaleParams)).toEqual(keys(i18n.textScaleParams.get()));

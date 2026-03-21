@@ -159,6 +159,7 @@ export type domRefs = {
   elEnharmonicSimplifySwitch: HTMLButtonElement
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
   elDegreeSwitchContainers: NodeListOf<HTMLInputElement>
+  elDegreeSwitchLabels: HTMLLabelElement[]
   elKeyboardNotes: NodeListOf<HTMLTableCellElement>
   elFretboard: HTMLTableSectionElement
   elFretboardStrings: HTMLTableRowElement[]

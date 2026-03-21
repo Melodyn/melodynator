@@ -20,6 +20,16 @@ export const getDomRefs = (): t.domRefs => {
   const elEnharmonicSimplifySwitch = qs<HTMLButtonElement>('[data-control="enharmonic-simplify"]');
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   const elDegreeSwitchContainers = qsa<HTMLInputElement>('[data-container="degree-switch"]');
+  const elDegreeSwitchLabels = Array.from(elDegreeSwitchContainers).map((elDegreeSwitchContainer) => {
+    const degreeSwitchLabels = elDegreeSwitchContainer.labels;
+    if (degreeSwitchLabels && degreeSwitchLabels.length > 0) {
+      const [elDegreeSwitchLabel] = degreeSwitchLabels;
+      if (elDegreeSwitchLabel) {
+        return elDegreeSwitchLabel;
+      }
+    }
+    throw new Error(`Missing label for degree switch "${elDegreeSwitchContainer.id}"`);
+  });
 
   const elKeyboardNotes = qsa<HTMLTableCellElement>('[data-instrument="keyboard-note"]');
 
@@ -30,14 +40,13 @@ export const getDomRefs = (): t.domRefs => {
   const elFretboardString = <HTMLTableRowElement>qs<HTMLTemplateElement>('[data-template="fretboard-string"]').content.firstElementChild;
   const elFretboardNewStringNoteParams = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="fretboard-set-string-params"]').content.firstElementChild;
   const elNoteList = qs<HTMLSelectElement>('[data-select="fretboard-string-note"]', elFretboardNewStringNoteParams);
-  const elNoteListItem = <HTMLOptionElement>elNoteList.firstElementChild;
-  c.allNotesNames.forEach((name, i) => {
-    const opt = i === 0 ? elNoteListItem : <HTMLOptionElement>elNoteListItem.cloneNode();
-    opt.value = name;
-    opt.textContent = name;
-    if (i > 0) {
-      elNoteList.appendChild(opt);
-    }
+  const elNoteListItemTemplate = <HTMLOptionElement>elNoteList.firstElementChild;
+  elNoteList.innerHTML = '';
+  c.allNotesNames.forEach((name) => {
+    const elNoteListItem = <HTMLOptionElement>elNoteListItemTemplate.cloneNode();
+    elNoteListItem.value = name;
+    elNoteListItem.textContent = name;
+    elNoteList.appendChild(elNoteListItem);
   });
 
   const elAddFretboardString = qs<HTMLButtonElement>('[data-control="add-fretboard-string"]');
@@ -78,6 +87,7 @@ export const getDomRefs = (): t.domRefs => {
     elEnharmonicSimplifySwitch,
     elScaleToneContainers,
     elDegreeSwitchContainers,
+    elDegreeSwitchLabels,
     elKeyboardNotes,
     elFretboard,
     elFretboardStrings,

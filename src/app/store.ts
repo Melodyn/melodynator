@@ -2,7 +2,7 @@ import * as n from 'nanostores';
 import * as t from '../types';
 import * as c from '../constants';
 import * as cu from '../commonUtils';
-import * as mu from '../index';
+import * as mu from '../core';
 import { StorageService } from './StorageService';
 
 export const createStore = (saved: t.savedValues, storageService: StorageService): t.store => {
@@ -25,7 +25,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     },
   );
   const stateResolvedScaleParams = n.computed(
-    [stateScaleBuildParams, stateDegreeRotation, stateContextOffset, stateHiddenDegrees],
+    [stateScaleBuildParams, stateDegreeRotation, stateContextOffset],
     (scaleBuildParams, degreeRotation, contextOffset) => {
       const resolvedScaleParams = mu.resolveScale(scaleBuildParams);
       const resolvedContextScaleParams = mu.applyContextTransform(resolvedScaleParams, contextOffset);

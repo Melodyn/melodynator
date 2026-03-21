@@ -79,11 +79,11 @@ const elFretboardStringFret = elFretboardStringFrets[fretIndex - 1];
 
 ### `domRefs.ts` — сбор DOM-ссылок
 
-Единственное место, где вызываются `querySelector` / `querySelectorAll`. Экспортирует `getDomRefs(): t.domRefs` — функцию, которая собирает все ссылки на DOM-элементы и возвращает объект `domRefs`. Вызывается один раз в `index.ts`, результат передаётся в `ui.ts` и `render.ts`.
+Единственное место, где вызываются `querySelector` / `querySelectorAll`. Экспортирует `getDomRefs(): t.domRefs` — функцию, которая собирает все ссылки на DOM-элементы и возвращает объект `domRefs`. Вызывается один раз в `src/index.ts`, результат передаётся в `ui.ts` и `render.ts`.
 
 ### `ui.ts` — DOM
 
-Все обращения к DOM через поведение — только здесь. Получает готовый `domRefs` из `index.ts` и передаёт его в `render.ts`. Если `render.ts` нужен DOM-элемент — он должен приходить через `refs`, а не запрашиваться напрямую.
+Все обращения к DOM через поведение — только здесь. Получает готовый `domRefs` из `src/index.ts` и передаёт его в `render.ts`. Если `render.ts` нужен DOM-элемент — он должен приходить через `refs`, а не запрашиваться напрямую.
 
 Весь DOM-контент создаётся через HTML-шаблоны (`<template>`). Создавать структурные DOM-элементы через `document.createElement` — антипаттерн: это возвращает компонентный подход, от которого проект намеренно отказался.
 
@@ -255,9 +255,9 @@ qs('[data-control="start-note"]', elFretboardString)
 - `insert(key, value)` — записывает значение
 - `selectAll()` — читает все ключи из `t.savedValues`
 
-Создаётся один раз в `app/index.ts` с дефолтными значениями и передаётся в `createStore`, `createUiStore`, `initI18n`. Начальное состояние — `storageService.selectAll()`.
+Создаётся один раз в `src/index.ts` с дефолтными значениями и передаётся в `createStore`, `createUiStore`, `initI18n`. Начальное состояние — `storageService.selectAll()`.
 
-**Чтение** — только через `storageService.selectAll()` в `index.ts`. Сторы не читают localStorage напрямую.
+**Чтение** — только через `storageService.selectAll()` в `src/index.ts`. Сторы не читают localStorage напрямую.
 
 **Запись** — через подписку `listen` в момент изменения стора. Так же, как с любым другим side-эффектом состояния.
 
