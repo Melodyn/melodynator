@@ -62,6 +62,7 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
     presetNotes: 'Ноты', // ноты в формате E2 A2 D3 G3 B3 E4
     presetTuning: 'Строй',
     presetComment: 'Пояснение',
+    presetStrings: 'струн',
   });
 
   const textContent = <t.i18nTextAtom><unknown>i18n('content', {
@@ -83,6 +84,7 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
     footerAboutLink: 'Сергей Мелодин',
     footerGithubLink: 'Github',
     presetScaleModalTitle: 'Пресеты гамм',
+    presetFretboardModalTitle: 'Пресеты инструментов',
     aboutTooltip: '— красная нота это подсказка с полезной информацией. Работает по наведению мыши и касанию на мобильных.',
     fretboardInfo: 'Это гриф. Цвет означает октаву ноты на ладу.',
   });

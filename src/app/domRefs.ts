@@ -21,6 +21,9 @@ export const getDomRefs = (): t.domRefs => {
   const elPresetScaleModalButtonLabel = qs<HTMLSpanElement>('[data-container="preset-scale-modal-button-label"]');
   const elPresetScaleModal = qs<HTMLDivElement>('[data-container="preset-scale-modal"]');
   const elPresetScaleList = qs<HTMLDivElement>('[data-container="preset-scale-list"]');
+  const elPresetFretboardModalButtonLabel = qs<HTMLSpanElement>('[data-container="preset-fretboard-modal-button-label"]');
+  const elPresetFretboardModal = qs<HTMLDivElement>('[data-container="preset-fretboard-modal"]');
+  const elPresetFretboardList = qs<HTMLDivElement>('[data-container="preset-fretboard-list"]');
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   const elDegreeSwitchContainers = qsa<HTMLInputElement>('[data-container="degree-switch"]');
   const elDegreeSwitchLabels = Array.from(elDegreeSwitchContainers).map((elDegreeSwitchContainer) => {
@@ -42,6 +45,7 @@ export const getDomRefs = (): t.domRefs => {
   const elFretboardStringFrets: HTMLTableCellElement[][] = [];
   const elFretboardString = <HTMLTableRowElement>qs<HTMLTemplateElement>('[data-template="fretboard-string"]').content.firstElementChild;
   const elPresetScaleCard = <HTMLDivElement>qs<HTMLTemplateElement>('[data-template="preset-scale-card"]').content.firstElementChild;
+  const elPresetFretboardCard = <HTMLDivElement>qs<HTMLTemplateElement>('[data-template="preset-fretboard-card"]').content.firstElementChild;
   const elFretboardNewStringNoteParams = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="fretboard-set-string-params"]').content.firstElementChild;
   const elNoteList = qs<HTMLSelectElement>('[data-select="fretboard-string-note"]', elFretboardNewStringNoteParams);
   const elNoteListItemTemplate = <HTMLOptionElement>elNoteList.firstElementChild;
@@ -89,6 +93,23 @@ export const getDomRefs = (): t.domRefs => {
     elEditPresetScaleButton: qs<HTMLButtonElement>('[data-control="edit-preset-scale"]', el),
     elRemovePresetScaleButton: qs<HTMLButtonElement>('[data-control="remove-preset-scale"]', el),
   });
+  const getElPresetFretboardCardTextElements = (el: HTMLDivElement): t.presetFretboardCardTextElements => ({
+    presetFretboardName: qs<HTMLSpanElement>(`[data-container="${c.PRESET_FRETBOARD_CARD_CONTAINERS.presetFretboardName}"]`, el),
+    presetFretboardStringsCount: qs<HTMLSpanElement>(`[data-container="${c.PRESET_FRETBOARD_CARD_CONTAINERS.presetFretboardStringsCount}"]`, el),
+    presetFretboardTuning: qs<HTMLSpanElement>(`[data-container="${c.PRESET_FRETBOARD_CARD_CONTAINERS.presetFretboardTuning}"]`, el),
+    presetFretboardNotes: qs<HTMLSpanElement>(`[data-container="${c.PRESET_FRETBOARD_CARD_CONTAINERS.presetFretboardNotes}"]`, el),
+    presetFretboardComment: qs<HTMLSpanElement>(`[data-container="${c.PRESET_FRETBOARD_CARD_CONTAINERS.presetFretboardComment}"]`, el),
+  });
+  const getElPresetFretboardCardLabelElements = (el: HTMLDivElement): t.presetFretboardCardLabelElements => ({
+    labelPresetFretboardTuning: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_FRETBOARD_CARD_STATIC_CONTENTS.labelPresetFretboardTuning}"]`, el),
+    labelPresetFretboardNotes: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_FRETBOARD_CARD_STATIC_CONTENTS.labelPresetFretboardNotes}"]`, el),
+    labelPresetFretboardComment: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_FRETBOARD_CARD_STATIC_CONTENTS.labelPresetFretboardComment}"]`, el),
+  });
+  const getElPresetFretboardCardActionButtons = (el: HTMLDivElement): t.presetFretboardCardActionButtons => ({
+    elApplyPresetFretboardButton: qs<HTMLButtonElement>('[data-control="apply-preset-fretboard"]', el),
+    elEditPresetFretboardButton: qs<HTMLButtonElement>('[data-control="edit-preset-fretboard"]', el),
+    elRemovePresetFretboardButton: qs<HTMLButtonElement>('[data-control="remove-preset-fretboard"]', el),
+  });
 
   const getElIntervalStepSelect = (form: HTMLFormElement) =>
     qs<HTMLSelectElement>('[data-select="interval-step-value"]', form);
@@ -118,6 +139,9 @@ export const getDomRefs = (): t.domRefs => {
     elPresetScaleModalButtonLabel,
     elPresetScaleModal,
     elPresetScaleList,
+    elPresetFretboardModalButtonLabel,
+    elPresetFretboardModal,
+    elPresetFretboardList,
     elScaleToneContainers,
     elDegreeSwitchContainers,
     elDegreeSwitchLabels,
@@ -128,6 +152,7 @@ export const getDomRefs = (): t.domRefs => {
     elFretboardStringFrets,
     elFretboardString,
     elPresetScaleCard,
+    elPresetFretboardCard,
     elFretboardNewStringNoteParams,
     elAddFretboardString,
     elAddFretboardStringConfirm,
@@ -138,6 +163,9 @@ export const getDomRefs = (): t.domRefs => {
     getElPresetScaleCardTextElements,
     getElPresetScaleCardLabelElements,
     getElPresetScaleCardActionButtons,
+    getElPresetFretboardCardTextElements,
+    getElPresetFretboardCardLabelElements,
+    getElPresetFretboardCardActionButtons,
     getElIntervalStepSelect,
     getElFretboardStringNoteSelect,
     getElFretboardNoteOctaveSelect,

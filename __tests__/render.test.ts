@@ -90,8 +90,11 @@ const createDomRefs = (): t.domRefs => {
   const elDegreeSwitchContainers = Array.from({ length: 7 }, (_, index) => createFakeElement({ value: `${index + 1}`, id: `degree-${index + 1}` }));
   const elDegreeSwitchLabels = Array.from({ length: 7 }, () => createFakeElement());
   const elKeyboardNotes = Array.from({ length: 13 }, () => createFakeElement());
-  const elFretboardStartNoteContainers = [createFakeElement()];
-  const elFretboardStringFrets = [Array.from({ length: 12 }, () => createFakeElement())];
+  const elFretboardStartNoteContainers = Array.from({ length: c.MAX_FRETBOARD_STRINGS }, () => createFakeElement());
+  const elFretboardStringFrets = Array.from(
+    { length: c.MAX_FRETBOARD_STRINGS },
+    () => Array.from({ length: 12 }, () => createFakeElement()),
+  );
   const elDirectionControllers = [
     createFakeElement({ dataset: { control: 'tonic-shift' } }),
     createFakeElement({ dataset: { control: 'modal-shift' } }),
@@ -115,6 +118,12 @@ const createDomRefs = (): t.domRefs => {
     elIntervalDisplaySwitch: createFakeElement(),
     elIntervalStepParams: {},
     elEnharmonicSimplifySwitch: createFakeElement(),
+    elPresetScaleModalButtonLabel: createFakeElement(),
+    elPresetScaleModal: createFakeElement(),
+    elPresetScaleList: createFakeElement(),
+    elPresetFretboardModalButtonLabel: createFakeElement(),
+    elPresetFretboardModal: createFakeElement(),
+    elPresetFretboardList: createFakeElement(),
     elScaleToneContainers,
     elDegreeSwitchContainers,
     elDegreeSwitchLabels,
@@ -124,6 +133,8 @@ const createDomRefs = (): t.domRefs => {
     elFretboardStartNoteContainers,
     elFretboardStringFrets,
     elFretboardString: {},
+    elPresetScaleCard: {},
+    elPresetFretboardCard: {},
     elFretboardNewStringNoteParams: {},
     elAddFretboardString: createFakeElement(),
     elAddFretboardStringConfirm: createFakeElement(),
@@ -131,6 +142,12 @@ const createDomRefs = (): t.domRefs => {
     getElFretboardStringNumberButton: () => <HTMLButtonElement><unknown>createFakeElement(),
     getElFretboardStartNoteContainer: () => <HTMLButtonElement><unknown>createFakeElement(),
     getElFretboardStringFrets: () => [],
+    getElPresetScaleCardTextElements: () => <t.presetScaleCardTextElements><unknown>{},
+    getElPresetScaleCardLabelElements: () => <t.presetScaleCardLabelElements><unknown>{},
+    getElPresetScaleCardActionButtons: () => <t.presetScaleCardActionButtons><unknown>{},
+    getElPresetFretboardCardTextElements: () => <t.presetFretboardCardTextElements><unknown>{},
+    getElPresetFretboardCardLabelElements: () => <t.presetFretboardCardLabelElements><unknown>{},
+    getElPresetFretboardCardActionButtons: () => <t.presetFretboardCardActionButtons><unknown>{},
     getElIntervalStepSelect: () => <HTMLSelectElement><unknown>createFakeElement(),
     getElFretboardStringNoteSelect: () => <HTMLSelectElement><unknown>createFakeElement(),
     getElFretboardNoteOctaveSelect: () => <HTMLSelectElement><unknown>createFakeElement(),
@@ -249,6 +266,20 @@ describe('bindRenderers', () => {
     expect(appStore.stateActiveFretboardPresetId.get()).toBe(1);
   });
 
+  test('applyFretboardPreset applies preset values and keeps unrelated state intact', () => {
+    const { appStore } = createRenderContext();
+
+    appStore.applyFretboardPreset(6);
+
+    expect(appStore.stateFretboardStartNotes.get()).toEqual(d.FRETBOARD_PRESETS.ru[5].startNotes);
+    expect(appStore.stateActiveFretboardPresetId.get()).toBe(6);
+    expect(appStore.stateLocale.get()).toBe('ru');
+    expect(appStore.theme.get()).toBe('light');
+    expect(appStore.stateIntervalDisplayMode.get()).toBe('digit');
+    expect(appStore.stateIsEnharmonicSimplify.get()).toBe(false);
+    expect(appStore.stateActiveScalePresetId.get()).toBe(d.DEFAULT_SCALE_PRESET_ID);
+  });
+
   test.each([
     ['offsetTonicShift', (appStore: t.appStore) => appStore.offsetTonicShift(1)],
     ['offsetModalShift', (appStore: t.appStore) => appStore.offsetModalShift(1)],
@@ -263,5 +294,29 @@ describe('bindRenderers', () => {
     mutateScale(appStore);
 
     expect(appStore.stateActiveScalePresetId.get()).toBe(c.NO_ACTIVE_PRESET_ID);
+  });
+
+  test.each([
+    ['setFretboardStartNote', (appStore: t.appStore) => appStore.setFretboardStartNote({ index: 0, note: 'D', octave: 4 })],
+    ['addFretboardString', (appStore: t.appStore) => appStore.addFretboardString()],
+    ['removeFretboardString', (appStore: t.appStore) => appStore.removeFretboardString(0)],
+  ])('%s resets activeFretboardPresetId after apply', (_actionName, mutateFretboard) => {
+    const { appStore } = createRenderContext();
+
+    appStore.applyFretboardPreset(6);
+    mutateFretboard(appStore);
+
+    expect(appStore.stateActiveFretboardPresetId.get()).toBe(c.NO_ACTIVE_PRESET_ID);
+  });
+
+  test('offsetFretboardPreset applies default preset first when active preset is missing', () => {
+    const { appStore } = createRenderContext();
+
+    appStore.applyFretboardPreset(6);
+    appStore.setFretboardStartNote({ index: 0, note: 'D', octave: 4 });
+    appStore.offsetFretboardPreset(1);
+
+    expect(appStore.stateActiveFretboardPresetId.get()).toBe(d.DEFAULT_FRETBOARD_PRESET_ID);
+    expect(appStore.stateFretboardStartNotes.get()).toEqual(d.FRETBOARD_PRESETS.ru[d.DEFAULT_FRETBOARD_PRESET_ID - 1].startNotes);
   });
 });

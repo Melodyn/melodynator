@@ -47,6 +47,9 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
   const resetActiveScalePresetId = (): void => {
     stateActiveScalePresetId.set(c.NO_ACTIVE_PRESET_ID);
   };
+  const resetActiveFretboardPresetId = (): void => {
+    stateActiveFretboardPresetId.set(c.NO_ACTIVE_PRESET_ID);
+  };
 
   const offsetTonicShift: t.offsetScaleParam = (offset) => {
     const currentTonicIndex = stateCurrentNoteChromaticIndex.get();
@@ -98,6 +101,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
       (startNote: t.fretboardStartNoteParams, i: number) => i === changeStringIndex ? newStringParams : startNote,
     );
     stateFretboardStartNotes.set(newStartNotes);
+    resetActiveFretboardPresetId();
   };
 
   const addFretboardString: t.addFretboardString = () => {
@@ -114,6 +118,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     const newNote = c.ENHARMONIC_SIMPLE_NAMES[newPitchClass];
     const newOctave = newPitchClass > lastPitchClass ? Math.max(0, lastStartNote.octave - 1) : lastStartNote.octave;
     stateFretboardStartNotes.set([...currentStartNotes, { note: newNote, octave: newOctave }]);
+    resetActiveFretboardPresetId();
   };
 
   const removeFretboardString: t.removeFretboardString = (index) => {
@@ -123,6 +128,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     }
     const newStartNotes = currentStartNotes.filter((_, i) => i !== index);
     stateFretboardStartNotes.set(newStartNotes);
+    resetActiveFretboardPresetId();
   };
 
   const setIntervalStep: t.setIntervalStep = ({ degree, step }) => {
@@ -161,6 +167,27 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     applyScalePreset(nextPreset.id);
   };
 
+  const applyFretboardPreset: t.applyFretboardPreset = (presetInstrumentId) => {
+    const presetInstrument = cu.find(d.FRETBOARD_PRESETS[stateLocale.get()], ({ id }) => id === presetInstrumentId);
+    const startNotes = presetInstrument.startNotes.map((startNote) => ({ ...startNote }));
+    stateFretboardStartNotes.set(startNotes);
+    stateActiveFretboardPresetId.set(presetInstrument.id);
+  };
+
+  const offsetFretboardPreset: t.offsetFretboardPreset = (offset) => {
+    const locale = stateLocale.get();
+    const presetInstruments = d.FRETBOARD_PRESETS[locale];
+    const activeFretboardPresetId = stateActiveFretboardPresetId.get();
+    if (activeFretboardPresetId === c.NO_ACTIVE_PRESET_ID) {
+      applyFretboardPreset(d.DEFAULT_FRETBOARD_PRESET_ID);
+      return;
+    }
+    const currentPresetIndex = cu.findIndex(presetInstruments, ({ id }) => id === activeFretboardPresetId);
+    const nextPresetIndex = (currentPresetIndex + presetInstruments.length + offset) % presetInstruments.length;
+    const nextPreset = presetInstruments[nextPresetIndex];
+    applyFretboardPreset(nextPreset.id);
+  };
+
   stateScaleBuildParams.listen(({ tonic, intervalPattern, modalShift }) => {
     storageService.insert('tonic', tonic);
     storageService.insert('intervalPattern', intervalPattern);
@@ -193,7 +220,9 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     removeFretboardString,
     setIntervalStep,
     applyScalePreset,
+    applyFretboardPreset,
     offsetScalePreset,
+    offsetFretboardPreset,
     stateActiveScalePresetId,
     stateActiveFretboardPresetId,
   };

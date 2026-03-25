@@ -89,25 +89,25 @@
     <main>
 
       <div class="pb-5 text-center">
-        <div class="d-inline-flex flex-column align-items-start gap-1">
-          <div class="d-flex align-items-center gap-1">
-            <button type="button" data-control="scale-preset-shift" data-direction="down"
-              class="btn btn-sm btn-outline-primary rounded-0 rounded-start fw-bold">
-              &#8592;
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-primary rounded-0"
-              data-control="open-preset-scale-modal" data-bs-toggle="modal" data-bs-target="#preset-scale-modal">
-              <span class="d-inline-block text-truncate max-width-120px align-bottom"
-                data-container="preset-scale-modal-button-label">
-              </span>
-            </button>
-            <button type="button" data-control="scale-preset-shift" data-direction="up"
-              class="btn btn-sm btn-outline-primary rounded-0 rounded-end fw-bold">
-              &#8594;
-            </button>
-          </div>
+        <div class="overflow-x-auto">
+          <div class="d-inline-flex flex-column align-items-start gap-1">
+            <div class="d-flex align-items-center gap-1">
+              <button type="button" data-control="scale-preset-shift" data-direction="down"
+                class="btn btn-sm btn-outline-primary rounded-0 rounded-start fw-bold">
+                &#8592;
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary rounded-0"
+                data-control="open-preset-scale-modal" data-bs-toggle="modal" data-bs-target="#preset-scale-modal">
+                <span class="d-inline-block text-truncate width-120px align-bottom"
+                  data-container="preset-scale-modal-button-label">
+                </span>
+              </button>
+              <button type="button" data-control="scale-preset-shift" data-direction="up"
+                class="btn btn-sm btn-outline-primary rounded-0 rounded-end fw-bold">
+                &#8594;
+              </button>
+            </div>
 
-          <div class="overflow-x-auto">
             <table
               class="table table-sm table-borderless align-middle text-center w-auto my-0 mx-auto p-0 table-spacing-y">
               <thead class="align-middle">
@@ -313,56 +313,77 @@
         </div>
       </div>
 
-      <div class="overflow-x-auto pb-5">
-        <table class="table table-bordered align-middle text-center w-auto my-0 mx-auto p-0">
-          <thead class="align-middle">
-            <tr class="height-30px">
-              <td class="p-0 text-secondary width-30px">
-                <span data-tooltip="fretboard" data-tooltip-placement="right"></span>
-              </td>
-              <td class="p-0 text-secondary width-30px">0</td>
-              <td class="p-0 text-secondary width-30px">1</td>
-              <td class="p-0 text-secondary width-30px">2</td>
-              <td class="p-0 text-secondary width-30px">3</td>
-              <td class="p-0 text-secondary width-30px">4</td>
-              <td class="p-0 text-secondary width-30px">5</td>
-              <td class="p-0 text-secondary width-30px">6</td>
-              <td class="p-0 text-secondary width-30px">7</td>
-              <td class="p-0 text-secondary width-30px">8</td>
-              <td class="p-0 text-secondary width-30px">9</td>
-              <td class="p-0 text-secondary width-30px">10</td>
-              <td class="p-0 text-secondary width-30px">11</td>
-              <td class="p-0 text-secondary width-30px">12</td>
-            </tr>
-          </thead>
-          <tbody data-instrument="fretboard">
-          </tbody>
-          <tfoot>
-            <tr class="height-30px">
-              <td class="p-0 width-30px position-relative">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right"
-                  data-control="add-fretboard-string">+
-                </button>
-              </td>
-              <td class="p-0 text-secondary width-30px">12</td>
-              <td class="p-0 text-secondary width-30px">13</td>
-              <td class="p-0 text-secondary width-30px">14</td>
-              <td class="p-0 text-secondary width-30px">15</td>
-              <td class="p-0 text-secondary width-30px">16</td>
-              <td class="p-0 text-secondary width-30px">17</td>
-              <td class="p-0 text-secondary width-30px">18</td>
-              <td class="p-0 text-secondary width-30px">19</td>
-              <td class="p-0 text-secondary width-30px">20</td>
-              <td class="p-0 text-secondary width-30px">21</td>
-              <td class="p-0 text-secondary width-30px">22</td>
-              <td class="p-0 text-secondary width-30px">23</td>
-              <td class="p-0 text-secondary width-30px">24</td>
-            </tr>
-          </tfoot>
-        </table>
-        <span class="small d-block text-center" data-static-content="fretboard-info"></span>
+      <div class="pb-5 text-center">
+        <div class="overflow-x-auto">
+          <div class="d-inline-flex flex-column align-items-start gap-1">
+            <div class="d-flex align-items-center gap-1">
+              <button type="button" data-control="fretboard-preset-shift" data-direction="down"
+                class="btn btn-sm btn-outline-primary rounded-0 rounded-start fw-bold">
+                &#8592;
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary rounded-0"
+                data-control="open-preset-fretboard-modal" data-bs-toggle="modal" data-bs-target="#preset-fretboard-modal">
+                <span class="d-inline-block text-truncate width-120px align-bottom"
+                  data-container="preset-fretboard-modal-button-label">
+                </span>
+              </button>
+              <button type="button" data-control="fretboard-preset-shift" data-direction="up"
+                class="btn btn-sm btn-outline-primary rounded-0 rounded-end fw-bold">
+                &#8594;
+              </button>
+            </div>
+
+            <table class="table table-bordered align-middle text-center w-auto my-0 mx-auto p-0">
+              <thead class="align-middle">
+                <tr class="height-30px">
+                  <td class="p-0 text-secondary width-30px">
+                    <span data-tooltip="fretboard" data-tooltip-placement="right"></span>
+                  </td>
+                  <td class="p-0 text-secondary width-30px">0</td>
+                  <td class="p-0 text-secondary width-30px">1</td>
+                  <td class="p-0 text-secondary width-30px">2</td>
+                  <td class="p-0 text-secondary width-30px">3</td>
+                  <td class="p-0 text-secondary width-30px">4</td>
+                  <td class="p-0 text-secondary width-30px">5</td>
+                  <td class="p-0 text-secondary width-30px">6</td>
+                  <td class="p-0 text-secondary width-30px">7</td>
+                  <td class="p-0 text-secondary width-30px">8</td>
+                  <td class="p-0 text-secondary width-30px">9</td>
+                  <td class="p-0 text-secondary width-30px">10</td>
+                  <td class="p-0 text-secondary width-30px">11</td>
+                  <td class="p-0 text-secondary width-30px">12</td>
+                </tr>
+              </thead>
+              <tbody data-instrument="fretboard">
+              </tbody>
+              <tfoot>
+                <tr class="height-30px">
+                  <td class="p-0 width-30px position-relative">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right"
+                      data-control="add-fretboard-string">+
+                    </button>
+                  </td>
+                  <td class="p-0 text-secondary width-30px">12</td>
+                  <td class="p-0 text-secondary width-30px">13</td>
+                  <td class="p-0 text-secondary width-30px">14</td>
+                  <td class="p-0 text-secondary width-30px">15</td>
+                  <td class="p-0 text-secondary width-30px">16</td>
+                  <td class="p-0 text-secondary width-30px">17</td>
+                  <td class="p-0 text-secondary width-30px">18</td>
+                  <td class="p-0 text-secondary width-30px">19</td>
+                  <td class="p-0 text-secondary width-30px">20</td>
+                  <td class="p-0 text-secondary width-30px">21</td>
+                  <td class="p-0 text-secondary width-30px">22</td>
+                  <td class="p-0 text-secondary width-30px">23</td>
+                  <td class="p-0 text-secondary width-30px">24</td>
+                </tr>
+              </tfoot>
+            </table>
+            <span class="small d-block text-center" data-static-content="fretboard-info"></span>
+          </div>
+        </div>
       </div>
 
       <div class="overflow-x-auto">
@@ -632,6 +653,68 @@
           </div>
           <div class="modal-body px-2 py-3">
             <div class="d-grid gap-3" data-container="preset-scale-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <template id="template-preset-fretboard-card" data-template="preset-fretboard-card">
+      <div class="card">
+        <div class="card-header px-3 py-1">
+          <span class="small fw-bold" data-container="preset-fretboard-name"></span><span class="small text-nowrap"
+            data-container="preset-fretboard-strings-count"></span>
+        </div>
+
+        <div class="card-body p-0 m-0 d-flex justify-content-between">
+          <ul class="list-group list-group-flush rounded pe-2">
+            <li class="list-group-item py-1">
+              <span class="small">
+                <span class="fw-bold text-secondary" data-static-content="label-preset-fretboard-tuning"></span>
+                <span data-container="preset-fretboard-tuning"></span>
+              </span>
+            </li>
+            <li class="list-group-item py-1">
+              <span class="small">
+                <span class="fw-bold text-secondary" data-static-content="label-preset-fretboard-notes"></span>
+                <span class="font-monospace" data-container="preset-fretboard-notes"></span>
+              </span>
+            </li>
+            <li class="list-group-item py-1">
+              <span class="small">
+                <span class="fw-bold text-secondary" data-static-content="label-preset-fretboard-comment"></span>
+                <span data-container="preset-fretboard-comment"></span>
+              </span>
+            </li>
+          </ul>
+
+          <ul class="list-group list-group-flush rounded">
+            <li class="list-group-item">
+              <button type="button" data-control="apply-preset-fretboard"
+                class="btn btn-outline-primary btn-sm width-30px">✓</button>
+            </li>
+            <li class="list-group-item">
+              <button type="button" data-control="edit-preset-fretboard"
+                class="btn btn-outline-warning btn-sm width-30px">✎</button>
+            </li>
+            <li class="list-group-item">
+              <button type="button" data-control="remove-preset-fretboard"
+                class="btn btn-outline-danger btn-sm width-30px">×</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </template>
+
+    <div class="modal fade" id="preset-fretboard-modal" tabindex="-1" aria-hidden="true"
+      data-container="preset-fretboard-modal">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" data-static-content="preset-fretboard-modal-title"></h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-2 py-3">
+            <div class="d-grid gap-3" data-container="preset-fretboard-list"></div>
           </div>
         </div>
       </div>

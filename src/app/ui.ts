@@ -112,14 +112,16 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   const removeStringRow = (index: number): void => {
     const elFretboardString = refs.elFretboardStrings[index];
     const elStartNoteButton = refs.elFretboardStartNoteContainers[index];
-    const elNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
     const startNotePopover = Popover.getInstance(elStartNoteButton);
     if (startNotePopover) {
       startNotePopover.dispose();
     }
-    const numberPopover = Popover.getInstance(elNumberButton);
-    if (numberPopover) {
-      numberPopover.dispose();
+    if (index >= c.MIN_FRETBOARD_STRINGS) {
+      const elNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
+      const numberPopover = Popover.getInstance(elNumberButton);
+      if (numberPopover) {
+        numberPopover.dispose();
+      }
     }
     elFretboardString.remove();
     refs.elFretboardStrings.splice(index, 1);
@@ -250,11 +252,11 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
     if (prevStartNotes === undefined) {
       return;
     }
-    if (startNotes.length > prevStartNotes.length) {
+    while (refs.elFretboardStrings.length < startNotes.length) {
       addStringRow();
-    } else if (startNotes.length < prevStartNotes.length) {
-      const removedIndex = prevStartNotes.findIndex((_prev, i) => i >= startNotes.length || startNotes[i] !== prevStartNotes[i]);
-      removeStringRow(removedIndex);
+    }
+    while (refs.elFretboardStrings.length > startNotes.length) {
+      removeStringRow(refs.elFretboardStrings.length - 1);
     }
   });
 };
@@ -396,6 +398,131 @@ const initPresetScaleModal = (refs: t.domRefs, appStore: t.appStore): void => {
   appStore.textContent.subscribe(renderPresetScaleModalButtonLabel);
 };
 
+const initPresetFretboardModal = (refs: t.domRefs, appStore: t.appStore): void => {
+  const getPresetFretboardStringsCount = (
+    presetInstrument: t.presetInstrument,
+    fretboardTexts: Record<string, string>,
+  ): string => `${presetInstrument.startNotes.length} ${fretboardTexts.presetStrings}`;
+
+  const getPresetFretboardNotes = (presetInstrument: t.presetInstrument): string =>
+    [...presetInstrument.startNotes]
+      .reverse()
+      .map(({ note, octave }) => `${note}${octave}`)
+      .join(' ');
+
+  const getPresetFretboardCardTexts = (
+    presetInstrument: t.presetInstrument,
+    fretboardTexts: Record<string, string>,
+  ): t.presetFretboardCardTexts => ({
+    presetFretboardName: presetInstrument.name,
+    presetFretboardStringsCount: `, ${getPresetFretboardStringsCount(presetInstrument, fretboardTexts)}`,
+    presetFretboardTuning: presetInstrument.tuning,
+    presetFretboardNotes: getPresetFretboardNotes(presetInstrument),
+    presetFretboardComment: presetInstrument.comment,
+  });
+
+  const getPresetFretboardCardLabels = (fretboardTexts: Record<string, string>): t.presetFretboardCardLabels => ({
+    labelPresetFretboardTuning: `${fretboardTexts.presetTuning}: `,
+    labelPresetFretboardNotes: `${fretboardTexts.presetNotes}: `,
+    labelPresetFretboardComment: `${fretboardTexts.presetComment}: `,
+  });
+
+  const renderPresetFretboardCardTexts = (
+    elPresetFretboardCard: HTMLDivElement,
+    presetFretboardCardTexts: t.presetFretboardCardTexts,
+  ): void => {
+    const elPresetFretboardCardTextElements = refs.getElPresetFretboardCardTextElements(elPresetFretboardCard);
+
+    Object.entries(elPresetFretboardCardTextElements).forEach(([key, elPresetFretboardCardTextElement]) => {
+      const presetFretboardCardTextKey = <keyof t.presetFretboardCardTexts>key;
+      elPresetFretboardCardTextElement.textContent = presetFretboardCardTexts[presetFretboardCardTextKey];
+    });
+  };
+
+  const renderPresetFretboardCardLabels = (
+    elPresetFretboardCard: HTMLDivElement,
+    presetFretboardCardLabels: t.presetFretboardCardLabels,
+  ): void => {
+    const elPresetFretboardCardLabelElements = refs.getElPresetFretboardCardLabelElements(elPresetFretboardCard);
+
+    Object.entries(elPresetFretboardCardLabelElements).forEach(([key, elPresetFretboardCardLabelElement]) => {
+      const presetFretboardCardLabelKey = <keyof t.presetFretboardCardLabels>key;
+      elPresetFretboardCardLabelElement.textContent = presetFretboardCardLabels[presetFretboardCardLabelKey];
+    });
+  };
+
+  const renderPresetFretboardCardActionButtons = (elPresetFretboardCard: HTMLDivElement, presetInstrument: t.presetInstrument): void => {
+    const elPresetFretboardCardActionButtons = refs.getElPresetFretboardCardActionButtons(elPresetFretboardCard);
+    const presetInstrumentId = `${presetInstrument.id}`;
+    const isActivePreset = appStore.stateActiveFretboardPresetId.get() === presetInstrument.id;
+    const isCustomPreset = presetInstrument.isCustomPreset;
+    const actionButtonClassNames = {
+      applyActive: 'btn-outline-primary',
+      applyDisabled: 'btn-outline-secondary',
+      editActive: 'btn-outline-warning',
+      editDisabled: 'btn-outline-secondary',
+      removeActive: 'btn-outline-danger',
+      removeDisabled: 'btn-outline-secondary',
+    };
+
+    elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.dataset.presetFretboardId = presetInstrumentId;
+    elPresetFretboardCardActionButtons.elEditPresetFretboardButton.dataset.presetFretboardId = presetInstrumentId;
+    elPresetFretboardCardActionButtons.elRemovePresetFretboardButton.dataset.presetFretboardId = presetInstrumentId;
+    elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.disabled = isActivePreset;
+    elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.classList.toggle(actionButtonClassNames.applyActive, !isActivePreset);
+    elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.classList.toggle(actionButtonClassNames.applyDisabled, isActivePreset);
+    elPresetFretboardCardActionButtons.elEditPresetFretboardButton.disabled = !isCustomPreset;
+    elPresetFretboardCardActionButtons.elRemovePresetFretboardButton.disabled = !isCustomPreset;
+    elPresetFretboardCardActionButtons.elEditPresetFretboardButton.classList.toggle(actionButtonClassNames.editActive, isCustomPreset);
+    elPresetFretboardCardActionButtons.elEditPresetFretboardButton.classList.toggle(actionButtonClassNames.editDisabled, !isCustomPreset);
+    elPresetFretboardCardActionButtons.elRemovePresetFretboardButton.classList.toggle(actionButtonClassNames.removeActive, isCustomPreset);
+    elPresetFretboardCardActionButtons.elRemovePresetFretboardButton.classList.toggle(actionButtonClassNames.removeDisabled, !isCustomPreset);
+  };
+
+  const renderPresetFretboardCards = () => {
+    const locale = appStore.stateLocale.get();
+    const fretboardTexts = appStore.textFretboard.get();
+    const presetFretboardCardLabels = getPresetFretboardCardLabels(fretboardTexts);
+    const elPresetFretboardCards = d.FRETBOARD_PRESETS[locale].map((presetInstrument) => {
+      const elPresetFretboardCard = <HTMLDivElement>refs.elPresetFretboardCard.cloneNode(true);
+      const elPresetFretboardCardActionButtons = refs.getElPresetFretboardCardActionButtons(elPresetFretboardCard);
+
+      elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.addEventListener('click', () => {
+        const presetInstrumentId = Number(elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.dataset.presetFretboardId);
+        appStore.applyFretboardPreset(presetInstrumentId);
+        Modal.getOrCreateInstance(refs.elPresetFretboardModal).hide();
+      });
+
+      renderPresetFretboardCardTexts(elPresetFretboardCard, getPresetFretboardCardTexts(presetInstrument, fretboardTexts));
+      renderPresetFretboardCardLabels(elPresetFretboardCard, presetFretboardCardLabels);
+      renderPresetFretboardCardActionButtons(elPresetFretboardCard, presetInstrument);
+
+      return elPresetFretboardCard;
+    });
+
+    refs.elPresetFretboardList.replaceChildren(...elPresetFretboardCards);
+  };
+
+  const renderPresetFretboardModalButtonLabel = () => {
+    const activeFretboardPresetId = appStore.stateActiveFretboardPresetId.get();
+    if (activeFretboardPresetId === c.NO_ACTIVE_PRESET_ID) {
+      refs.elPresetFretboardModalButtonLabel.textContent = appStore.textContent.get().presetFretboardModalTitle;
+      return;
+    }
+    const locale = appStore.stateLocale.get();
+    const activePresetFretboard = cu.find(d.FRETBOARD_PRESETS[locale], ({ id }) => id === activeFretboardPresetId);
+    refs.elPresetFretboardModalButtonLabel.textContent = `${activePresetFretboard.name}, ${activePresetFretboard.tuning}`;
+  };
+
+  appStore.stateLocale.subscribe(renderPresetFretboardCards);
+  appStore.textFretboard.subscribe(renderPresetFretboardCards);
+  appStore.stateActiveFretboardPresetId.subscribe(renderPresetFretboardCards);
+  appStore.stateActiveFretboardPresetId.subscribe(renderPresetFretboardModalButtonLabel);
+  appStore.stateLocale.subscribe(renderPresetFretboardModalButtonLabel);
+  appStore.textContent.subscribe(renderPresetFretboardModalButtonLabel);
+  appStore.textFretboard.subscribe(renderPresetFretboardModalButtonLabel);
+};
+
 const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
   const tooltipInstances = new Map<string, Tooltip>();
   const elTooltipButton = <HTMLButtonElement>refs.elTooltipTemplate.content.firstElementChild;
@@ -456,6 +583,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
   initIntervalSteps(refs, appStore);
   initFretboard(refs, appStore);
   initPresetScaleModal(refs, appStore);
+  initPresetFretboardModal(refs, appStore);
   initTooltips(refs, appStore);
   initStaticText(refs, appStore);
 
@@ -476,6 +604,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
     'degree-rotation': appStore.offsetDegreeRotation,
     'context-shift': appStore.offsetContext,
     'scale-preset-shift': appStore.offsetScalePreset,
+    'fretboard-preset-shift': appStore.offsetFretboardPreset,
   };
 
   refs.elDirectionControllers.forEach((el) => {

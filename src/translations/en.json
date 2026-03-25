@@ -36,7 +36,8 @@
     "presetName": "Name",
     "presetNotes": "Notes",
     "presetTuning": "Tuning",
-    "presetComment": "Comment"
+    "presetComment": "Comment",
+    "presetStrings": "strings"
   },
   "content": {
     "pageTitle": "Melodynator",
@@ -57,6 +58,7 @@
     "footerAboutLink": "Sergei Melodyn",
     "footerGithubLink": "Github",
     "presetScaleModalTitle": "Scale presets",
+    "presetFretboardModalTitle": "Instrument presets",
     "aboutTooltip": "— a red note is a tooltip with useful information. Works on hover and touch on mobile.",
     "fretboardInfo": "This is the neck. The color indicates the octave of the note on the fret."
   },

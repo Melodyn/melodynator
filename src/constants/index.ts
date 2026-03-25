@@ -58,3 +58,17 @@ export const PRESET_SCALE_CARD_STATIC_CONTENTS: Record<keyof t.presetScaleCardLa
   labelPresetScaleHiddenDegrees: 'label-preset-scale-hidden-degrees',
   labelPresetScaleComment: 'label-preset-scale-comment',
 };
+
+export const PRESET_FRETBOARD_CARD_CONTAINERS: Record<keyof t.presetFretboardCardTexts, string> = {
+  presetFretboardName: 'preset-fretboard-name',
+  presetFretboardStringsCount: 'preset-fretboard-strings-count',
+  presetFretboardTuning: 'preset-fretboard-tuning',
+  presetFretboardNotes: 'preset-fretboard-notes',
+  presetFretboardComment: 'preset-fretboard-comment',
+};
+
+export const PRESET_FRETBOARD_CARD_STATIC_CONTENTS: Record<keyof t.presetFretboardCardLabels, string> = {
+  labelPresetFretboardTuning: 'label-preset-fretboard-tuning',
+  labelPresetFretboardNotes: 'label-preset-fretboard-notes',
+  labelPresetFretboardComment: 'label-preset-fretboard-comment',
+};

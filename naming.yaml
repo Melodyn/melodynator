@@ -46,9 +46,14 @@ data_control:
   - remove-fretboard-string # → removeFretboardString → stateFretboardStartNotes | кнопка в td номера строки; popover с подтверждением
   - open-preset-scale-modal # → declarative Bootstrap modal trigger | кнопка открытия списка пресетов гамм
   - scale-preset-shift      # → offsetScalePreset | кнопки листания пресетов над конфигуратором; направление задаётся data-direction
+  - open-preset-fretboard-modal # → declarative Bootstrap modal trigger | кнопка открытия списка пресетов инструментов
+  - fretboard-preset-shift      # → offsetFretboardPreset | кнопки листания пресетов над грифом; направление задаётся data-direction
   - apply-preset-scale     # → control карточки пресета гаммы в модалке; preset id хранится в data-preset-scale-id
   - edit-preset-scale      # → control карточки пресета гаммы в модалке; доступна только для isCustomPreset
   - remove-preset-scale    # → control карточки пресета гаммы в модалке; доступна только для isCustomPreset
+  - apply-preset-fretboard # → control карточки пресета инструмента в модалке; preset id хранится в data-preset-fretboard-id
+  - edit-preset-fretboard  # → control карточки пресета инструмента в модалке; доступна только для isCustomPreset
+  - remove-preset-fretboard # → control карточки пресета инструмента в модалке; доступна только для isCustomPreset
 
 data_tooltip:
   # Атрибут data-tooltip="key" — на плейсхолдере <span>. Ключ совпадает с ключом в textTooltips.
@@ -96,6 +101,7 @@ data_static_content:
   - footer-about-link # → textContent.footerAboutLink
   - footer-github-link # → textContent.footerGithubLink
   - preset-scale-modal-title # → textContent.presetScaleModalTitle | текст кнопки открытия и заголовка модалки пресетов
+  - preset-fretboard-modal-title # → textContent.presetFretboardModalTitle | текст кнопки открытия и заголовка модалки пресетов инструментов
   - about-tooltip    # → textContent.aboutTooltip | текст рядом с tooltip-иконкой в шапке
   - fretboard-info   # → textContent.fretboardInfo | подпись под фретбордом
   # статичные label-тексты карточки пресета гаммы (→ textPresetScale)
@@ -106,6 +112,9 @@ data_static_content:
   - label-preset-scale-degree-rotation
   - label-preset-scale-hidden-degrees
   - label-preset-scale-comment
+  - label-preset-fretboard-tuning
+  - label-preset-fretboard-notes
+  - label-preset-fretboard-comment
 
 data_template:
   # Атрибут data-template="name" — на <template>-элементах. Выбирается в domRefs.ts вместо #id.
@@ -114,6 +123,7 @@ data_template:
   - interval-step-params            # elIntervalStepParams — форма popover выбора интервала
   - fretboard-string                # elFretboardString — шаблон строки фретборда
   - preset-scale-card               # elPresetScaleCard — шаблон карточки пресета гаммы для списка в модалке
+  - preset-fretboard-card           # elPresetFretboardCard — шаблон карточки пресета инструмента для списка в модалке
   - fretboard-set-string-params     # elFretboardNewStringNoteParams — форма popover настройки ноты/октавы
   - add-fretboard-string-confirm    # elAddFretboardStringConfirm — кнопка подтверждения добавления строки
   - remove-fretboard-string-confirm # elRemoveFretboardStringConfirm — кнопка подтверждения удаления строки
@@ -149,6 +159,14 @@ data_container:
   - preset-scale-degree-rotation
   - preset-scale-hidden-degrees
   - preset-scale-comment
+  - preset-fretboard-modal # корневой элемент модалки списка пресетов инструментов
+  - preset-fretboard-list # mount target списка карточек пресетов инструментов внутри modal-body
+  - preset-fretboard-modal-button-label # текст кнопки открытия модалки пресетов инструментов; позже может подменяться названием активного инструмента
+  - preset-fretboard-name
+  - preset-fretboard-strings-count
+  - preset-fretboard-tuning
+  - preset-fretboard-notes
+  - preset-fretboard-comment
 
 data_instrument:
   - fretboard              # refs: elFretboard (tbody-контейнер строк)
@@ -185,7 +203,7 @@ key_types:
   - setIntervalStep      # action: degree (1-based) + intervalSize → stateScaleBuildParams(.intervalPattern)
   - altReduceMap         # Map<noteName, noteName> — карта замены нот на энгармонические эквиваленты с меньшим числом альтераций | render.ts: buildAltReduceMap, getAltReduceMap, reduceAlt
   - presetScale          # { id, name, scaleType, tonic, intervalPattern, modalShift, contextOffset, degreeRotation, hiddenDegrees, mood, family, comment, isCustomPreset } | хранится в defaults.ts; карточки рендерятся в модалке списка пресетов
-  - presetInstrument     # { id, name, tuning, startNotes } | хранится в textPresetsFretboard (i18n, оба локаля)
+  - presetInstrument     # { id, name, tuning, comment, startNotes, isCustomPreset } | хранится в defaults.ts; карточки рендерятся в модалке списка пресетов инструментов
   - addFretboardString   # action type: () => void | добавляет строку кварту ниже последней, max=MAX_FRETBOARD_STRINGS
   - removeFretboardString # action type: (index: number) => void | удаляет строку по индексу, min=MIN_FRETBOARD_STRINGS
 
@@ -193,11 +211,11 @@ stores:
   - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide | → initStaticText
   - textContent      # type: i18n atom | namespace: content | ключи: pageTitle, pageDescription, sections... | → initStaticText
   - textTooltips     # type: i18n atom | ключи: tooltip,hide,tonal,modal,degrees,center,context,fretboard | → initTooltips (Tooltip.setContent)
-  - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8, addStringLabel, removeStringLabel, presetName, presetNotes, presetTuning, presetComment | → popover content() в initFretboard
+  - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8, addStringLabel, removeStringLabel, presetName, presetNotes, presetTuning, presetComment, presetStrings | → popover content() в initFretboard и карточки пресетов инструментов
   - textErrors       # type: i18n atom | namespace: errors | ключи: resolveError, openPatternError | → render.ts (сообщение ошибки)
   - textIntervals    # type: i18n atom | namespace: intervals | ключи: halfStep, wholeStep, interval0–12, digitModeLabel | → render.ts, ui.ts (popover)
   - textPresetsScale     # type: i18n atom<presetScale[]> | namespace: presetsScale | 18 пресетов гамм | → будущий UI пресетов
-  - textPresetsFretboard # type: i18n atom<presetInstrument[]> | namespace: presetsFretboard | 8 пресетов инструментов | → будущий UI пресетов
+  - textPresetsFretboard # type: i18n atom<presetInstrument[]> | namespace: presetsFretboard | 8 пресетов инструментов | → потенциальный будущий источник, если пресеты инструментов будут вынесены из defaults.ts в i18n
   - textPresetScale      # type: i18n atom | namespace: presetScale | label-тексты карточки пресета гаммы
   - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elSetIntervalSteps, elIntervalDisplaySwitch
   - stateLocale                     # type: Atom<locale> | atom, инициализируется из storageService.selectAll() | → elLocaleSwitch
@@ -230,6 +248,8 @@ actions:
   - removeFretboardString     # ← data-control="remove-fretboard-string" (popover) | params: index | → stateFretboardStartNotes (filter)
   - applyScalePreset          # ← data-control="apply-preset-scale" | params: presetScaleId | → stateScaleBuildParams + stateContextOffset + stateDegreeRotation + stateHiddenDegrees + stateActiveScalePresetId
   - offsetScalePreset         # ← data-control="scale-preset-shift" + data-direction | → applyScalePreset(next/prev) | при NO_ACTIVE_PRESET_ID сначала применяет DEFAULT_SCALE_PRESET_ID
+  - applyFretboardPreset      # ← data-control="apply-preset-fretboard" | params: presetInstrumentId | → stateFretboardStartNotes + stateActiveFretboardPresetId
+  - offsetFretboardPreset     # ← data-control="fretboard-preset-shift" + data-direction | → applyFretboardPreset(next/prev) | при NO_ACTIVE_PRESET_ID сначала применяет DEFAULT_FRETBOARD_PRESET_ID
 
 render_targets:
   - elBody                    # document.body | ← uiStore.theme → dataset.bsTheme
@@ -249,6 +269,9 @@ render_targets:
   - elPresetScaleModalButtonLabel # data-container="preset-scale-modal-button-label" | текст кнопки открытия модалки; ← stateActiveScalePresetId/stateLocale
   - elPresetScaleModal        # data-container="preset-scale-modal" | корневой element Bootstrap modal для списка пресетов
   - elPresetScaleList         # data-container="preset-scale-list" | target для replaceChildren списка карточек пресетов
+  - elPresetFretboardModalButtonLabel # data-container="preset-fretboard-modal-button-label" | текст кнопки открытия модалки; ← stateActiveFretboardPresetId/stateLocale
+  - elPresetFretboardModal    # data-container="preset-fretboard-modal" | корневой element Bootstrap modal для списка пресетов инструментов
+  - elPresetFretboardList     # data-container="preset-fretboard-list" | target для replaceChildren списка карточек пресетов инструментов
   - elKeyboardNotes           # data-instrument="keyboard-note" (td-ячейки) | ← stateResolvedScaleParams(.scale)
   - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard
   - elFretboardStrings        # data-instrument="fretboard-string" (per-string tr) | строится в initFretboard из stateFretboardStartNotes
@@ -256,11 +279,12 @@ render_targets:
   - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
   - elFretboardString               # data-template="fretboard-string" → клонируется в initFretboard
   - elPresetScaleCard               # data-template="preset-scale-card" → клонируется в initPresetScaleModal
+  - elPresetFretboardCard           # data-template="preset-fretboard-card" → клонируется в initPresetFretboardModal
   - elFretboardNewStringNoteParams  # data-template="fretboard-set-string-params" → клонируется в popover; note select заполняется нотами один раз в getDomRefs
   - elAddFretboardString            # data-control="add-fretboard-string" (кнопка в tfoot) | popover → addFretboardString
   - elAddFretboardStringConfirm     # data-template="add-fretboard-string-confirm" → клонируется в popover content()
   - elRemoveFretboardStringConfirm  # data-template="remove-fretboard-string-confirm" → клонируется в popover content()
-  - elDirectionControllers    # data-direction (кнопки up/down) | click → controlToOffset[control](offset) | все четыре контрола (tonic/modal/degree/context) | modal-shift, context-shift и degree-rotation disabled при !canModalShift
+  - elDirectionControllers    # data-direction (кнопки up/down) | click → controlToOffset[control](offset) | tonic/modal/degree/context + пресеты гамм/инструментов | modal-shift, context-shift и degree-rotation disabled при !canModalShift
   # getter-функции (domRefs.ts) — DOM-запрос внутри per-string элемента
   - getElFretboardStringNumberButton  # → data-control="remove-fretboard-string" внутри tr
   - getElFretboardStartNoteContainer  # → data-control="start-note" внутри tr
@@ -268,6 +292,9 @@ render_targets:
   - getElPresetScaleCardTextElements   # grouped refs для data-container="preset-scale-*" внутри карточки
   - getElPresetScaleCardLabelElements  # grouped refs для data-static-content="label-preset-scale-*" внутри карточки
   - getElPresetScaleCardActionButtons  # grouped refs для action buttons apply/edit/remove внутри карточки
+  - getElPresetFretboardCardTextElements   # grouped refs для data-container="preset-fretboard-*" внутри карточки
+  - getElPresetFretboardCardLabelElements  # grouped refs для data-static-content="label-preset-fretboard-*" внутри карточки
+  - getElPresetFretboardCardActionButtons  # grouped refs для action buttons apply/edit/remove внутри карточки
   - getElIntervalStepSelect           # → data-select="interval-step-value" внутри form
   - getElFretboardStringNoteSelect    # → data-select="fretboard-string-note" внутри form
   - getElFretboardNoteOctaveSelect    # → data-select="fretboard-note-octave" внутри form
