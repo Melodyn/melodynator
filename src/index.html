@@ -87,6 +87,9 @@
     <hr />
 
     <main>
+
+      <div data-container="preset-scale-preview"></div>
+
       <div class="overflow-x-auto pt-2 pb-5">
         <table class="table table-sm table-borderless align-middle text-center w-auto my-0 mx-auto p-0 table-spacing-y">
           <thead class="align-middle">
@@ -286,8 +289,8 @@
           </tbody>
         </table>
 
-        <small class="d-block text-center text-danger" data-container="resolve-error">
-        </small>
+        <span class="small d-block text-center text-danger" data-container="resolve-error">
+        </span>
       </div>
 
       <div class="overflow-x-auto pb-5">
@@ -339,7 +342,7 @@
             </tr>
           </tfoot>
         </table>
-        <small class="d-block text-center" data-static-content="fretboard-info"></small>
+        <span class="small d-block text-center" data-static-content="fretboard-info"></span>
       </div>
 
       <div class="overflow-x-auto">
@@ -403,10 +406,10 @@
         </table>
       </div>
 
-      <p>
+      <span class="small d-block text-center">
         <span data-tooltip="tooltip" data-tooltip-placement="right"></span>
-        <small data-static-content="about-tooltip"></small>
-      </p>
+        <span class="small" data-static-content="about-tooltip"></span>
+      </span>
 
       <hr />
 
@@ -527,6 +530,75 @@
           <button type="submit" class="btn btn-outline-primary btn-sm width-30px">✓</button>
         </div>
       </form>
+    </template>
+
+    <template id="template-preset-scale-card" data-template="preset-scale-card">
+      <div class="card">
+        <div class="card-header px-3 py-1">
+          <span class="small fw-bold" data-container="preset-scale-name"></span>
+          <span class="small text-nowrap" data-container="preset-scale-family-mood"></span>
+        </div>
+
+        <div class="card-body p-0 m-0 d-flex justify-content-between">
+          <ul class="list-group list-group-flush rounded pe-2">
+            <li class="list-group-item py-1">
+              <span class="small">
+                <span class="fw-bold text-secondary" data-static-content="label-preset-scale-type"></span>
+                <span data-container="preset-scale-type"></span>
+              </span>
+            </li>
+            <li class="list-group-item py-1">
+              <span class="small">
+                <span class="fw-bold text-secondary" data-static-content="label-preset-scale-interval-params"></span>
+
+                <span class="text-nowrap">
+                  <span class="fw-bold" data-container="preset-scale-interval-tonic"></span>
+                  <span class="fw-bold px-1">•</span>
+                  <span class="text-nowrap font-monospace" data-container="preset-scale-interval-pattern"></span>
+                </span>
+
+                <span class="d-flex flex-column">
+                  <span class="d-flex flex-row">
+                    <span class="small text-nowrap pe-1" data-static-content="label-preset-scale-context-offset"></span>
+                    <span class="small text-nowrap" data-container="preset-scale-context-offset"></span>
+                    <span class="small text-nowrap px-1"> • </span>
+                    <span class="small text-nowrap pe-1" data-static-content="label-preset-scale-modal-shift"></span>
+                    <span class="small text-nowrap" data-container="preset-scale-modal-shift"></span>
+                  </span>
+                  <span class="d-flex flex-row">
+                    <span class="small text-nowrap pe-1" data-static-content="label-preset-scale-degree-rotation"></span>
+                    <span class="small text-nowrap" data-container="preset-scale-degree-rotation"></span>
+                    <span class="small text-nowrap px-1"> • </span>
+                    <span class="small text-nowrap pe-1" data-static-content="label-preset-scale-hidden-degrees"></span>
+                    <span class="small text-nowrap" data-container="preset-scale-hidden-degrees"></span>
+                  </span>
+                </span>
+              </span>
+            </li>
+            <li class="list-group-item py-1">
+              <span class="small">
+                <span class="fw-bold text-secondary" data-static-content="label-preset-scale-comment"></span>
+                <span data-container="preset-scale-comment"></span>
+              </span>
+            </li>
+          </ul>
+
+          <ul class="list-group list-group-flush rounded">
+            <li class="list-group-item">
+              <button type="button" data-control="apply-preset-scale"
+                class="btn btn-outline-primary btn-sm width-30px">✓</button>
+            </li>
+            <li class="list-group-item">
+              <button type="button" data-control="edit-preset-scale"
+                class="btn btn-outline-warning btn-sm width-30px">✎</button>
+            </li>
+            <li class="list-group-item">
+              <button type="button" data-control="remove-preset-scale"
+                class="btn btn-outline-danger btn-sm width-30px">×</button>
+            </li>
+          </ul>
+        </div>
+      </div>
     </template>
   </div>
 

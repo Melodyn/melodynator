@@ -80,5 +80,15 @@
     "interval11": "Major Seventh / Diminished Octave",
     "interval12": "Perfect Octave",
     "digitModeLabel": "1/2"
+  },
+  "presetScale": {
+    "labelPresetScaleType": "Type: ",
+    "labelPresetScaleIntervalParams": "Scheme: ",
+    "labelPresetScaleContextOffset": "context ",
+    "labelPresetScaleModalShift": "modality ",
+    "labelPresetScaleDegreeRotation": "degrees ",
+    "labelPresetScaleHiddenDegrees": "hidden ",
+    "labelPresetScaleComment": "Comment: ",
+    "presetScaleNotes": "notes"
   }
 }

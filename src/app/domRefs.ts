@@ -18,6 +18,7 @@ export const getDomRefs = (): t.domRefs => {
   const elIntervalDisplaySwitch = qs<HTMLButtonElement>('[data-control="interval-display-switch"]');
   const elIntervalStepParams = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="interval-step-params"]').content.firstElementChild;
   const elEnharmonicSimplifySwitch = qs<HTMLButtonElement>('[data-control="enharmonic-simplify"]');
+  const elPresetScalePreview = qs<HTMLDivElement>('[data-container="preset-scale-preview"]');
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   const elDegreeSwitchContainers = qsa<HTMLInputElement>('[data-container="degree-switch"]');
   const elDegreeSwitchLabels = Array.from(elDegreeSwitchContainers).map((elDegreeSwitchContainer) => {
@@ -38,6 +39,7 @@ export const getDomRefs = (): t.domRefs => {
   const elFretboardStartNoteContainers: HTMLButtonElement[] = [];
   const elFretboardStringFrets: HTMLTableCellElement[][] = [];
   const elFretboardString = <HTMLTableRowElement>qs<HTMLTemplateElement>('[data-template="fretboard-string"]').content.firstElementChild;
+  const elPresetScaleCard = <HTMLDivElement>qs<HTMLTemplateElement>('[data-template="preset-scale-card"]').content.firstElementChild;
   const elFretboardNewStringNoteParams = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="fretboard-set-string-params"]').content.firstElementChild;
   const elNoteList = qs<HTMLSelectElement>('[data-select="fretboard-string-note"]', elFretboardNewStringNoteParams);
   const elNoteListItemTemplate = <HTMLOptionElement>elNoteList.firstElementChild;
@@ -59,6 +61,32 @@ export const getDomRefs = (): t.domRefs => {
     qs<HTMLButtonElement>('[data-control="start-note"]', el);
   const getElFretboardStringFrets = (el: HTMLTableRowElement): HTMLTableCellElement[] =>
     Array.from(qsa<HTMLTableCellElement>('[data-instrument="fretboard-string-fret"]', el));
+  const getElPresetScaleCardTextElements = (el: HTMLDivElement): t.presetScaleCardTextElements => ({
+    presetScaleName: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleName}"]`, el),
+    presetScaleFamilyMood: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleFamilyMood}"]`, el),
+    presetScaleType: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleType}"]`, el),
+    presetScaleIntervalTonic: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleIntervalTonic}"]`, el),
+    presetScaleIntervalPattern: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleIntervalPattern}"]`, el),
+    presetScaleContextOffset: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleContextOffset}"]`, el),
+    presetScaleModalShift: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleModalShift}"]`, el),
+    presetScaleDegreeRotation: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleDegreeRotation}"]`, el),
+    presetScaleHiddenDegrees: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleHiddenDegrees}"]`, el),
+    presetScaleComment: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleComment}"]`, el),
+  });
+  const getElPresetScaleCardLabelElements = (el: HTMLDivElement): t.presetScaleCardLabelElements => ({
+    labelPresetScaleType: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_SCALE_CARD_STATIC_CONTENTS.labelPresetScaleType}"]`, el),
+    labelPresetScaleIntervalParams: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_SCALE_CARD_STATIC_CONTENTS.labelPresetScaleIntervalParams}"]`, el),
+    labelPresetScaleContextOffset: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_SCALE_CARD_STATIC_CONTENTS.labelPresetScaleContextOffset}"]`, el),
+    labelPresetScaleModalShift: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_SCALE_CARD_STATIC_CONTENTS.labelPresetScaleModalShift}"]`, el),
+    labelPresetScaleDegreeRotation: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_SCALE_CARD_STATIC_CONTENTS.labelPresetScaleDegreeRotation}"]`, el),
+    labelPresetScaleHiddenDegrees: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_SCALE_CARD_STATIC_CONTENTS.labelPresetScaleHiddenDegrees}"]`, el),
+    labelPresetScaleComment: qs<HTMLSpanElement>(`[data-static-content="${c.PRESET_SCALE_CARD_STATIC_CONTENTS.labelPresetScaleComment}"]`, el),
+  });
+  const getElPresetScaleCardActionButtons = (el: HTMLDivElement): t.presetScaleCardActionButtons => ({
+    elApplyPresetScaleButton: qs<HTMLButtonElement>('[data-control="apply-preset-scale"]', el),
+    elEditPresetScaleButton: qs<HTMLButtonElement>('[data-control="edit-preset-scale"]', el),
+    elRemovePresetScaleButton: qs<HTMLButtonElement>('[data-control="remove-preset-scale"]', el),
+  });
 
   const getElIntervalStepSelect = (form: HTMLFormElement) =>
     qs<HTMLSelectElement>('[data-select="interval-step-value"]', form);
@@ -85,6 +113,7 @@ export const getDomRefs = (): t.domRefs => {
     elIntervalDisplaySwitch,
     elIntervalStepParams,
     elEnharmonicSimplifySwitch,
+    elPresetScalePreview,
     elScaleToneContainers,
     elDegreeSwitchContainers,
     elDegreeSwitchLabels,
@@ -94,6 +123,7 @@ export const getDomRefs = (): t.domRefs => {
     elFretboardStartNoteContainers,
     elFretboardStringFrets,
     elFretboardString,
+    elPresetScaleCard,
     elFretboardNewStringNoteParams,
     elAddFretboardString,
     elAddFretboardStringConfirm,
@@ -101,6 +131,9 @@ export const getDomRefs = (): t.domRefs => {
     getElFretboardStringNumberButton,
     getElFretboardStartNoteContainer,
     getElFretboardStringFrets,
+    getElPresetScaleCardTextElements,
+    getElPresetScaleCardLabelElements,
+    getElPresetScaleCardActionButtons,
     getElIntervalStepSelect,
     getElFretboardStringNoteSelect,
     getElFretboardNoteOctaveSelect,

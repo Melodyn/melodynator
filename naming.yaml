@@ -44,6 +44,9 @@ data_control:
   - enharmonic-simplify    # → switchEnharmonicSimplify → stateIsEnharmonicSimplify | button ♭=♯
   - add-fretboard-string   # → addFretboardString → stateFretboardStartNotes | кнопка в tfoot; popover с подтверждением
   - remove-fretboard-string # → removeFretboardString → stateFretboardStartNotes | кнопка в td номера строки; popover с подтверждением
+  - apply-preset-scale     # → preview-card control | кнопка применения пресета гаммы; preset id хранится в data-preset-scale-id
+  - edit-preset-scale      # → preview-card control | кнопка редактирования пресета гаммы; доступна только для isCustomPreset
+  - remove-preset-scale    # → preview-card control | кнопка удаления пресета гаммы; доступна только для isCustomPreset
 
 data_tooltip:
   # Атрибут data-tooltip="key" — на плейсхолдере <span>. Ключ совпадает с ключом в textTooltips.
@@ -89,8 +92,17 @@ data_static_content:
   - footer-keywords  # → textContent.footerKeywords
   - footer-about     # → textContent.footerAbout
   - footer-about-link # → textContent.footerAboutLink
+  - footer-github-link # → textContent.footerGithubLink
   - about-tooltip    # → textContent.aboutTooltip | текст рядом с tooltip-иконкой в шапке
   - fretboard-info   # → textContent.fretboardInfo | подпись под фретбордом
+  # статичные label-тексты карточки пресета гаммы (→ textPresetScale)
+  - label-preset-scale-type
+  - label-preset-scale-interval-params
+  - label-preset-scale-context-offset
+  - label-preset-scale-modal-shift
+  - label-preset-scale-degree-rotation
+  - label-preset-scale-hidden-degrees
+  - label-preset-scale-comment
 
 data_template:
   # Атрибут data-template="name" — на <template>-элементах. Выбирается в domRefs.ts вместо #id.
@@ -98,6 +110,7 @@ data_template:
   - tooltip                         # elTooltipTemplate — кнопка с SVG-иконкой для Tooltip
   - interval-step-params            # elIntervalStepParams — форма popover выбора интервала
   - fretboard-string                # elFretboardString — шаблон строки фретборда
+  - preset-scale-card               # elPresetScaleCard — шаблон карточки пресета гаммы для preview по DEFAULT_SCALE_PRESET_ID
   - fretboard-set-string-params     # elFretboardNewStringNoteParams — форма popover настройки ноты/октавы
   - add-fretboard-string-confirm    # elAddFretboardStringConfirm — кнопка подтверждения добавления строки
   - remove-fretboard-string-confirm # elRemoveFretboardStringConfirm — кнопка подтверждения удаления строки
@@ -120,6 +133,17 @@ data_container:
   - scale-tone      # ← stateUnshiftResolvedScaleParams(.scale) → elScaleToneContainers
   - degree-switch   # → switchDegreeVisibility → stateHiddenDegrees | ← stateHiddenDegrees → elDegreeSwitchContainers
   - resolve-error   # ← stateResolvedScaleParams(.canApplyContext) → elResolveErrorContainer
+  - preset-scale-preview # mount target для одной preview-карточки пресета гаммы
+  - preset-scale-name
+  - preset-scale-family-mood
+  - preset-scale-type
+  - preset-scale-interval-tonic
+  - preset-scale-interval-pattern
+  - preset-scale-context-offset
+  - preset-scale-modal-shift
+  - preset-scale-degree-rotation
+  - preset-scale-hidden-degrees
+  - preset-scale-comment
 
 data_instrument:
   - fretboard              # refs: elFretboard (tbody-контейнер строк)
@@ -155,7 +179,7 @@ key_types:
   - intervalDisplayMode  # type: 'digit' | 'letter' | store: stateIntervalDisplayMode
   - setIntervalStep      # action: degree (1-based) + intervalSize → stateScaleBuildParams(.intervalPattern)
   - altReduceMap         # Map<noteName, noteName> — карта замены нот на энгармонические эквиваленты с меньшим числом альтераций | render.ts: buildAltReduceMap, getAltReduceMap, reduceAlt
-  - presetScale          # { id, name, scaleType, tonic, intervalPattern, modalShift, contextOffset, degreeRotation, hiddenDegrees, mood, family } | хранится в textPresetsScale (i18n, оба локаля)
+  - presetScale          # { id, name, scaleType, tonic, intervalPattern, modalShift, contextOffset, degreeRotation, hiddenDegrees, mood, family, comment, isCustomPreset } | хранится в defaults.ts; preview-карточка рендерится по DEFAULT_SCALE_PRESET_ID
   - presetInstrument     # { id, name, tuning, startNotes } | хранится в textPresetsFretboard (i18n, оба локаля)
   - addFretboardString   # action type: () => void | добавляет строку кварту ниже последней, max=MAX_FRETBOARD_STRINGS
   - removeFretboardString # action type: (index: number) => void | удаляет строку по индексу, min=MIN_FRETBOARD_STRINGS
@@ -169,6 +193,7 @@ stores:
   - textIntervals    # type: i18n atom | namespace: intervals | ключи: halfStep, wholeStep, interval0–12, digitModeLabel | → render.ts, ui.ts (popover)
   - textPresetsScale     # type: i18n atom<presetScale[]> | namespace: presetsScale | 18 пресетов гамм | → будущий UI пресетов
   - textPresetsFretboard # type: i18n atom<presetInstrument[]> | namespace: presetsFretboard | 8 пресетов инструментов | → будущий UI пресетов
+  - textPresetScale      # type: i18n atom | namespace: presetScale | label-тексты карточки пресета гаммы
   - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elSetIntervalSteps, elIntervalDisplaySwitch
   - stateLocale                     # type: Atom<locale> | atom, инициализируется из storageService.selectAll() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
@@ -198,6 +223,7 @@ actions:
   - switchEnharmonicSimplify  # ← data-control="enharmonic-simplify" (change) | → stateIsEnharmonicSimplify
   - addFretboardString        # ← data-control="add-fretboard-string" (popover) | → stateFretboardStartNotes (append)
   - removeFretboardString     # ← data-control="remove-fretboard-string" (popover) | params: index | → stateFretboardStartNotes (filter)
+  - applyScalePreset          # ← data-control="apply-preset-scale" | params: presetScaleId | → stateScaleBuildParams + stateContextOffset + stateDegreeRotation + stateHiddenDegrees + stateActiveScalePresetId
 
 render_targets:
   - elBody                    # document.body | ← uiStore.theme → dataset.bsTheme
@@ -214,12 +240,14 @@ render_targets:
   - elDegreeSwitchContainers  # data-container="degree-switch" | ← stateHiddenDegrees (input-переключатели)
   - elDegreeSwitchLabels      # labels для data-container="degree-switch" | ← stateHiddenDegrees (стилизация label без DOM API в render.ts)
   - elResolveErrorContainer   # data-container="resolve-error" | ← stateResolvedScaleParams(.canApplyContext)
+  - elPresetScalePreview      # data-container="preset-scale-preview" | target для replaceChildren одной preview-карточки пресета
   - elKeyboardNotes           # data-instrument="keyboard-note" (td-ячейки) | ← stateResolvedScaleParams(.scale)
   - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard
   - elFretboardStrings        # data-instrument="fretboard-string" (per-string tr) | строится в initFretboard из stateFretboardStartNotes
   - elFretboardStartNoteContainers  # data-control="start-note" в data-instrument="fretboard-string-note" | ← stateFretboardLayout
   - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
   - elFretboardString               # data-template="fretboard-string" → клонируется в initFretboard
+  - elPresetScaleCard               # data-template="preset-scale-card" → клонируется в initPresetScalePreview
   - elFretboardNewStringNoteParams  # data-template="fretboard-set-string-params" → клонируется в popover; note select заполняется нотами один раз в getDomRefs
   - elAddFretboardString            # data-control="add-fretboard-string" (кнопка в tfoot) | popover → addFretboardString
   - elAddFretboardStringConfirm     # data-template="add-fretboard-string-confirm" → клонируется в popover content()
@@ -229,6 +257,9 @@ render_targets:
   - getElFretboardStringNumberButton  # → data-control="remove-fretboard-string" внутри tr
   - getElFretboardStartNoteContainer  # → data-control="start-note" внутри tr
   - getElFretboardStringFrets         # → data-instrument="fretboard-string-fret" внутри tr
+  - getElPresetScaleCardTextElements   # grouped refs для data-container="preset-scale-*" внутри карточки
+  - getElPresetScaleCardLabelElements  # grouped refs для data-static-content="label-preset-scale-*" внутри карточки
+  - getElPresetScaleCardActionButtons  # grouped refs для action buttons apply/edit/remove внутри карточки
   - getElIntervalStepSelect           # → data-select="interval-step-value" внутри form
   - getElFretboardStringNoteSelect    # → data-select="fretboard-string-note" внутри form
   - getElFretboardNoteOctaveSelect    # → data-select="fretboard-note-octave" внутри form

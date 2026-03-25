@@ -110,6 +110,17 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
     digitModeLabel: '1/2',
   });
 
+  const textPresetScale = <t.i18nTextAtom><unknown>i18n('presetScale', {
+    labelPresetScaleType: 'Тип: ',
+    labelPresetScaleIntervalParams: 'Схема: ',
+    labelPresetScaleContextOffset: 'контекст ',
+    labelPresetScaleModalShift: 'модальность ',
+    labelPresetScaleDegreeRotation: 'ступени ',
+    labelPresetScaleHiddenDegrees: 'скрыто ',
+    labelPresetScaleComment: 'Пояснение: ',
+    presetScaleNotes: 'нот',
+  });
+
   return {
     stateLocale: localeStore,
     switchLocale,
@@ -119,5 +130,6 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
     textContent,
     textErrors,
     textIntervals,
+    textPresetScale,
   };
 };

@@ -5,6 +5,7 @@ import { initI18n } from '../src/app/i18n';
 import { StorageService } from '../src/app/StorageService';
 import { createStore } from '../src/app/store';
 import * as c from '../src/constants';
+import * as d from '../src/constants/defaults';
 import enJson from '../src/translations/en.json';
 import * as t from '../src/types';
 
@@ -76,7 +77,7 @@ const createSavedValues = (): t.savedValues => ({
   degreeRotation: 0,
   hiddenDegrees: [],
   startNotes: [{ note: 'C', octave: 4 }],
-  activeScalePresetId: 1,
+  activeScalePresetId: d.DEFAULT_SCALE_PRESET_ID,
   activeFretboardPresetId: 1,
   isEnharmonicSimplify: false,
   intervalDisplayMode: 'digit',
@@ -170,9 +171,9 @@ const waitFor = async (assertion: () => boolean) => {
 const createRenderContext = () => {
   const storageService = new StorageService(createSavedValues());
   const saved = storageService.selectAll();
-  const store = createStore(saved, storageService);
-  const uiStore = createUiStore();
   const i18nStore = initI18n(saved.locale, storageService);
+  const store = createStore(saved, storageService, i18nStore.stateLocale);
+  const uiStore = createUiStore();
   const appStore = { ...store, ...uiStore, ...i18nStore };
   const refs = createDomRefs();
 
@@ -225,5 +226,42 @@ describe('bindRenderers', () => {
 
     expect(expectedEn).not.toBe(expectedRu);
     expect(refs.elResolveErrorContainer.textContent).toBe(expectedEn);
+  });
+
+  test('applyScalePreset applies preset values and keeps unrelated state intact', () => {
+    const { appStore } = createRenderContext();
+
+    appStore.applyScalePreset(18);
+
+    expect(appStore.stateScaleBuildParams.get()).toEqual({
+      tonic: 'A',
+      intervalPattern: [2, 2, 1, 2, 2, 2, 1],
+      modalShift: 5,
+    });
+    expect(appStore.stateContextOffset.get()).toBe(0);
+    expect(appStore.stateDegreeRotation.get()).toBe(0);
+    expect([...appStore.stateHiddenDegrees.get()]).toEqual([2, 6]);
+    expect(appStore.stateActiveScalePresetId.get()).toBe(18);
+    expect(appStore.stateLocale.get()).toBe('ru');
+    expect(appStore.theme.get()).toBe('light');
+    expect(appStore.stateIntervalDisplayMode.get()).toBe('digit');
+    expect(appStore.stateIsEnharmonicSimplify.get()).toBe(false);
+    expect(appStore.stateActiveFretboardPresetId.get()).toBe(1);
+  });
+
+  test.each([
+    ['offsetTonicShift', (appStore: t.appStore) => appStore.offsetTonicShift(1)],
+    ['offsetModalShift', (appStore: t.appStore) => appStore.offsetModalShift(1)],
+    ['offsetDegreeRotation', (appStore: t.appStore) => appStore.offsetDegreeRotation(1)],
+    ['offsetContext', (appStore: t.appStore) => appStore.offsetContext(1)],
+    ['setIntervalStep', (appStore: t.appStore) => appStore.setIntervalStep({ degree: 1, step: 1 })],
+    ['switchDegreeVisibility', (appStore: t.appStore) => appStore.switchDegreeVisibility(1)],
+  ])('%s resets activeScalePresetId after apply', (_actionName, mutateScale) => {
+    const { appStore } = createRenderContext();
+
+    appStore.applyScalePreset(18);
+    mutateScale(appStore);
+
+    expect(appStore.stateActiveScalePresetId.get()).toBe(c.NO_ACTIVE_PRESET_ID);
   });
 });

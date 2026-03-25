@@ -11,6 +11,7 @@ export const EMPTY_VALUE = '\u00A0';
 export const MIN_FRETBOARD_STRINGS = 4;
 export const MAX_FRETBOARD_STRINGS = 12;
 export const FRETBOARD_STRING_INTERVAL = 5; // кварта вниз = 5 полутонов
+export const NO_ACTIVE_PRESET_ID = 0;
 
 export const naturalNotesParams: t.naturalNoteParams[] = [
   { note: 'C', degree: 1, naturalPitchClass: 0 },
@@ -34,3 +35,26 @@ export const allIntervalSizes: t.intervalSize[] = <t.intervalSize[]>Array.from({
 export const ENHARMONIC_SIMPLE_NAMES: t.noteName[] = [
   'C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B',
 ];
+
+export const PRESET_SCALE_CARD_CONTAINERS: Record<keyof t.presetScaleCardTexts, string> = {
+  presetScaleName: 'preset-scale-name',
+  presetScaleFamilyMood: 'preset-scale-family-mood',
+  presetScaleType: 'preset-scale-type',
+  presetScaleIntervalTonic: 'preset-scale-interval-tonic',
+  presetScaleIntervalPattern: 'preset-scale-interval-pattern',
+  presetScaleContextOffset: 'preset-scale-context-offset',
+  presetScaleModalShift: 'preset-scale-modal-shift',
+  presetScaleDegreeRotation: 'preset-scale-degree-rotation',
+  presetScaleHiddenDegrees: 'preset-scale-hidden-degrees',
+  presetScaleComment: 'preset-scale-comment',
+};
+
+export const PRESET_SCALE_CARD_STATIC_CONTENTS: Record<keyof t.presetScaleCardLabels, string> = {
+  labelPresetScaleType: 'label-preset-scale-type',
+  labelPresetScaleIntervalParams: 'label-preset-scale-interval-params',
+  labelPresetScaleContextOffset: 'label-preset-scale-context-offset',
+  labelPresetScaleModalShift: 'label-preset-scale-modal-shift',
+  labelPresetScaleDegreeRotation: 'label-preset-scale-degree-rotation',
+  labelPresetScaleHiddenDegrees: 'label-preset-scale-hidden-degrees',
+  labelPresetScaleComment: 'label-preset-scale-comment',
+};

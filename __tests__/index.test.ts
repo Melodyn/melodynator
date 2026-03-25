@@ -241,4 +241,8 @@ describe('en.json completeness', () => {
   test('errors keys match base locale', () => {
     expect(keys(enJson.errors)).toEqual(keys(i18n.textErrors.get()));
   });
+
+  test('presetScale keys match base locale', () => {
+    expect(keys(enJson.presetScale)).toEqual(keys(i18n.textPresetScale.get()));
+  });
 });

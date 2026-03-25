@@ -42,7 +42,7 @@ export const run = () => {
 
   const i18nStore = initI18n(saved.locale, storageService);
   const uiStore = createUiStore(saved.theme, saved.isEnharmonicSimplify, saved.intervalDisplayMode, storageService);
-  const store = createStore(saved, storageService);
+  const store = createStore(saved, storageService, i18nStore.stateLocale);
   const appStore = { ...store, ...uiStore, ...i18nStore };
   const refs = initUI(appStore);
 

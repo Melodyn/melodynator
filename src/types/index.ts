@@ -93,9 +93,52 @@ export type presetScale = {
   hiddenDegrees: degree[]
   mood: string
   family: string
+  comment: string
+  isCustomPreset: boolean
 };
 
 export type presetScales = presetScale[];
+
+export type presetScaleCardTexts = {
+  presetScaleName: string
+  presetScaleFamilyMood: string
+  presetScaleType: string
+  presetScaleIntervalTonic: string
+  presetScaleIntervalPattern: string
+  presetScaleContextOffset: string
+  presetScaleModalShift: string
+  presetScaleDegreeRotation: string
+  presetScaleHiddenDegrees: string
+  presetScaleComment: string
+};
+
+export type presetScaleCardLabels = {
+  labelPresetScaleType: string
+  labelPresetScaleIntervalParams: string
+  labelPresetScaleContextOffset: string
+  labelPresetScaleModalShift: string
+  labelPresetScaleDegreeRotation: string
+  labelPresetScaleHiddenDegrees: string
+  labelPresetScaleComment: string
+};
+
+export type presetScaleTexts = presetScaleCardLabels & {
+  presetScaleNotes: string
+};
+
+export type presetScaleCardTextElements = {
+  [key in keyof presetScaleCardTexts]: HTMLSpanElement
+};
+
+export type presetScaleCardLabelElements = {
+  [key in keyof presetScaleCardLabels]: HTMLSpanElement
+};
+
+export type presetScaleCardActionButtons = {
+  elApplyPresetScaleButton: HTMLButtonElement
+  elEditPresetScaleButton: HTMLButtonElement
+  elRemovePresetScaleButton: HTMLButtonElement
+};
 
 export type scaleLayout = fretboardNoteParams[];
 
@@ -117,6 +160,7 @@ export type switchDegreeVisibility = (degree: degree) => void;
 export type setFretboardStartNote = (startNoteParams: fretboardStartNoteParams & { index: number }) => void;
 export type addFretboardString = () => void;
 export type removeFretboardString = (index: number) => void;
+export type applyScalePreset = (presetScaleId: number) => void;
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
@@ -137,6 +181,7 @@ export type store = {
   addFretboardString: addFretboardString
   removeFretboardString: removeFretboardString
   setIntervalStep: setIntervalStep
+  applyScalePreset: applyScalePreset
   stateActiveScalePresetId: Atom<number>
   stateActiveFretboardPresetId: Atom<number>
 };
@@ -157,6 +202,7 @@ export type domRefs = {
   elIntervalDisplaySwitch: HTMLButtonElement
   elIntervalStepParams: HTMLFormElement
   elEnharmonicSimplifySwitch: HTMLButtonElement
+  elPresetScalePreview: HTMLDivElement
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
   elDegreeSwitchContainers: NodeListOf<HTMLInputElement>
   elDegreeSwitchLabels: HTMLLabelElement[]
@@ -166,6 +212,7 @@ export type domRefs = {
   elFretboardStartNoteContainers: HTMLButtonElement[]
   elFretboardStringFrets: HTMLTableCellElement[][]
   elFretboardString: HTMLTableRowElement
+  elPresetScaleCard: HTMLDivElement
   elFretboardNewStringNoteParams: HTMLFormElement
   elAddFretboardString: HTMLButtonElement
   elAddFretboardStringConfirm: HTMLButtonElement
@@ -173,6 +220,9 @@ export type domRefs = {
   getElFretboardStringNumberButton: (el: HTMLTableRowElement) => HTMLButtonElement
   getElFretboardStartNoteContainer: (el: HTMLTableRowElement) => HTMLButtonElement
   getElFretboardStringFrets: (el: HTMLTableRowElement) => HTMLTableCellElement[]
+  getElPresetScaleCardTextElements: (el: HTMLDivElement) => presetScaleCardTextElements
+  getElPresetScaleCardLabelElements: (el: HTMLDivElement) => presetScaleCardLabelElements
+  getElPresetScaleCardActionButtons: (el: HTMLDivElement) => presetScaleCardActionButtons
   getElIntervalStepSelect: (form: HTMLFormElement) => HTMLSelectElement
   getElFretboardStringNoteSelect: (form: HTMLFormElement) => HTMLSelectElement
   getElFretboardNoteOctaveSelect: (form: HTMLFormElement) => HTMLSelectElement
@@ -225,6 +275,7 @@ export type i18nStore = {
   textContent: i18nTextAtom
   textErrors: ReadableAtom<i18nErrors>
   textIntervals: i18nTextAtom
+  textPresetScale: i18nTextAtom
 };
 
 export type appStore = store & uiStore & i18nStore;

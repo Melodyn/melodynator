@@ -3,9 +3,10 @@ import * as t from '../types';
 import * as c from '../constants';
 import * as cu from '../commonUtils';
 import * as mu from '../core';
+import * as d from '../constants/defaults';
 import { StorageService } from './StorageService';
 
-export const createStore = (saved: t.savedValues, storageService: StorageService): t.store => {
+export const createStore = (saved: t.savedValues, storageService: StorageService, stateLocale: n.Atom<t.locale>): t.store => {
   const stateHiddenDegrees = n.atom<Set<t.degree>>(new Set(saved.hiddenDegrees));
   const stateFretboardStartNotes = n.atom<t.fretboardStartNoteParams[]>(saved.startNotes);
   const stateScaleBuildParams = n.map<t.scaleBuildParams>({ tonic: saved.tonic, intervalPattern: saved.intervalPattern, modalShift: saved.modalShift });
@@ -43,12 +44,16 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
       return mu.mapScaleToLayout({ scaleMap, startNotes });
     },
   );
+  const resetActiveScalePresetId = (): void => {
+    stateActiveScalePresetId.set(c.NO_ACTIVE_PRESET_ID);
+  };
 
   const offsetTonicShift: t.offsetScaleParam = (offset) => {
     const currentTonicIndex = stateCurrentNoteChromaticIndex.get();
     const newTonicIndex = (currentTonicIndex + c.allNotesNames.length + offset) % c.allNotesNames.length;
     const newTonic = c.allNotesNames[newTonicIndex];
     stateScaleBuildParams.setKey('tonic', newTonic);
+    resetActiveScalePresetId();
   };
 
   const offsetModalShift: t.offsetScaleParam = (offset) => {
@@ -56,6 +61,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     const degreeCount = intervalPattern.length;
     const newShift = (currentShift + offset + degreeCount) % degreeCount;
     stateScaleBuildParams.setKey('modalShift', newShift);
+    resetActiveScalePresetId();
   };
 
   const offsetDegreeRotation: t.offsetScaleParam = (offset) => {
@@ -64,12 +70,14 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     const degreeCount = intervalPattern.length;
     const newRotation = (currentRotation + offset + degreeCount) % degreeCount;
     stateDegreeRotation.set(newRotation);
+    resetActiveScalePresetId();
   };
 
   const offsetContext: t.offsetScaleParam = (offset) => {
     const currentShift = stateContextOffset.get();
     const newContextOffset = <t.contextOffset>((currentShift + c.OCTAVE_SIZE + offset) % c.OCTAVE_SIZE);
     stateContextOffset.set(newContextOffset);
+    resetActiveScalePresetId();
   };
 
   const switchDegreeVisibility: t.switchDegreeVisibility = (degree) => {
@@ -80,6 +88,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
       hiddenDegrees.add(degree);
     }
     stateHiddenDegrees.set(hiddenDegrees);
+    resetActiveScalePresetId();
   };
 
   const setFretboardStartNote: t.setFretboardStartNote = (startNoteParams) => {
@@ -121,6 +130,21 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     const degreeIndex = degree - 1;
     const newPattern = <t.intervalPattern>intervalPattern.map((currentStep, i) => i === degreeIndex ? step : currentStep);
     stateScaleBuildParams.setKey('intervalPattern', newPattern);
+    resetActiveScalePresetId();
+  };
+
+  const applyScalePreset: t.applyScalePreset = (presetScaleId) => {
+    const presetScale = cu.find(d.SCALE_PRESETS[stateLocale.get()], ({ id }) => id === presetScaleId);
+
+    stateScaleBuildParams.set({
+      tonic: presetScale.tonic,
+      intervalPattern: presetScale.intervalPattern,
+      modalShift: presetScale.modalShift,
+    });
+    stateContextOffset.set(<t.contextOffset>presetScale.contextOffset);
+    stateDegreeRotation.set(presetScale.degreeRotation);
+    stateHiddenDegrees.set(new Set(presetScale.hiddenDegrees));
+    stateActiveScalePresetId.set(presetScale.id);
   };
 
   stateScaleBuildParams.listen(({ tonic, intervalPattern, modalShift }) => {
@@ -154,6 +178,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     addFretboardString,
     removeFretboardString,
     setIntervalStep,
+    applyScalePreset,
     stateActiveScalePresetId,
     stateActiveFretboardPresetId,
   };

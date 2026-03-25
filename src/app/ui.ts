@@ -1,6 +1,8 @@
 import { Popover, Tooltip } from 'bootstrap';
 import * as n from 'nanostores';
 import * as c from '../constants';
+import * as cu from '../commonUtils';
+import * as d from '../constants/defaults';
 import type * as t from '../types';
 import { StorageService } from './StorageService';
 import { getDomRefs } from './domRefs';
@@ -257,6 +259,124 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
+const initPresetScalePreview = (refs: t.domRefs, appStore: t.appStore): void => {
+  const getPresetScaleVisibleDegreeCount = (presetScale: t.presetScale): number => {
+    const visibleDegreesCount = presetScale.intervalPattern.filter((intervalStep) => intervalStep > 0).length;
+    return visibleDegreesCount - presetScale.hiddenDegrees.length;
+  };
+
+  const getPresetScaleFamilyMood = (presetScale: t.presetScale): string => {
+    const familyMood = [presetScale.mood, presetScale.family].filter(value => value.length > 0).join(', ');
+    if (familyMood.length > 0) {
+      return ` (${familyMood})`;
+    }
+    return '';
+  };
+
+  const getPresetScaleHiddenDegrees = (presetScale: t.presetScale): string => {
+    if (presetScale.hiddenDegrees.length > 0) {
+      return presetScale.hiddenDegrees.join(', ');
+    }
+    return '0';
+  };
+
+  const getPresetScaleCardTexts = (presetScale: t.presetScale, presetScaleTexts: t.presetScaleTexts): t.presetScaleCardTexts => {
+    const visibleDegreesCount = getPresetScaleVisibleDegreeCount(presetScale);
+
+    return {
+      presetScaleName: presetScale.name,
+      presetScaleFamilyMood: getPresetScaleFamilyMood(presetScale),
+      presetScaleType: `${presetScale.scaleType}, ${visibleDegreesCount} ${presetScaleTexts.presetScaleNotes}`,
+      presetScaleIntervalTonic: presetScale.tonic,
+      presetScaleIntervalPattern: presetScale.intervalPattern.join(' '),
+      presetScaleContextOffset: `${presetScale.contextOffset}`,
+      presetScaleModalShift: `${presetScale.modalShift}`,
+      presetScaleDegreeRotation: `${presetScale.degreeRotation}`,
+      presetScaleHiddenDegrees: getPresetScaleHiddenDegrees(presetScale),
+      presetScaleComment: presetScale.comment,
+    };
+  };
+
+  const getPresetScaleCardLabels = (presetScaleTexts: t.presetScaleTexts): t.presetScaleCardLabels => ({
+    labelPresetScaleType: presetScaleTexts.labelPresetScaleType,
+    labelPresetScaleIntervalParams: presetScaleTexts.labelPresetScaleIntervalParams,
+    labelPresetScaleContextOffset: presetScaleTexts.labelPresetScaleContextOffset,
+    labelPresetScaleModalShift: presetScaleTexts.labelPresetScaleModalShift,
+    labelPresetScaleDegreeRotation: presetScaleTexts.labelPresetScaleDegreeRotation,
+    labelPresetScaleHiddenDegrees: presetScaleTexts.labelPresetScaleHiddenDegrees,
+    labelPresetScaleComment: presetScaleTexts.labelPresetScaleComment,
+  });
+
+  const renderPresetScaleCardTexts = (elPresetScaleCard: HTMLDivElement, presetScaleCardTexts: t.presetScaleCardTexts): void => {
+    const elPresetScaleCardTextElements = refs.getElPresetScaleCardTextElements(elPresetScaleCard);
+
+    Object.entries(elPresetScaleCardTextElements).forEach(([key, elPresetScaleCardTextElement]) => {
+      const presetScaleCardTextKey = <keyof t.presetScaleCardTexts>key;
+      elPresetScaleCardTextElement.textContent = presetScaleCardTexts[presetScaleCardTextKey];
+    });
+  };
+
+  const renderPresetScaleCardLabels = (elPresetScaleCard: HTMLDivElement, presetScaleCardLabels: t.presetScaleCardLabels): void => {
+    const elPresetScaleCardLabelElements = refs.getElPresetScaleCardLabelElements(elPresetScaleCard);
+
+    Object.entries(elPresetScaleCardLabelElements).forEach(([key, elPresetScaleCardLabelElement]) => {
+      const presetScaleCardLabelKey = <keyof t.presetScaleCardLabels>key;
+      elPresetScaleCardLabelElement.textContent = presetScaleCardLabels[presetScaleCardLabelKey];
+    });
+  };
+
+  const renderPresetScaleCardActionButtons = (elPresetScaleCard: HTMLDivElement, presetScale: t.presetScale): void => {
+    const elPresetScaleCardActionButtons = refs.getElPresetScaleCardActionButtons(elPresetScaleCard);
+    const presetScaleId = `${presetScale.id}`;
+    const isActivePreset = appStore.stateActiveScalePresetId.get() === presetScale.id;
+    const isCustomPreset = presetScale.isCustomPreset;
+    const actionButtonClassNames = {
+      applyActive: 'btn-outline-primary',
+      applyDisabled: 'btn-outline-secondary',
+      editActive: 'btn-outline-warning',
+      editDisabled: 'btn-outline-secondary',
+      removeActive: 'btn-outline-danger',
+      removeDisabled: 'btn-outline-secondary',
+    };
+
+    elPresetScaleCardActionButtons.elApplyPresetScaleButton.dataset.presetScaleId = presetScaleId;
+    elPresetScaleCardActionButtons.elEditPresetScaleButton.dataset.presetScaleId = presetScaleId;
+    elPresetScaleCardActionButtons.elRemovePresetScaleButton.dataset.presetScaleId = presetScaleId;
+    elPresetScaleCardActionButtons.elApplyPresetScaleButton.disabled = isActivePreset;
+    elPresetScaleCardActionButtons.elApplyPresetScaleButton.classList.toggle(actionButtonClassNames.applyActive, !isActivePreset);
+    elPresetScaleCardActionButtons.elApplyPresetScaleButton.classList.toggle(actionButtonClassNames.applyDisabled, isActivePreset);
+    elPresetScaleCardActionButtons.elEditPresetScaleButton.disabled = !isCustomPreset;
+    elPresetScaleCardActionButtons.elRemovePresetScaleButton.disabled = !isCustomPreset;
+    elPresetScaleCardActionButtons.elEditPresetScaleButton.classList.toggle(actionButtonClassNames.editActive, isCustomPreset);
+    elPresetScaleCardActionButtons.elEditPresetScaleButton.classList.toggle(actionButtonClassNames.editDisabled, !isCustomPreset);
+    elPresetScaleCardActionButtons.elRemovePresetScaleButton.classList.toggle(actionButtonClassNames.removeActive, isCustomPreset);
+    elPresetScaleCardActionButtons.elRemovePresetScaleButton.classList.toggle(actionButtonClassNames.removeDisabled, !isCustomPreset);
+  };
+
+  const elPresetScaleCard = <HTMLDivElement>refs.elPresetScaleCard.cloneNode(true);
+  refs.elPresetScalePreview.replaceChildren(elPresetScaleCard);
+  const elPresetScaleCardActionButtons = refs.getElPresetScaleCardActionButtons(elPresetScaleCard);
+
+  elPresetScaleCardActionButtons.elApplyPresetScaleButton.addEventListener('click', () => {
+    const presetScaleId = Number(elPresetScaleCardActionButtons.elApplyPresetScaleButton.dataset.presetScaleId);
+    appStore.applyScalePreset(presetScaleId);
+  });
+
+  const renderPresetScalePreview = () => {
+    const locale = appStore.stateLocale.get();
+    const presetScale = cu.find(d.SCALE_PRESETS[locale], ({ id }) => id === d.DEFAULT_SCALE_PRESET_ID);
+    const presetScaleTexts = <t.presetScaleTexts><unknown>appStore.textPresetScale.get();
+
+    renderPresetScaleCardTexts(elPresetScaleCard, getPresetScaleCardTexts(presetScale, presetScaleTexts));
+    renderPresetScaleCardLabels(elPresetScaleCard, getPresetScaleCardLabels(presetScaleTexts));
+    renderPresetScaleCardActionButtons(elPresetScaleCard, presetScale);
+  };
+
+  appStore.stateLocale.subscribe(renderPresetScalePreview);
+  appStore.textPresetScale.subscribe(renderPresetScalePreview);
+  appStore.stateActiveScalePresetId.subscribe(renderPresetScalePreview);
+};
+
 const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
   const tooltipInstances = new Map<string, Tooltip>();
   const elTooltipButton = <HTMLButtonElement>refs.elTooltipTemplate.content.firstElementChild;
@@ -287,6 +407,7 @@ const initStaticText = (refs: t.domRefs, appStore: t.appStore): void => {
     s.replace(/[-_]+([a-z])/g, (_, c: string) => c.toUpperCase());
 
   const SCALE_PARAMS_PREFIX = 'scale-params-';
+  const LABEL_PRESET_SCALE_PREFIX = 'label-preset-scale-';
 
   refs.elStaticContentElements.forEach((el) => {
     const value = <string>el.dataset.staticContent;
@@ -295,6 +416,9 @@ const initStaticText = (refs: t.domRefs, appStore: t.appStore): void => {
     if (value.startsWith(SCALE_PARAMS_PREFIX)) {
       atom = appStore.textScaleParams;
       key = kebabToCamel(value.slice(SCALE_PARAMS_PREFIX.length));
+    } else if (value.startsWith(LABEL_PRESET_SCALE_PREFIX)) {
+      atom = appStore.textPresetScale;
+      key = kebabToCamel(value);
     } else {
       atom = appStore.textContent;
       key = kebabToCamel(value);
@@ -312,6 +436,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
 
   initIntervalSteps(refs, appStore);
   initFretboard(refs, appStore);
+  initPresetScalePreview(refs, appStore);
   initTooltips(refs, appStore);
   initStaticText(refs, appStore);
 

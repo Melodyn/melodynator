@@ -4,6 +4,7 @@
     "alwaysStrict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "outDir": "./dist/",
