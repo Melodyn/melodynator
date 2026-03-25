@@ -56,6 +56,7 @@
     "footerAbout": "Project developed by",
     "footerAboutLink": "Sergei Melodyn",
     "footerGithubLink": "Github",
+    "presetScaleModalTitle": "Scale presets",
     "aboutTooltip": "— a red note is a tooltip with useful information. Works on hover and touch on mobile.",
     "fretboardInfo": "This is the neck. The color indicates the octave of the note on the fret."
   },

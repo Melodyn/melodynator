@@ -1,4 +1,4 @@
-import { Popover, Tooltip } from 'bootstrap';
+import { Modal, Popover, Tooltip } from 'bootstrap';
 import * as n from 'nanostores';
 import * as c from '../constants';
 import * as cu from '../commonUtils';
@@ -259,7 +259,7 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
-const initPresetScalePreview = (refs: t.domRefs, appStore: t.appStore): void => {
+const initPresetScaleModal = (refs: t.domRefs, appStore: t.appStore): void => {
   const getPresetScaleVisibleDegreeCount = (presetScale: t.presetScale): number => {
     const visibleDegreesCount = presetScale.intervalPattern.filter((intervalStep) => intervalStep > 0).length;
     return visibleDegreesCount - presetScale.hiddenDegrees.length;
@@ -353,28 +353,47 @@ const initPresetScalePreview = (refs: t.domRefs, appStore: t.appStore): void => 
     elPresetScaleCardActionButtons.elRemovePresetScaleButton.classList.toggle(actionButtonClassNames.removeDisabled, !isCustomPreset);
   };
 
-  const elPresetScaleCard = <HTMLDivElement>refs.elPresetScaleCard.cloneNode(true);
-  refs.elPresetScalePreview.replaceChildren(elPresetScaleCard);
-  const elPresetScaleCardActionButtons = refs.getElPresetScaleCardActionButtons(elPresetScaleCard);
-
-  elPresetScaleCardActionButtons.elApplyPresetScaleButton.addEventListener('click', () => {
-    const presetScaleId = Number(elPresetScaleCardActionButtons.elApplyPresetScaleButton.dataset.presetScaleId);
-    appStore.applyScalePreset(presetScaleId);
-  });
-
-  const renderPresetScalePreview = () => {
+  const renderPresetScaleCards = () => {
     const locale = appStore.stateLocale.get();
-    const presetScale = cu.find(d.SCALE_PRESETS[locale], ({ id }) => id === d.DEFAULT_SCALE_PRESET_ID);
     const presetScaleTexts = <t.presetScaleTexts><unknown>appStore.textPresetScale.get();
+    const presetScaleCardLabels = getPresetScaleCardLabels(presetScaleTexts);
+    const elPresetScaleCards = d.SCALE_PRESETS[locale].map((presetScale) => {
+      const elPresetScaleCard = <HTMLDivElement>refs.elPresetScaleCard.cloneNode(true);
+      const elPresetScaleCardActionButtons = refs.getElPresetScaleCardActionButtons(elPresetScaleCard);
 
-    renderPresetScaleCardTexts(elPresetScaleCard, getPresetScaleCardTexts(presetScale, presetScaleTexts));
-    renderPresetScaleCardLabels(elPresetScaleCard, getPresetScaleCardLabels(presetScaleTexts));
-    renderPresetScaleCardActionButtons(elPresetScaleCard, presetScale);
+      elPresetScaleCardActionButtons.elApplyPresetScaleButton.addEventListener('click', () => {
+        const presetScaleId = Number(elPresetScaleCardActionButtons.elApplyPresetScaleButton.dataset.presetScaleId);
+        appStore.applyScalePreset(presetScaleId);
+        Modal.getOrCreateInstance(refs.elPresetScaleModal).hide();
+      });
+
+      renderPresetScaleCardTexts(elPresetScaleCard, getPresetScaleCardTexts(presetScale, presetScaleTexts));
+      renderPresetScaleCardLabels(elPresetScaleCard, presetScaleCardLabels);
+      renderPresetScaleCardActionButtons(elPresetScaleCard, presetScale);
+
+      return elPresetScaleCard;
+    });
+
+    refs.elPresetScaleList.replaceChildren(...elPresetScaleCards);
   };
 
-  appStore.stateLocale.subscribe(renderPresetScalePreview);
-  appStore.textPresetScale.subscribe(renderPresetScalePreview);
-  appStore.stateActiveScalePresetId.subscribe(renderPresetScalePreview);
+  const renderPresetScaleModalButtonLabel = () => {
+    const activeScalePresetId = appStore.stateActiveScalePresetId.get();
+    if (activeScalePresetId === c.NO_ACTIVE_PRESET_ID) {
+      refs.elPresetScaleModalButtonLabel.textContent = appStore.textContent.get().presetScaleModalTitle;
+      return;
+    }
+    const locale = appStore.stateLocale.get();
+    const activePresetScale = cu.find(d.SCALE_PRESETS[locale], ({ id }) => id === activeScalePresetId);
+    refs.elPresetScaleModalButtonLabel.textContent = activePresetScale.name;
+  };
+
+  appStore.stateLocale.subscribe(renderPresetScaleCards);
+  appStore.textPresetScale.subscribe(renderPresetScaleCards);
+  appStore.stateActiveScalePresetId.subscribe(renderPresetScaleCards);
+  appStore.stateActiveScalePresetId.subscribe(renderPresetScaleModalButtonLabel);
+  appStore.stateLocale.subscribe(renderPresetScaleModalButtonLabel);
+  appStore.textContent.subscribe(renderPresetScaleModalButtonLabel);
 };
 
 const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
@@ -436,7 +455,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
 
   initIntervalSteps(refs, appStore);
   initFretboard(refs, appStore);
-  initPresetScalePreview(refs, appStore);
+  initPresetScaleModal(refs, appStore);
   initTooltips(refs, appStore);
   initStaticText(refs, appStore);
 
@@ -456,6 +475,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
     'modal-shift': appStore.offsetModalShift,
     'degree-rotation': appStore.offsetDegreeRotation,
     'context-shift': appStore.offsetContext,
+    'scale-preset-shift': appStore.offsetScalePreset,
   };
 
   refs.elDirectionControllers.forEach((el) => {

@@ -82,6 +82,7 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
     footerAbout: 'Проект разработал',
     footerAboutLink: 'Сергей Мелодин',
     footerGithubLink: 'Github',
+    presetScaleModalTitle: 'Пресеты гамм',
     aboutTooltip: '— красная нота это подсказка с полезной информацией. Работает по наведению мыши и касанию на мобильных.',
     fretboardInfo: 'Это гриф. Цвет означает октаву ноты на ладу.',
   });

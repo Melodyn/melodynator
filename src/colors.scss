@@ -26,6 +26,10 @@ $theme-colors: map-merge($theme-colors,
   width: 40px;
 }
 
+.max-width-120px {
+  max-width: 120px;
+}
+
 .height-30px {
   height: 30px;
 }

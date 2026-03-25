@@ -88,209 +88,229 @@
 
     <main>
 
-      <div data-container="preset-scale-preview"></div>
+      <div class="pb-5 text-center">
+        <div class="d-inline-flex flex-column align-items-start gap-1">
+          <div class="d-flex align-items-center gap-1">
+            <button type="button" data-control="scale-preset-shift" data-direction="down"
+              class="btn btn-sm btn-outline-primary rounded-0 rounded-start fw-bold">
+              &#8592;
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-0"
+              data-control="open-preset-scale-modal" data-bs-toggle="modal" data-bs-target="#preset-scale-modal">
+              <span class="d-inline-block text-truncate max-width-120px align-bottom"
+                data-container="preset-scale-modal-button-label">
+              </span>
+            </button>
+            <button type="button" data-control="scale-preset-shift" data-direction="up"
+              class="btn btn-sm btn-outline-primary rounded-0 rounded-end fw-bold">
+              &#8594;
+            </button>
+          </div>
 
-      <div class="overflow-x-auto pt-2 pb-5">
-        <table class="table table-sm table-borderless align-middle text-center w-auto my-0 mx-auto p-0 table-spacing-y">
-          <thead class="align-middle">
-            <tr class="height-30px fw-bold">
-              <td class="py-0 ps-0 pe-2 text-start" data-static-content="scale-params-offset"></td>
-              <td class="p-0 text-nowrap" colspan="3">
-                <span data-tooltip="center" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params-center"></span>
-              </td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px text-nowrap" colspan="4">
-                <span data-tooltip="context" data-tooltip-placement="left"></span>
-                <span data-static-content="scale-params-context"></span>
-              </td>
-              <td class="p-0"></td>
-            </tr>
-          </thead>
-          <tbody class="align-middle">
-            <tr class="height-30px" data-container="center">
-              <td class="py-0 ps-0 pe-2 text-start text-nowrap">
-                <span data-tooltip="tonal" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params-tonal"></span>
-              </td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="tonic-shift" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px fw-bold" data-container="tonic"></td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="tonic-shift" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px"></td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="context-shift" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px fw-bold" data-container="context" colspan="2"></td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="context-shift" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-              <td></td>
-            </tr>
-            <tr class="height-30px" data-container="interval">
-              <td class="py-0 ps-0 pe-2 text-start text-nowrap">
-                <span data-tooltip="modal" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params-modal"></span>
-              </td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="modal-shift" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
-              <td class="p-0 width-30px position-relative" data-container="interval-step">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-control="interval-step"></button>
-              </td>
-              <td class="p-0 width-30px position-relative" data-container="interval-step">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-control="interval-step"></button>
-              </td>
-              <td class="p-0 width-30px position-relative" data-container="interval-step">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-control="interval-step"></button>
-              </td>
-              <td class="p-0 width-30px position-relative" data-container="interval-step">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-control="interval-step"></button>
-              </td>
-              <td class="p-0 width-30px position-relative" data-container="interval-step">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-control="interval-step"></button>
-              </td>
-              <td class="p-0 width-30px position-relative" data-container="interval-step">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-control="interval-step"></button>
-              </td>
-              <td class="p-0 width-30px position-relative" data-container="interval-step">
-                <button type="button"
-                  class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0"
-                  data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-control="interval-step"></button>
-              </td>
-              <td class="p-0 text-start">
-                <button type="button" data-control="modal-shift" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-              <td class="p-0 text-start width-40px">
-                <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
-                  data-control="interval-display-switch"></button>
-              </td>
-            </tr>
-            <tr class="height-30px" data-container="tones">
-              <td class="py-0 ps-0 pe-2 text-start text-nowrap">
-                <span data-tooltip="degrees" data-tooltip-placement="right"></span>
-                <span class="pe-1" data-static-content="scale-params-degrees"></span>
-              </td>
-              <td class="p-0 width-30px">
-                <button type="button" data-control="degree-rotation" data-direction="down"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
-                  &#8592;
-                </button>
-              </td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
-              <td class="p-0 width-30px text-secondary" data-container="scale-tone"></td>
-              <td class="p-0 text-start">
-                <button type="button" data-control="degree-rotation" data-direction="up"
-                  class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
-                  &#8594;
-                </button>
-              </td>
-              <td class="p-0 text-start">
-                <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
-                  data-control="enharmonic-simplify">&#9837;=&#9839;</button>
-              </td>
-            </tr>
-            <tr class="height-30px" data-container="degree">
-              <td class="px-0 pb-0 pt-2 border-top text-start text-nowrap">
-                <span data-tooltip="hide" data-tooltip-placement="right"></span>
-                <span data-static-content="scale-params-hide"></span>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">&#9745;</td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-1" value="1" type="checkbox"
-                  data-container="degree-switch" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-1">1</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-2" value="2" type="checkbox"
-                  data-container="degree-switch" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-2">2</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-3" value="3" type="checkbox"
-                  data-container="degree-switch" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-3">3</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-4" value="4" type="checkbox"
-                  data-container="degree-switch" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-4">4</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-5" value="5" type="checkbox"
-                  data-container="degree-switch" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-5">5</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-6" value="6" type="checkbox"
-                  data-container="degree-switch" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-6">6</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px">
-                <input class="btn-check btn-focusable" id="switch-degree-7" value="7" type="checkbox"
-                  data-container="degree-switch" />
-                <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-7">7</label>
-              </td>
-              <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">8</td>
-              <td class="px-0 pb-0 pt-1 border-top"></td>
-              <td class="border-top"></td>
-            </tr>
-          </tbody>
-        </table>
+          <div class="overflow-x-auto">
+            <table
+              class="table table-sm table-borderless align-middle text-center w-auto my-0 mx-auto p-0 table-spacing-y">
+              <thead class="align-middle">
+                <tr class="height-30px fw-bold">
+                  <td class="py-0 ps-0 pe-2 text-start" data-static-content="scale-params-offset"></td>
+                  <td class="p-0 text-nowrap" colspan="3">
+                    <span data-tooltip="center" data-tooltip-placement="right"></span>
+                    <span data-static-content="scale-params-center"></span>
+                  </td>
+                  <td class="p-0 width-30px"></td>
+                  <td class="p-0 width-30px"></td>
+                  <td class="p-0 width-30px"></td>
+                  <td class="p-0 width-30px text-nowrap" colspan="4">
+                    <span data-tooltip="context" data-tooltip-placement="left"></span>
+                    <span data-static-content="scale-params-context"></span>
+                  </td>
+                  <td class="p-0"></td>
+                </tr>
+              </thead>
+              <tbody class="align-middle">
+                <tr class="height-30px" data-container="center">
+                  <td class="py-0 ps-0 pe-2 text-start text-nowrap">
+                    <span data-tooltip="tonal" data-tooltip-placement="right"></span>
+                    <span data-static-content="scale-params-tonal"></span>
+                  </td>
+                  <td class="p-0 width-30px">
+                    <button type="button" data-control="tonic-shift" data-direction="down"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                      &#8592;
+                    </button>
+                  </td>
+                  <td class="p-0 width-30px fw-bold" data-container="tonic"></td>
+                  <td class="p-0 width-30px">
+                    <button type="button" data-control="tonic-shift" data-direction="up"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                      &#8594;
+                    </button>
+                  </td>
+                  <td class="p-0 width-30px"></td>
+                  <td class="p-0 width-30px"></td>
+                  <td class="p-0 width-30px"></td>
+                  <td class="p-0 width-30px">
+                    <button type="button" data-control="context-shift" data-direction="down"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                      &#8592;
+                    </button>
+                  </td>
+                  <td class="p-0 width-30px fw-bold" data-container="context" colspan="2"></td>
+                  <td class="p-0 width-30px">
+                    <button type="button" data-control="context-shift" data-direction="up"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                      &#8594;
+                    </button>
+                  </td>
+                  <td></td>
+                </tr>
+                <tr class="height-30px" data-container="interval">
+                  <td class="py-0 ps-0 pe-2 text-start text-nowrap">
+                    <span data-tooltip="modal" data-tooltip-placement="right"></span>
+                    <span data-static-content="scale-params-modal"></span>
+                  </td>
+                  <td class="p-0 width-30px">
+                    <button type="button" data-control="modal-shift" data-direction="down"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                      &#8592;
+                    </button>
+                  </td>
+                  <td class="p-0 width-30px rounded-circle" data-container="interval-step"></td>
+                  <td class="p-0 width-30px position-relative" data-container="interval-step">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-control="interval-step"></button>
+                  </td>
+                  <td class="p-0 width-30px position-relative" data-container="interval-step">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-control="interval-step"></button>
+                  </td>
+                  <td class="p-0 width-30px position-relative" data-container="interval-step">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-control="interval-step"></button>
+                  </td>
+                  <td class="p-0 width-30px position-relative" data-container="interval-step">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-control="interval-step"></button>
+                  </td>
+                  <td class="p-0 width-30px position-relative" data-container="interval-step">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-control="interval-step"></button>
+                  </td>
+                  <td class="p-0 width-30px position-relative" data-container="interval-step">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0 text-body"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-control="interval-step"></button>
+                  </td>
+                  <td class="p-0 width-30px position-relative" data-container="interval-step">
+                    <button type="button"
+                      class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-circle position-absolute top-0 bottom-0 start-0 end-0"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-control="interval-step"></button>
+                  </td>
+                  <td class="p-0 text-start">
+                    <button type="button" data-control="modal-shift" data-direction="up"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                      &#8594;
+                    </button>
+                  </td>
+                  <td class="p-0 text-start width-40px">
+                    <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
+                      data-control="interval-display-switch"></button>
+                  </td>
+                </tr>
+                <tr class="height-30px" data-container="tones">
+                  <td class="py-0 ps-0 pe-2 text-start text-nowrap">
+                    <span data-tooltip="degrees" data-tooltip-placement="right"></span>
+                    <span class="pe-1" data-static-content="scale-params-degrees"></span>
+                  </td>
+                  <td class="p-0 width-30px">
+                    <button type="button" data-control="degree-rotation" data-direction="down"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-start fw-bold">
+                      &#8592;
+                    </button>
+                  </td>
+                  <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                  <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                  <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                  <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                  <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                  <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                  <td class="p-0 width-30px rounded-circle" data-container="scale-tone"></td>
+                  <td class="p-0 width-30px text-secondary" data-container="scale-tone"></td>
+                  <td class="p-0 text-start">
+                    <button type="button" data-control="degree-rotation" data-direction="up"
+                      class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
+                      &#8594;
+                    </button>
+                  </td>
+                  <td class="p-0 text-start">
+                    <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
+                      data-control="enharmonic-simplify">&#9837;=&#9839;</button>
+                  </td>
+                </tr>
+                <tr class="height-30px" data-container="degree">
+                  <td class="px-0 pb-0 pt-2 border-top text-start text-nowrap">
+                    <span data-tooltip="hide" data-tooltip-placement="right"></span>
+                    <span data-static-content="scale-params-hide"></span>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">&#9745;</td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px">
+                    <input class="btn-check btn-focusable" id="switch-degree-1" value="1" type="checkbox"
+                      data-container="degree-switch" />
+                    <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-1">1</label>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px">
+                    <input class="btn-check btn-focusable" id="switch-degree-2" value="2" type="checkbox"
+                      data-container="degree-switch" />
+                    <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-2">2</label>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px">
+                    <input class="btn-check btn-focusable" id="switch-degree-3" value="3" type="checkbox"
+                      data-container="degree-switch" />
+                    <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-3">3</label>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px">
+                    <input class="btn-check btn-focusable" id="switch-degree-4" value="4" type="checkbox"
+                      data-container="degree-switch" />
+                    <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-4">4</label>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px">
+                    <input class="btn-check btn-focusable" id="switch-degree-5" value="5" type="checkbox"
+                      data-container="degree-switch" />
+                    <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-5">5</label>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px">
+                    <input class="btn-check btn-focusable" id="switch-degree-6" value="6" type="checkbox"
+                      data-container="degree-switch" />
+                    <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-6">6</label>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px">
+                    <input class="btn-check btn-focusable" id="switch-degree-7" value="7" type="checkbox"
+                      data-container="degree-switch" />
+                    <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-7">7</label>
+                  </td>
+                  <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">8</td>
+                  <td class="px-0 pb-0 pt-1 border-top"></td>
+                  <td class="border-top"></td>
+                </tr>
+              </tbody>
+            </table>
 
-        <span class="small d-block text-center text-danger" data-container="resolve-error">
-        </span>
+            <span class="small d-block text-center text-danger" data-container="resolve-error">
+            </span>
+          </div>
+        </div>
       </div>
 
       <div class="overflow-x-auto pb-5">
@@ -566,7 +586,8 @@
                     <span class="small text-nowrap" data-container="preset-scale-modal-shift"></span>
                   </span>
                   <span class="d-flex flex-row">
-                    <span class="small text-nowrap pe-1" data-static-content="label-preset-scale-degree-rotation"></span>
+                    <span class="small text-nowrap pe-1"
+                      data-static-content="label-preset-scale-degree-rotation"></span>
                     <span class="small text-nowrap" data-container="preset-scale-degree-rotation"></span>
                     <span class="small text-nowrap px-1"> • </span>
                     <span class="small text-nowrap pe-1" data-static-content="label-preset-scale-hidden-degrees"></span>
@@ -600,6 +621,21 @@
         </div>
       </div>
     </template>
+
+    <div class="modal fade" id="preset-scale-modal" tabindex="-1" aria-hidden="true"
+      data-container="preset-scale-modal">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" data-static-content="preset-scale-modal-title"></h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-2 py-3">
+            <div class="d-grid gap-3" data-container="preset-scale-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="frontend.ts"></script>

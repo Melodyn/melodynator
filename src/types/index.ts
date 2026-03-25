@@ -148,7 +148,7 @@ export type mapScaleToLayout = (layoutParams: { scaleMap: scaleMap, startNotes: 
 
 // UI level (user intention)
 export type setIntervalStep = (params: { degree: degree, step: intervalSize }) => void;
-export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'context-shift';
+export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'context-shift' | 'scale-preset-shift';
 
 export type controlDirection = 'up' | 'down';
 
@@ -161,6 +161,7 @@ export type setFretboardStartNote = (startNoteParams: fretboardStartNoteParams &
 export type addFretboardString = () => void;
 export type removeFretboardString = (index: number) => void;
 export type applyScalePreset = (presetScaleId: number) => void;
+export type offsetScalePreset = offsetScaleParam;
 
 export type store = {
   stateScaleBuildParams: MapStore<scaleBuildParams>
@@ -182,6 +183,7 @@ export type store = {
   removeFretboardString: removeFretboardString
   setIntervalStep: setIntervalStep
   applyScalePreset: applyScalePreset
+  offsetScalePreset: offsetScalePreset
   stateActiveScalePresetId: Atom<number>
   stateActiveFretboardPresetId: Atom<number>
 };
@@ -202,7 +204,9 @@ export type domRefs = {
   elIntervalDisplaySwitch: HTMLButtonElement
   elIntervalStepParams: HTMLFormElement
   elEnharmonicSimplifySwitch: HTMLButtonElement
-  elPresetScalePreview: HTMLDivElement
+  elPresetScaleModalButtonLabel: HTMLSpanElement
+  elPresetScaleModal: HTMLDivElement
+  elPresetScaleList: HTMLDivElement
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
   elDegreeSwitchContainers: NodeListOf<HTMLInputElement>
   elDegreeSwitchLabels: HTMLLabelElement[]

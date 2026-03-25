@@ -147,6 +147,20 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     stateActiveScalePresetId.set(presetScale.id);
   };
 
+  const offsetScalePreset: t.offsetScalePreset = (offset) => {
+    const locale = stateLocale.get();
+    const presetScales = d.SCALE_PRESETS[locale];
+    const activeScalePresetId = stateActiveScalePresetId.get();
+    if (activeScalePresetId === c.NO_ACTIVE_PRESET_ID) {
+      applyScalePreset(d.DEFAULT_SCALE_PRESET_ID);
+      return;
+    }
+    const currentPresetIndex = cu.findIndex(presetScales, ({ id }) => id === activeScalePresetId);
+    const nextPresetIndex = (currentPresetIndex + presetScales.length + offset) % presetScales.length;
+    const nextPreset = presetScales[nextPresetIndex];
+    applyScalePreset(nextPreset.id);
+  };
+
   stateScaleBuildParams.listen(({ tonic, intervalPattern, modalShift }) => {
     storageService.insert('tonic', tonic);
     storageService.insert('intervalPattern', intervalPattern);
@@ -179,6 +193,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     removeFretboardString,
     setIntervalStep,
     applyScalePreset,
+    offsetScalePreset,
     stateActiveScalePresetId,
     stateActiveFretboardPresetId,
   };

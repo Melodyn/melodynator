@@ -18,7 +18,9 @@ export const getDomRefs = (): t.domRefs => {
   const elIntervalDisplaySwitch = qs<HTMLButtonElement>('[data-control="interval-display-switch"]');
   const elIntervalStepParams = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="interval-step-params"]').content.firstElementChild;
   const elEnharmonicSimplifySwitch = qs<HTMLButtonElement>('[data-control="enharmonic-simplify"]');
-  const elPresetScalePreview = qs<HTMLDivElement>('[data-container="preset-scale-preview"]');
+  const elPresetScaleModalButtonLabel = qs<HTMLSpanElement>('[data-container="preset-scale-modal-button-label"]');
+  const elPresetScaleModal = qs<HTMLDivElement>('[data-container="preset-scale-modal"]');
+  const elPresetScaleList = qs<HTMLDivElement>('[data-container="preset-scale-list"]');
   const elScaleToneContainers = qsa<HTMLTableCellElement>('[data-container="scale-tone"]');
   const elDegreeSwitchContainers = qsa<HTMLInputElement>('[data-container="degree-switch"]');
   const elDegreeSwitchLabels = Array.from(elDegreeSwitchContainers).map((elDegreeSwitchContainer) => {
@@ -113,7 +115,9 @@ export const getDomRefs = (): t.domRefs => {
     elIntervalDisplaySwitch,
     elIntervalStepParams,
     elEnharmonicSimplifySwitch,
-    elPresetScalePreview,
+    elPresetScaleModalButtonLabel,
+    elPresetScaleModal,
+    elPresetScaleList,
     elScaleToneContainers,
     elDegreeSwitchContainers,
     elDegreeSwitchLabels,
