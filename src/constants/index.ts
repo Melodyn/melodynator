@@ -8,7 +8,7 @@ export const FLAT_SYMBOL: t.flatSymbol = '♭';
 export const SHARP_SYMBOL: t.sharpSymbol = '♯';
 export const EMPTY_VALUE = '\u00A0';
 
-export const MIN_FRETBOARD_STRINGS = 4;
+export const MIN_FRETBOARD_STRINGS = 3;
 export const MAX_FRETBOARD_STRINGS = 12;
 export const FRETBOARD_STRING_INTERVAL = 5; // кварта вниз = 5 полутонов
 export const NO_ACTIVE_PRESET_ID = 0;
