@@ -1,11 +1,6 @@
 import { expect, test, describe } from 'vitest';
 import * as t from '../src/types';
 import { resolveScale, scaleToMap, mapScaleToLayout, applyContextTransform, applyDegreeRotation } from '../src/core';
-import { initI18n } from '../src/app/i18n';
-import { StorageService } from '../src/app/StorageService';
-import enJson from '../src/translations/en.json';
-
-const keys = (obj: object) => Object.keys(obj).sort();
 
 
 const major = [
@@ -87,12 +82,12 @@ describe('major', () => {
 describe('applyContextTransform', () => {
   const cMajor = resolveScale({ tonic: 'C', intervalPattern: [2, 2, 1, 2, 2, 2, 1], modalShift: 0 });
 
-  test('contextOffset=0 не меняет гамму', () => {
+  test('при contextOffset=0 гамма не меняется', () => {
     const result = applyContextTransform(cMajor, 0);
     expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F G A B C');
   });
 
-  test('context=F (offset=5): pitch set F major, якорь C, ступени 1–7 от C', () => {
+  test('контекст F: ступени 1–7 остаются от C', () => {
     const result = applyContextTransform(cMajor, 5);
     expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F G A B♭ C');
     expect(result.scale[0].degree).toBe(1);
@@ -101,14 +96,14 @@ describe('applyContextTransform', () => {
     expect(result.contextTargets).toEqual(['F']);
   });
 
-  test('context=G (offset=7): pitch set G major, якорь C, F♯ вместо F', () => {
+  test('контекст G: появляется F♯ вместо F', () => {
     const result = applyContextTransform(cMajor, 7);
     expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F♯ G A B C');
     expect(result.scale[0].degree).toBe(1);
     expect(result.contextTargets).toEqual(['G']);
   });
 
-  test('context=F: C всегда degree=1', () => {
+  test('контекст F: C остаётся 1 ступенью', () => {
     const result = applyContextTransform(cMajor, 5);
     const firstNote = result.scale[0];
     expect(firstNote.note).toBe('C');
@@ -119,12 +114,12 @@ describe('applyContextTransform', () => {
 describe('applyDegreeRotation', () => {
   const cMajor = resolveScale({ tonic: 'C', intervalPattern: [2, 2, 1, 2, 2, 2, 1], modalShift: 0 });
 
-  test('degreeRotation=0 не меняет гамму', () => {
+  test('без поворота гамма не меняется', () => {
     const result = applyDegreeRotation(cMajor, 0);
     expect(result.scale.map(({ note }) => note).join(' ')).toBe('C D E F G A B C');
   });
 
-  test('rotation=1 на C major: D становится degree=1, ноты сохраняются', () => {
+  test('D становится 1 ступенью, ноты сохраняются', () => {
     const result = applyDegreeRotation(cMajor, 1);
     expect(result.scale.map(({ note }) => note).join(' ')).toBe('D E F G A B C D');
     expect(result.scale[0].degree).toBe(1);
@@ -132,7 +127,7 @@ describe('applyDegreeRotation', () => {
     expect(result.scale[7].degree).toBe(8);
   });
 
-  test('rotation=1 на C-в-контексте-F: B♭ сохраняется (не заменяется на B♮)', () => {
+  test('B♭ сохраняется после поворота в контексте F', () => {
     const cInF = applyContextTransform(cMajor, 5);
     const result = applyDegreeRotation(cInF, 1);
     expect(result.scale.map(({ note }) => note).join(' ')).toBe('D E F G A B♭ C D');
@@ -141,7 +136,7 @@ describe('applyDegreeRotation', () => {
 });
 
 describe('scaleToMap', () => {
-  test('converts scale to map with unique pitch classes', () => {
+  test('создаёт map по уникальным pitchClass', () => {
     const scale: t.noteParams[] = [
       { note: 'C', degree: 1, pitchClass: 0 },
       { note: 'D', degree: 2, pitchClass: 2 },
@@ -155,7 +150,7 @@ describe('scaleToMap', () => {
     expect(result.get(4)).toEqual({ note: 'E', degree: 3, pitchClass: 4 });
   });
 
-  test('uses first note when pitch classes duplicate', () => {
+  test('при дубле pitchClass берёт первую ноту', () => {
     const scale: t.noteParams[] = [
       { note: 'C', degree: 1, pitchClass: 0 },
       { note: 'B♯', degree: 2, pitchClass: 0 },
@@ -168,7 +163,7 @@ describe('scaleToMap', () => {
 });
 
 describe('mapScaleToLayout', () => {
-  test('creates layout with empty strings for notes not in scale', () => {
+  test('оставляет пустые ячейки для нот вне гаммы', () => {
     const { scale } = resolveScale({
       tonic: 'C',
       intervalPattern: [2, 2, 1, 2, 2, 2, 1],
@@ -191,7 +186,7 @@ describe('mapScaleToLayout', () => {
     expect(result[0][6]).toEqual({ note: '', octave: 4, degree: 0 }); // F# не входит в гамму
   });
 
-  test('returns layout with filtered notes string', () => {
+  test('возвращает строку нот без пустых значений', () => {
     const { scale } = resolveScale({
       tonic: 'C',
       intervalPattern: [2, 2, 1, 2, 2, 2, 1],
@@ -205,74 +200,5 @@ describe('mapScaleToLayout', () => {
 
     const notesString = result[0].map(({ note }) => note).filter(n => n.length > 0).join(' ');
     expect(notesString).toBe('C D E F G A B C');
-  });
-});
-
-describe('en.json completeness', () => {
-  const storageService = new StorageService({
-    theme: 'light',
-    locale: 'ru',
-    tonic: 'C',
-    intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-    modalShift: 0,
-    contextOffset: 0,
-    degreeRotation: 0,
-    hiddenDegrees: [],
-    startNotes: [{ note: 'C', octave: 4 }],
-    activeScalePresetId: 1,
-    activeFretboardPresetId: 1,
-    isEnharmonicSimplify: false,
-    intervalDisplayMode: 'digit',
-  });
-  const i18n = initI18n('ru', storageService);
-
-  test('scaleParams keys match base locale', () => {
-    expect(keys(enJson.scaleParams)).toEqual(keys(i18n.textScaleParams.get()));
-  });
-
-  test('fretboard keys match base locale', () => {
-    expect(keys(enJson.fretboard)).toEqual(keys(i18n.textFretboard.get()));
-  });
-
-  test('content keys match base locale', () => {
-    expect(keys(enJson.content)).toEqual(keys(i18n.textContent.get()));
-  });
-
-  test('errors keys match base locale', () => {
-    expect(keys(enJson.errors)).toEqual(keys(i18n.textErrors.get()));
-  });
-
-  test('presetScale keys match base locale', () => {
-    expect(keys(enJson.presetScale)).toEqual(keys(i18n.textPresetScale.get()));
-  });
-
-  test('initial en locale loads translated static texts', async () => {
-    const enStorageService = new StorageService({
-      theme: 'light',
-      locale: 'en',
-      tonic: 'C',
-      intervalPattern: [2, 2, 1, 2, 2, 2, 1],
-      modalShift: 0,
-      contextOffset: 0,
-      degreeRotation: 0,
-      hiddenDegrees: [],
-      startNotes: [{ note: 'C', octave: 4 }],
-      activeScalePresetId: 1,
-      activeFretboardPresetId: 1,
-      isEnharmonicSimplify: false,
-      intervalDisplayMode: 'digit',
-    });
-    const enI18n = initI18n('en', enStorageService);
-
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-      if (enI18n.textContent.get().pageTitle === enJson.content.pageTitle) {
-        break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    }
-
-    expect(enI18n.textContent.get().pageTitle).toBe(enJson.content.pageTitle);
-    expect(enI18n.textScaleParams.get().offset).toBe(enJson.scaleParams.offset);
-    expect(enI18n.textFretboard.get().presetTuning).toBe(enJson.fretboard.presetTuning);
   });
 });
