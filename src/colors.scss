@@ -30,6 +30,10 @@ $theme-colors: map-merge($theme-colors,
   width: 120px;
 }
 
+.width-420px {
+  width: 420px;
+}
+
 .height-30px {
   height: 30px;
 }
@@ -40,6 +44,10 @@ $theme-colors: map-merge($theme-colors,
 
 .tooltip-mw-300 {
   --bs-tooltip-max-width: 300px;
+}
+
+.popover-settings .popover-body {
+  padding: 0.25rem 0.5rem;
 }
 
 .icon-faded {

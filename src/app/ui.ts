@@ -101,6 +101,49 @@ const initIntervalSteps = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
+const initScaleConfigSettingsPopover = (refs: t.domRefs, appStore: t.appStore): void => {
+  let scaleConfigSettingsElements: t.scaleConfigSettingsElements | null = null;
+
+  const renderScaleConfigSettings = (): void => {
+    if (!scaleConfigSettingsElements) {
+      return;
+    }
+    const scaleParamsTexts = appStore.textScaleParams.get();
+    scaleConfigSettingsElements.elIntervalDisplayLabel.textContent = scaleParamsTexts.intervalLetters;
+    scaleConfigSettingsElements.elEnharmonicSimplifyLabel.textContent = scaleParamsTexts.reduceAccidentals;
+    scaleConfigSettingsElements.elIntervalDisplaySwitch.checked = appStore.stateIntervalDisplayMode.get() === 'letter';
+    scaleConfigSettingsElements.elEnharmonicSimplifySwitch.checked = appStore.stateIsEnharmonicSimplify.get();
+  };
+
+  new Popover(refs.elScaleConfigSettingsButton, {
+    html: true,
+    sanitize: false,
+    content: () => {
+      const elScaleConfigSettings = <HTMLDivElement>refs.elScaleConfigSettings.cloneNode(true);
+      scaleConfigSettingsElements = refs.getElScaleConfigSettingsElements(elScaleConfigSettings);
+
+      scaleConfigSettingsElements.elIntervalDisplaySwitch.addEventListener('change', () => {
+        appStore.switchIntervalDisplayMode();
+      });
+      scaleConfigSettingsElements.elEnharmonicSimplifySwitch.addEventListener('change', () => {
+        appStore.switchEnharmonicSimplify();
+      });
+
+      renderScaleConfigSettings();
+
+      return elScaleConfigSettings;
+    },
+  });
+
+  refs.elScaleConfigSettingsButton.addEventListener('hidden.bs.popover', () => {
+    scaleConfigSettingsElements = null;
+  });
+
+  appStore.textScaleParams.subscribe(renderScaleConfigSettings);
+  appStore.stateIntervalDisplayMode.subscribe(renderScaleConfigSettings);
+  appStore.stateIsEnharmonicSimplify.subscribe(renderScaleConfigSettings);
+};
+
 const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   const updateStringNumbers = (): void => {
     refs.elFretboardStrings.slice(c.MIN_FRETBOARD_STRINGS).forEach((elString, i) => {
@@ -585,6 +628,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
   const refs = getDomRefs();
 
   initIntervalSteps(refs, appStore);
+  initScaleConfigSettingsPopover(refs, appStore);
   initFretboard(refs, appStore);
   initPresetScaleModal(refs, appStore);
   initPresetFretboardModal(refs, appStore);
@@ -623,15 +667,6 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
 
       offsetScaleParam(offset);
     });
-  });
-
-  // Interval display mode switch
-  refs.elIntervalDisplaySwitch.addEventListener('click', () => {
-    appStore.switchIntervalDisplayMode();
-  });
-
-  refs.elEnharmonicSimplifySwitch.addEventListener('click', () => {
-    appStore.switchEnharmonicSimplify();
   });
 
   refs.elDegreeSwitchContainers.forEach((el) => {

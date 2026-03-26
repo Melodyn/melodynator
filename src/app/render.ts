@@ -162,18 +162,6 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     });
   };
 
-  const renderIntervalDisplaySwitch = () => {
-    const mode = store.stateIntervalDisplayMode.get();
-    const intervals = store.textIntervals.get();
-    if (mode === 'letter') {
-      refs.elIntervalDisplaySwitch.textContent = intervals.digitModeLabel;
-    } else {
-      const halfStepLetter = intervals.halfStep[0].toUpperCase();
-      const wholeStepLetter = intervals.wholeStep[0].toUpperCase();
-      refs.elIntervalDisplaySwitch.textContent = `${halfStepLetter}/${wholeStepLetter}`;
-    }
-  };
-
   const renderDirectionControllers = (resolvedScaleParams: t.resolvedScaleParams) => {
     refs.elDirectionControllers.forEach((el) => {
       const { control } = el.dataset;
@@ -222,9 +210,6 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   store.stateIntervalDisplayMode.subscribe(renderIntervalContainers);
   store.textIntervals.subscribe(renderIntervalContainers);
 
-  store.stateIntervalDisplayMode.subscribe(renderIntervalDisplaySwitch);
-  store.textIntervals.subscribe(renderIntervalDisplaySwitch);
-
   store.stateResolvedScaleParams.subscribe((resolvedScaleParams) => {
     refs.elContextContainer.textContent = resolvedScaleParams.contextTargets.join('/');
     renderDirectionControllers(resolvedScaleParams);
@@ -252,10 +237,7 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
   });
 
   store.stateIsEnharmonicSimplify.subscribe(() => {
-    const isEnharmonicSimplify = store.stateIsEnharmonicSimplify.get();
     const unshiftResolvedScaleParams = store.stateUnshiftResolvedScaleParams.get();
-    refs.elEnharmonicSimplifySwitch.classList.toggle('btn-secondary', isEnharmonicSimplify);
-    refs.elEnharmonicSimplifySwitch.classList.toggle('btn-outline-secondary', !isEnharmonicSimplify);
     renderScaleTones(unshiftResolvedScaleParams);
     renderVisibleNotes();
   });

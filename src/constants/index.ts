@@ -72,3 +72,8 @@ export const PRESET_FRETBOARD_CARD_STATIC_CONTENTS: Record<keyof t.presetFretboa
   labelPresetFretboardNotes: 'label-preset-fretboard-notes',
   labelPresetFretboardComment: 'label-preset-fretboard-comment',
 };
+
+export const SCALE_CONFIG_SETTINGS_CONTAINERS = {
+  intervalDisplayLabel: 'scale-config-settings-interval-display-label',
+  enharmonicSimplifyLabel: 'scale-config-settings-enharmonic-simplify-label',
+};

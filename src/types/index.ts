@@ -169,6 +169,13 @@ export type presetFretboardCardActionButtons = {
   elRemovePresetFretboardButton: HTMLButtonElement
 };
 
+export type scaleConfigSettingsElements = {
+  elIntervalDisplaySwitch: HTMLInputElement
+  elEnharmonicSimplifySwitch: HTMLInputElement
+  elIntervalDisplayLabel: HTMLLabelElement
+  elEnharmonicSimplifyLabel: HTMLLabelElement
+};
+
 export type scaleLayout = fretboardNoteParams[];
 
 export type scaleLayouts = scaleLayout[];
@@ -234,9 +241,9 @@ export type domRefs = {
   elContextContainer: HTMLTableCellElement
   elIntervalContainers: NodeListOf<HTMLTableCellElement>
   elSetIntervalSteps: HTMLButtonElement[]
-  elIntervalDisplaySwitch: HTMLButtonElement
+  elScaleConfigSettingsButton: HTMLButtonElement
+  elScaleConfigSettings: HTMLDivElement
   elIntervalStepParams: HTMLFormElement
-  elEnharmonicSimplifySwitch: HTMLButtonElement
   elPresetScaleModalButtonLabel: HTMLSpanElement
   elPresetScaleModal: HTMLDivElement
   elPresetScaleList: HTMLDivElement
@@ -269,6 +276,7 @@ export type domRefs = {
   getElPresetFretboardCardLabelElements: (el: HTMLDivElement) => presetFretboardCardLabelElements
   getElPresetFretboardCardActionButtons: (el: HTMLDivElement) => presetFretboardCardActionButtons
   getElPresetFretboardCardHeader: (el: HTMLDivElement) => HTMLDivElement
+  getElScaleConfigSettingsElements: (el: HTMLDivElement) => scaleConfigSettingsElements
   getElIntervalStepSelect: (form: HTMLFormElement) => HTMLSelectElement
   getElFretboardStringNoteSelect: (form: HTMLFormElement) => HTMLSelectElement
   getElFretboardNoteOctaveSelect: (form: HTMLFormElement) => HTMLSelectElement

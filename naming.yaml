@@ -41,7 +41,8 @@ data_control:
   - start-note             # → setFretboardStartNote → stateFretboardStartNotes → elFretboardStartNoteButtons
   - interval-step          # → setIntervalStep → stateScaleBuildParams(.intervalPattern) | degree=1–7; popover-форма
   - interval-display-switch # → switchIntervalDisplayMode → stateIntervalDisplayMode
-  - enharmonic-simplify    # → switchEnharmonicSimplify → stateIsEnharmonicSimplify | button ♭=♯
+  - enharmonic-simplify    # → switchEnharmonicSimplify → stateIsEnharmonicSimplify | switch в popover настроек конфигуратора
+  - open-scale-config-settings # → declarative Bootstrap popover trigger | кнопка ⚙ в строке degree конфигуратора
   - add-fretboard-string   # → addFretboardString → stateFretboardStartNotes | кнопка в tfoot; popover с подтверждением
   - remove-fretboard-string # → removeFretboardString → stateFretboardStartNotes | кнопка в td номера строки; popover с подтверждением
   - open-preset-scale-modal # → declarative Bootstrap modal trigger | кнопка открытия списка пресетов гамм
@@ -121,6 +122,7 @@ data_template:
   # id остаётся в HTML только для <label for> (доступность).
   - tooltip                         # elTooltipTemplate — кнопка с SVG-иконкой для Tooltip
   - interval-step-params            # elIntervalStepParams — форма popover выбора интервала
+  - scale-config-settings           # elScaleConfigSettings — шаблон содержимого popover настроек конфигуратора
   - fretboard-string                # elFretboardString — шаблон строки фретборда
   - preset-scale-card               # elPresetScaleCard — шаблон карточки пресета гаммы для списка в модалке
   - preset-fretboard-card           # elPresetFretboardCard — шаблон карточки пресета инструмента для списка в модалке
@@ -167,6 +169,8 @@ data_container:
   - preset-fretboard-tuning
   - preset-fretboard-notes
   - preset-fretboard-comment
+  - scale-config-settings-interval-display-label
+  - scale-config-settings-enharmonic-simplify-label
 
 data_instrument:
   - fretboard              # refs: elFretboard (tbody-контейнер строк)
@@ -208,7 +212,7 @@ key_types:
   - removeFretboardString # action type: (index: number) => void | удаляет строку по индексу, min=MIN_FRETBOARD_STRINGS
 
 stores:
-  - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide | → initStaticText
+  - textScaleParams  # type: i18n atom | namespace: scale-params | ключи: offset,center,context,tonal,modal,degrees,hide,intervalLetters,reduceAccidentals | → initStaticText и popover настроек конфигуратора
   - textContent      # type: i18n atom | namespace: content | ключи: pageTitle, pageDescription, sections... | → initStaticText
   - textTooltips     # type: i18n atom | ключи: tooltip,hide,tonal,modal,degrees,center,context,fretboard | → initTooltips (Tooltip.setContent)
   - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8, addStringLabel, removeStringLabel, presetName, presetNotes, presetTuning, presetComment, presetStrings | → popover content() в initFretboard и карточки пресетов инструментов
@@ -217,7 +221,7 @@ stores:
   - textPresetsScale     # type: i18n atom<presetScale[]> | namespace: presetsScale | 18 пресетов гамм | → будущий UI пресетов
   - textPresetsFretboard # type: i18n atom<presetInstrument[]> | namespace: presetsFretboard | 8 пресетов инструментов | → потенциальный будущий источник, если пресеты инструментов будут вынесены из defaults.ts в i18n
   - textPresetScale      # type: i18n atom | namespace: presetScale | label-тексты карточки пресета гаммы
-  - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elSetIntervalSteps, elIntervalDisplaySwitch
+  - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elSetIntervalSteps и switch в popover настроек конфигуратора
   - stateLocale                     # type: Atom<locale> | atom, инициализируется из storageService.selectAll() | → elLocaleSwitch
   - stateScaleBuildParams           # type: MapStore<scaleBuildParams> | ← tonic-shift, modal-shift | → elTonicContainer, elIntervalContainers
   - stateContextOffset              # type: Atom<contextOffset> | ← context-shift | → (учитывается в stateResolvedScaleParams)
@@ -260,7 +264,8 @@ render_targets:
   - elContextContainer        # data-container="context" | ← stateResolvedScaleParams(.contextTargets)
   - elIntervalContainers      # data-container="interval-step" | ← stateScaleBuildParams(.intervalPattern, .modalShift) | ячейка 0 — «0» на td; ячейки 1–7 — кнопки
   - elSetIntervalSteps        # data-control="interval-step" (7 кнопок) | ← intervalPattern, stateIntervalDisplayMode; текст обновляется в renderIntervalContainers
-  - elIntervalDisplaySwitch   # data-control="interval-display-switch" | ← stateIntervalDisplayMode, textIntervals; кнопка-переключатель digit/letter
+  - elScaleConfigSettingsButton # data-control="open-scale-config-settings" | trigger Bootstrap popover настроек конфигуратора
+  - elScaleConfigSettings     # data-template="scale-config-settings" → клонируется в popover content()
   - elIntervalStepParams      # data-template="interval-step-params" → клонируется в popover content() initIntervalSteps; select заполняется интервалами при каждом открытии
   - elScaleToneContainers     # data-container="scale-tone" | ← stateUnshiftResolvedScaleParams(.scale), stateDegreeRotation
   - elDegreeSwitchContainers  # data-container="degree-switch" | ← stateHiddenDegrees (input-переключатели)
@@ -297,12 +302,12 @@ render_targets:
   - getElPresetFretboardCardLabelElements  # grouped refs для data-static-content="label-preset-fretboard-*" внутри карточки
   - getElPresetFretboardCardActionButtons  # grouped refs для action buttons apply/edit/remove внутри карточки
   - getElPresetFretboardCardHeader         # .card-header внутри карточки пресета инструмента; используется для выделения активного пресета
+  - getElScaleConfigSettingsElements       # grouped refs для switch и label внутри popover настроек конфигуратора
   - getElIntervalStepSelect           # → data-select="interval-step-value" внутри form
   - getElFretboardStringNoteSelect    # → data-select="fretboard-string-note" внутри form
   - getElFretboardNoteOctaveSelect    # → data-select="fretboard-note-octave" внутри form
   # data-control refs
   - elThemeSwitch             # data-control="theme-switch" | click → toggleTheme → refs.elBody[data-bs-theme]
-  - elEnharmonicSimplifySwitch # data-control="enharmonic-simplify" (button) | ← stateIsEnharmonicSimplify (классы btn-secondary/btn-outline-secondary)
   # i18n refs
   - elLocaleSwitch            # data-control="locale-switch" | ← stateLocale (кнопка с текущим не-активным языком)
   # статичные тексты — через initStaticText() по data-static-content, refs не нужны

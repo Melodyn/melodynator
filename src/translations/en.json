@@ -6,7 +6,9 @@
     "tonal": "tonal",
     "modal": "modal",
     "degrees": "degrees",
-    "hide": "hide"
+    "hide": "hide",
+    "intervalLetters": "intervals in letters",
+    "reduceAccidentals": "reduce accidentals"
   },
   "tooltips": {
     "tooltip": "Click on the big note above",

@@ -2,6 +2,7 @@ import { createI18n, params } from '@nanostores/i18n';
 import { atom } from 'nanostores';
 import type { ReadableAtom } from 'nanostores';
 import type * as t from '../types';
+import * as d from '../constants/defaults';
 import { StorageService } from './StorageService';
 
 export const initI18n = (locale: t.locale, storageService: StorageService): t.i18nStore => {
@@ -15,7 +16,7 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
   };
 
   const i18n = createI18n(localeStore, {
-    baseLocale: locale,
+    baseLocale: d.DEFAULT_LOCALE,
     async get(code) {
       return (await import(`../translations/${code}.json`)).default;
     },
@@ -29,6 +30,8 @@ export const initI18n = (locale: t.locale, storageService: StorageService): t.i1
     modal: 'модальное',
     degrees: 'ступеней',
     hide: 'скрыть',
+    intervalLetters: 'интервалы буквами',
+    reduceAccidentals: 'сократить альтерации',
   });
 
   const textTooltips = <t.i18nTextAtom><unknown>i18n('tooltips', {

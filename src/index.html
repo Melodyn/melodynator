@@ -124,7 +124,6 @@
                     <span data-tooltip="context" data-tooltip-placement="left"></span>
                     <span data-static-content="scale-params-context"></span>
                   </td>
-                  <td class="p-0"></td>
                 </tr>
               </thead>
               <tbody class="align-middle">
@@ -162,7 +161,6 @@
                       &#8594;
                     </button>
                   </td>
-                  <td></td>
                 </tr>
                 <tr class="height-30px" data-container="interval">
                   <td class="py-0 ps-0 pe-2 text-start text-nowrap">
@@ -224,10 +222,6 @@
                       &#8594;
                     </button>
                   </td>
-                  <td class="p-0 text-start width-40px">
-                    <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
-                      data-control="interval-display-switch"></button>
-                  </td>
                 </tr>
                 <tr class="height-30px" data-container="tones">
                   <td class="py-0 ps-0 pe-2 text-start text-nowrap">
@@ -253,10 +247,6 @@
                       class="btn btn-sm btn-outline-secondary border-0 rounded-0 rounded-end fw-bold">
                       &#8594;
                     </button>
-                  </td>
-                  <td class="p-0 text-start">
-                    <button type="button" class="btn btn-sm p-1 btn-outline-secondary border-0 ms-1"
-                      data-control="enharmonic-simplify">&#9837;=&#9839;</button>
                   </td>
                 </tr>
                 <tr class="height-30px" data-container="degree">
@@ -301,8 +291,11 @@
                     <label class="btn border border-dark-subtle round-2 py-0 px-2" for="switch-degree-7">7</label>
                   </td>
                   <td class="px-0 pb-0 pt-1 border-top width-30px text-secondary">8</td>
-                  <td class="px-0 pb-0 pt-1 border-top"></td>
-                  <td class="border-top"></td>
+                  <td class="px-0 pb-0 pt-1 text-start">
+                    <button type="button" class="btn btn-sm btn-outline-primary border-0 rounded-circle fw-bold"
+                      data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                      data-bs-custom-class="popover-settings" data-control="open-scale-config-settings">⚙</button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -322,7 +315,8 @@
                 &#8592;
               </button>
               <button type="button" class="btn btn-sm btn-outline-primary rounded-0"
-                data-control="open-preset-fretboard-modal" data-bs-toggle="modal" data-bs-target="#preset-fretboard-modal">
+                data-control="open-preset-fretboard-modal" data-bs-toggle="modal"
+                data-bs-target="#preset-fretboard-modal">
                 <span class="d-inline-block text-truncate width-120px align-bottom"
                   data-container="preset-fretboard-modal-button-label">
                 </span>
@@ -381,7 +375,7 @@
                 </tr>
               </tfoot>
             </table>
-            <span class="small d-block text-center" data-static-content="fretboard-info"></span>
+            <span class="small d-inline-block width-420px text-center" data-static-content="fretboard-info"></span>
           </div>
         </div>
       </div>
@@ -512,6 +506,22 @@
           <option></option>
         </select>
       </form>
+    </template>
+
+    <template id="template-scale-config-settings" data-template="scale-config-settings">
+      <div class="d-flex flex-column gap-2">
+        <div class="form-check form-switch d-flex align-items-center gap-2 mb-0 ps-0">
+          <input class="form-check-input mt-0 ms-0" type="checkbox" role="switch"
+            data-control="interval-display-switch" />
+          <label class="form-check-label text-nowrap"
+            data-container="scale-config-settings-interval-display-label"></label>
+        </div>
+        <div class="form-check form-switch d-flex align-items-center gap-2 mb-0 ps-0">
+          <input class="form-check-input mt-0 ms-0" type="checkbox" role="switch" data-control="enharmonic-simplify" />
+          <label class="form-check-label text-nowrap"
+            data-container="scale-config-settings-enharmonic-simplify-label"></label>
+        </div>
+      </div>
     </template>
 
     <template id="template-fretboard-string" data-template="fretboard-string">

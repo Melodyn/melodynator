@@ -15,9 +15,9 @@ export const getDomRefs = (): t.domRefs => {
   const elContextContainer = qs<HTMLTableCellElement>('[data-container="context"]');
   const elIntervalContainers = qsa<HTMLTableCellElement>('[data-container="interval-step"]');
   const elSetIntervalSteps = Array.from(qsa<HTMLButtonElement>('[data-control="interval-step"]'));
-  const elIntervalDisplaySwitch = qs<HTMLButtonElement>('[data-control="interval-display-switch"]');
+  const elScaleConfigSettingsButton = qs<HTMLButtonElement>('[data-control="open-scale-config-settings"]');
+  const elScaleConfigSettings = <HTMLDivElement>qs<HTMLTemplateElement>('[data-template="scale-config-settings"]').content.firstElementChild;
   const elIntervalStepParams = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="interval-step-params"]').content.firstElementChild;
-  const elEnharmonicSimplifySwitch = qs<HTMLButtonElement>('[data-control="enharmonic-simplify"]');
   const elPresetScaleModalButtonLabel = qs<HTMLSpanElement>('[data-container="preset-scale-modal-button-label"]');
   const elPresetScaleModal = qs<HTMLDivElement>('[data-container="preset-scale-modal"]');
   const elPresetScaleList = qs<HTMLDivElement>('[data-container="preset-scale-list"]');
@@ -114,6 +114,12 @@ export const getDomRefs = (): t.domRefs => {
   });
   const getElPresetFretboardCardHeader = (el: HTMLDivElement): HTMLDivElement =>
     qs<HTMLDivElement>('.card-header', el);
+  const getElScaleConfigSettingsElements = (el: HTMLDivElement): t.scaleConfigSettingsElements => ({
+    elIntervalDisplaySwitch: qs<HTMLInputElement>('[data-control="interval-display-switch"]', el),
+    elEnharmonicSimplifySwitch: qs<HTMLInputElement>('[data-control="enharmonic-simplify"]', el),
+    elIntervalDisplayLabel: qs<HTMLLabelElement>(`[data-container="${c.SCALE_CONFIG_SETTINGS_CONTAINERS.intervalDisplayLabel}"]`, el),
+    elEnharmonicSimplifyLabel: qs<HTMLLabelElement>(`[data-container="${c.SCALE_CONFIG_SETTINGS_CONTAINERS.enharmonicSimplifyLabel}"]`, el),
+  });
 
   const getElIntervalStepSelect = (form: HTMLFormElement) =>
     qs<HTMLSelectElement>('[data-select="interval-step-value"]', form);
@@ -137,9 +143,9 @@ export const getDomRefs = (): t.domRefs => {
     elContextContainer,
     elIntervalContainers,
     elSetIntervalSteps,
-    elIntervalDisplaySwitch,
+    elScaleConfigSettingsButton,
+    elScaleConfigSettings,
     elIntervalStepParams,
-    elEnharmonicSimplifySwitch,
     elPresetScaleModalButtonLabel,
     elPresetScaleModal,
     elPresetScaleList,
@@ -172,6 +178,7 @@ export const getDomRefs = (): t.domRefs => {
     getElPresetFretboardCardLabelElements,
     getElPresetFretboardCardActionButtons,
     getElPresetFretboardCardHeader,
+    getElScaleConfigSettingsElements,
     getElIntervalStepSelect,
     getElFretboardStringNoteSelect,
     getElFretboardNoteOctaveSelect,

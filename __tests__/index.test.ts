@@ -245,4 +245,34 @@ describe('en.json completeness', () => {
   test('presetScale keys match base locale', () => {
     expect(keys(enJson.presetScale)).toEqual(keys(i18n.textPresetScale.get()));
   });
+
+  test('initial en locale loads translated static texts', async () => {
+    const enStorageService = new StorageService({
+      theme: 'light',
+      locale: 'en',
+      tonic: 'C',
+      intervalPattern: [2, 2, 1, 2, 2, 2, 1],
+      modalShift: 0,
+      contextOffset: 0,
+      degreeRotation: 0,
+      hiddenDegrees: [],
+      startNotes: [{ note: 'C', octave: 4 }],
+      activeScalePresetId: 1,
+      activeFretboardPresetId: 1,
+      isEnharmonicSimplify: false,
+      intervalDisplayMode: 'digit',
+    });
+    const enI18n = initI18n('en', enStorageService);
+
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      if (enI18n.textContent.get().pageTitle === enJson.content.pageTitle) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+
+    expect(enI18n.textContent.get().pageTitle).toBe(enJson.content.pageTitle);
+    expect(enI18n.textScaleParams.get().offset).toBe(enJson.scaleParams.offset);
+    expect(enI18n.textFretboard.get().presetTuning).toBe(enJson.fretboard.presetTuning);
+  });
 });
