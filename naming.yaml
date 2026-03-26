@@ -38,7 +38,7 @@ data_control:
   - context-shift   # → offsetContext → stateContextOffset → elContextContainer
   - theme-switch    # → toggleTheme → uiStore.theme → refs.elBody
   - locale-switch   # → switchLocale → stateLocale → elLocaleSwitch
-  - start-note             # → setFretboardStartNote → stateFretboardStartNotes → elFretboardStartNoteButtons
+  - start-note             # → setFretboardStartNote → stateFretboardStartNotes → elFretboardStartNoteContainers
   - interval-step          # → setIntervalStep → stateScaleBuildParams(.intervalPattern) | degree=1–7; popover-форма
   - interval-display-switch # → switchIntervalDisplayMode → stateIntervalDisplayMode
   - enharmonic-simplify    # → switchEnharmonicSimplify → stateIsEnharmonicSimplify | switch в popover настроек конфигуратора
@@ -218,8 +218,6 @@ stores:
   - textFretboard    # type: i18n atom | namespace: fretboard | ключи: openNoteLabel, octaveLabel, confirmButton, octaveName0–8, addStringLabel, removeStringLabel, presetName, presetNotes, presetTuning, presetComment, presetStrings | → popover content() в initFretboard и карточки пресетов инструментов
   - textErrors       # type: i18n atom | namespace: errors | ключи: resolveError, openPatternError | → render.ts (сообщение ошибки)
   - textIntervals    # type: i18n atom | namespace: intervals | ключи: halfStep, wholeStep, interval0–12, digitModeLabel | → render.ts, ui.ts (popover)
-  - textPresetsScale     # type: i18n atom<presetScale[]> | namespace: presetsScale | 18 пресетов гамм | → будущий UI пресетов
-  - textPresetsFretboard # type: i18n atom<presetInstrument[]> | namespace: presetsFretboard | 8 пресетов инструментов | → потенциальный будущий источник, если пресеты инструментов будут вынесены из defaults.ts в i18n
   - textPresetScale      # type: i18n atom | namespace: presetScale | label-тексты карточки пресета гаммы
   - stateIntervalDisplayMode  # type: Atom<intervalDisplayMode> | ← interval-display-switch | → elSetIntervalSteps и switch в popover настроек конфигуратора
   - stateLocale                     # type: Atom<locale> | atom, инициализируется из storageService.selectAll() | → elLocaleSwitch
