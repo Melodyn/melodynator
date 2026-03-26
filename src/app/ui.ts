@@ -329,6 +329,7 @@ const initPresetScaleModal = (refs: t.domRefs, appStore: t.appStore): void => {
 
   const renderPresetScaleCardActionButtons = (elPresetScaleCard: HTMLDivElement, presetScale: t.presetScale): void => {
     const elPresetScaleCardActionButtons = refs.getElPresetScaleCardActionButtons(elPresetScaleCard);
+    const elPresetScaleCardHeader = refs.getElPresetScaleCardHeader(elPresetScaleCard);
     const presetScaleId = `${presetScale.id}`;
     const isActivePreset = appStore.stateActiveScalePresetId.get() === presetScale.id;
     const isCustomPreset = presetScale.isCustomPreset;
@@ -347,6 +348,7 @@ const initPresetScaleModal = (refs: t.domRefs, appStore: t.appStore): void => {
     elPresetScaleCardActionButtons.elApplyPresetScaleButton.disabled = isActivePreset;
     elPresetScaleCardActionButtons.elApplyPresetScaleButton.classList.toggle(actionButtonClassNames.applyActive, !isActivePreset);
     elPresetScaleCardActionButtons.elApplyPresetScaleButton.classList.toggle(actionButtonClassNames.applyDisabled, isActivePreset);
+    elPresetScaleCardHeader.classList.toggle('bg-primary-subtle', isActivePreset);
     elPresetScaleCardActionButtons.elEditPresetScaleButton.disabled = !isCustomPreset;
     elPresetScaleCardActionButtons.elRemovePresetScaleButton.disabled = !isCustomPreset;
     elPresetScaleCardActionButtons.elEditPresetScaleButton.classList.toggle(actionButtonClassNames.editActive, isCustomPreset);
@@ -453,6 +455,7 @@ const initPresetFretboardModal = (refs: t.domRefs, appStore: t.appStore): void =
 
   const renderPresetFretboardCardActionButtons = (elPresetFretboardCard: HTMLDivElement, presetInstrument: t.presetInstrument): void => {
     const elPresetFretboardCardActionButtons = refs.getElPresetFretboardCardActionButtons(elPresetFretboardCard);
+    const elPresetFretboardCardHeader = refs.getElPresetFretboardCardHeader(elPresetFretboardCard);
     const presetInstrumentId = `${presetInstrument.id}`;
     const isActivePreset = appStore.stateActiveFretboardPresetId.get() === presetInstrument.id;
     const isCustomPreset = presetInstrument.isCustomPreset;
@@ -471,6 +474,7 @@ const initPresetFretboardModal = (refs: t.domRefs, appStore: t.appStore): void =
     elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.disabled = isActivePreset;
     elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.classList.toggle(actionButtonClassNames.applyActive, !isActivePreset);
     elPresetFretboardCardActionButtons.elApplyPresetFretboardButton.classList.toggle(actionButtonClassNames.applyDisabled, isActivePreset);
+    elPresetFretboardCardHeader.classList.toggle('bg-primary-subtle', isActivePreset);
     elPresetFretboardCardActionButtons.elEditPresetFretboardButton.disabled = !isCustomPreset;
     elPresetFretboardCardActionButtons.elRemovePresetFretboardButton.disabled = !isCustomPreset;
     elPresetFretboardCardActionButtons.elEditPresetFretboardButton.classList.toggle(actionButtonClassNames.editActive, isCustomPreset);

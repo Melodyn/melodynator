@@ -292,9 +292,11 @@ render_targets:
   - getElPresetScaleCardTextElements   # grouped refs для data-container="preset-scale-*" внутри карточки
   - getElPresetScaleCardLabelElements  # grouped refs для data-static-content="label-preset-scale-*" внутри карточки
   - getElPresetScaleCardActionButtons  # grouped refs для action buttons apply/edit/remove внутри карточки
+  - getElPresetScaleCardHeader         # .card-header внутри карточки пресета гаммы; используется для выделения активного пресета
   - getElPresetFretboardCardTextElements   # grouped refs для data-container="preset-fretboard-*" внутри карточки
   - getElPresetFretboardCardLabelElements  # grouped refs для data-static-content="label-preset-fretboard-*" внутри карточки
   - getElPresetFretboardCardActionButtons  # grouped refs для action buttons apply/edit/remove внутри карточки
+  - getElPresetFretboardCardHeader         # .card-header внутри карточки пресета инструмента; используется для выделения активного пресета
   - getElIntervalStepSelect           # → data-select="interval-step-value" внутри form
   - getElFretboardStringNoteSelect    # → data-select="fretboard-string-note" внутри form
   - getElFretboardNoteOctaveSelect    # → data-select="fretboard-note-octave" внутри form

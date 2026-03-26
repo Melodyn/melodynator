@@ -93,6 +93,8 @@ export const getDomRefs = (): t.domRefs => {
     elEditPresetScaleButton: qs<HTMLButtonElement>('[data-control="edit-preset-scale"]', el),
     elRemovePresetScaleButton: qs<HTMLButtonElement>('[data-control="remove-preset-scale"]', el),
   });
+  const getElPresetScaleCardHeader = (el: HTMLDivElement): HTMLDivElement =>
+    qs<HTMLDivElement>('.card-header', el);
   const getElPresetFretboardCardTextElements = (el: HTMLDivElement): t.presetFretboardCardTextElements => ({
     presetFretboardName: qs<HTMLSpanElement>(`[data-container="${c.PRESET_FRETBOARD_CARD_CONTAINERS.presetFretboardName}"]`, el),
     presetFretboardStringsCount: qs<HTMLSpanElement>(`[data-container="${c.PRESET_FRETBOARD_CARD_CONTAINERS.presetFretboardStringsCount}"]`, el),
@@ -110,6 +112,8 @@ export const getDomRefs = (): t.domRefs => {
     elEditPresetFretboardButton: qs<HTMLButtonElement>('[data-control="edit-preset-fretboard"]', el),
     elRemovePresetFretboardButton: qs<HTMLButtonElement>('[data-control="remove-preset-fretboard"]', el),
   });
+  const getElPresetFretboardCardHeader = (el: HTMLDivElement): HTMLDivElement =>
+    qs<HTMLDivElement>('.card-header', el);
 
   const getElIntervalStepSelect = (form: HTMLFormElement) =>
     qs<HTMLSelectElement>('[data-select="interval-step-value"]', form);
@@ -163,9 +167,11 @@ export const getDomRefs = (): t.domRefs => {
     getElPresetScaleCardTextElements,
     getElPresetScaleCardLabelElements,
     getElPresetScaleCardActionButtons,
+    getElPresetScaleCardHeader,
     getElPresetFretboardCardTextElements,
     getElPresetFretboardCardLabelElements,
     getElPresetFretboardCardActionButtons,
+    getElPresetFretboardCardHeader,
     getElIntervalStepSelect,
     getElFretboardStringNoteSelect,
     getElFretboardNoteOctaveSelect,
