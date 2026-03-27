@@ -488,8 +488,4 @@ elNoteSelect.ariaLabel = fretboardTexts.openNoteLabel;
 
 ## 7. Проверка
 
-Перед тем как считать задачу выполненной:
-
-1. `npm run lint` — без ошибок линтера
-3. `npx tsc --noEmit` — без ошибок typescript
-2. `npm test` — тесты зелёные
+Перед тем как считать задачу выполненной: `make check` — без ошибок линтера, typescript, тесты зелёные
