@@ -11,9 +11,16 @@ import { run } from '../src/index.js';
 import enJson from '../src/translations/en.json';
 
 const keys = (obj: object) => Object.keys(obj).sort();
+const playMock = vi.fn();
 
 vi.mock('@hawk.so/javascript', () => ({
   default: class HawkCatcher { },
+}));
+
+vi.mock('../src/app/AudioService.js', () => ({
+  AudioService: class AudioService {
+    play = playMock;
+  },
 }));
 
 vi.mock('bootstrap', () => {
@@ -52,11 +59,13 @@ const bodyHtml = bodyMatch ? bodyMatch[1] : html;
 
 describe('приложение запустилось', () => {
   beforeEach(() => {
+    playMock.mockClear();
     localStorage.clear();
     document.body.innerHTML = bodyHtml;
   });
 
   afterEach(() => {
+    playMock.mockClear();
     document.body.innerHTML = '';
     localStorage.clear();
   });
@@ -142,6 +151,75 @@ describe('приложение запустилось', () => {
   });
 });
 
+describe('клавиатура', () => {
+  beforeEach(() => {
+    playMock.mockClear();
+    localStorage.clear();
+    document.body.innerHTML = bodyHtml;
+  });
+
+  afterEach(() => {
+    playMock.mockClear();
+    document.body.innerHTML = '';
+    localStorage.clear();
+  });
+
+  test('клавиши отрисованы как интерактивные', async () => {
+    run();
+
+    const elKeyboard = await screen.findByRole('table', { name: 'Клавиатура' });
+    const elKeyboardKey = within(elKeyboard).getByRole('button', { name: 'C4' });
+
+    expect(elKeyboardKey).toBeTruthy();
+  });
+
+  test('нажатие клавиши вызывает воспроизведение', async () => {
+    const user = userEvent.setup();
+
+    run();
+
+    const elKeyboard = await screen.findByRole('table', { name: 'Клавиатура' });
+    const elKeyboardKey = within(elKeyboard).getByRole('button', { name: 'C4' });
+
+    await user.click(elKeyboardKey);
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 0, octave: 4 });
+  });
+
+  test('Enter на клавише вызывает воспроизведение', async () => {
+    const user = userEvent.setup();
+
+    run();
+
+    const elKeyboard = await screen.findByRole('table', { name: 'Клавиатура' });
+    const elKeyboardKey = within(elKeyboard).getByRole('button', { name: 'C4' });
+
+    elKeyboardKey.focus();
+    await user.keyboard('{Enter}');
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 0, octave: 4 });
+  });
+
+  test('смена октавы меняет параметр octave', async () => {
+    const user = userEvent.setup();
+
+    run();
+
+    const elOctaveUpButton = await screen.findByRole('button', { name: 'Октава выше' });
+    await user.click(elOctaveUpButton);
+
+    const elKeyboard = await screen.findByRole('table', { name: 'Клавиатура' });
+    const elKeyboardKey = within(elKeyboard).getByRole('button', { name: 'C5' });
+
+    await user.click(elKeyboardKey);
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 0, octave: 5 });
+  });
+});
+
 describe('i18n', () => {
   const storageService = new StorageService({
     theme: 'light',
@@ -157,6 +235,7 @@ describe('i18n', () => {
     activeFretboardPresetId: 1,
     isEnharmonicSimplify: false,
     intervalDisplayMode: 'digit',
+    keyboardAudioStartOctave: 4,
   });
   const i18n = initI18n('ru', storageService);
 
@@ -195,6 +274,7 @@ describe('i18n', () => {
       activeFretboardPresetId: 1,
       isEnharmonicSimplify: false,
       intervalDisplayMode: 'digit',
+      keyboardAudioStartOctave: 4,
     });
     const enI18n = initI18n('en', enStorageService);
 

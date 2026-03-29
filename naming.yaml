@@ -49,6 +49,7 @@ data_control:
   - scale-preset-shift      # → offsetScalePreset | кнопки листания пресетов над конфигуратором; направление задаётся data-direction
   - open-preset-fretboard-modal # → declarative Bootstrap modal trigger | кнопка открытия списка пресетов инструментов
   - fretboard-preset-shift      # → offsetFretboardPreset | кнопки листания пресетов над грифом; направление задаётся data-direction
+  - keyboard-audio-octave   # → offsetKeyboardAudioStartOctave | кнопки листания стартовой октавы над клавиатурой; направление задаётся data-direction
   - apply-preset-scale     # → control карточки пресета гаммы в модалке; preset id хранится в data-preset-scale-id
   - edit-preset-scale      # → control карточки пресета гаммы в модалке; доступна только для isCustomPreset
   - remove-preset-scale    # → control карточки пресета гаммы в модалке; доступна только для isCustomPreset
@@ -103,6 +104,7 @@ data_static_content:
   - footer-github-link # → textContent.footerGithubLink
   - preset-scale-modal-title # → textContent.presetScaleModalTitle | текст кнопки открытия и заголовка модалки пресетов
   - preset-fretboard-modal-title # → textContent.presetFretboardModalTitle | текст кнопки открытия и заголовка модалки пресетов инструментов
+  - keyboard-octave    # → textContent.keyboardOctave | подпись управления октавой над клавиатурой
   - about-tooltip    # → textContent.aboutTooltip | текст рядом с tooltip-иконкой в шапке
   - fretboard-info   # → textContent.fretboardInfo | подпись под фретбордом
   # статичные label-тексты карточки пресета гаммы (→ textPresetScale)
@@ -171,6 +173,8 @@ data_container:
   - preset-fretboard-comment
   - scale-config-settings-interval-display-label
   - scale-config-settings-enharmonic-simplify-label
+  - keyboard-audio-start-octave
+  - keyboard-audio-start-octave-name
 
 data_instrument:
   - fretboard              # refs: elFretboard (tbody-контейнер строк)
@@ -179,6 +183,7 @@ data_instrument:
   - fretboard-string-note    # TD-ячейка открытой ноты; refs нет; внутри — кнопка data-control="start-note"
   - fretboard-string-fret    # TD-ячейка лада (1–12); refs: elFretboardStringFrets (per-string); getElFretboardStringFrets
   - keyboard               # нет refs
+  - keyboard-key           # refs: elKeyboardKeys (td-клавиши); интерактивные элементы для AudioService
   - keyboard-notes         # tr-контейнер строки нот; нет refs
   - keyboard-note          # refs: elKeyboardNotes (td-ячейки нот)
 
@@ -229,10 +234,13 @@ stores:
   - stateDegreeRotation             # type: Atom<degreeRotation> | ← degree-rotation | → elScaleToneContainers
   - stateHiddenDegrees              # type: Atom<Set<degree>> | ← degree-switch | → elDegreeSwitchContainers, elKeyboardNotes, renderFretboard
   - stateFretboardStartNotes        # type: Atom<fretboardStartNoteParams[]> | ← start-note | → stateFretboardLayout
+  - stateChromaticScale             # computed: stateResolvedScaleParams(.scale) → chromaticScale текущей альтерации | → render.ts, stateKeyboardAudioLayout, addFretboardString
   - stateFretboardLayout            # computed: [stateResolvedScaleParams, stateFretboardStartNotes] → scaleLayouts (пустой массив если !canApplyContext) | → renderFretboard
+  - stateKeyboardAudioStartOctave   # type: Atom<number> | ← keyboard-audio-octave | → stateKeyboardAudioLayout
+  - stateKeyboardAudioLayout        # computed: [stateKeyboardAudioStartOctave, stateChromaticScale] → chromaticNoteParams[] | → aria-label клавиш и AudioService wiring
   - stateActiveScalePresetId        # type: Atom<number> | инициализируется из storageService.selectAll() | персистентен через storageService.insert
   - stateActiveFretboardPresetId    # type: Atom<number> | инициализируется из storageService.selectAll() | персистентен через storageService.insert
-  - stateIsEnharmonicSimplify         # type: Atom<boolean> | ← enharmonic-simplify (change) | → renderScaleTones, renderKeyboard, renderFretboard | lookup: ENHARMONIC_SIMPLE_NAMES
+  - stateIsEnharmonicSimplify         # type: Atom<boolean> | ← enharmonic-simplify (change) | → renderScaleTones, renderKeyboard, renderFretboard | lookup: stateChromaticScale
 
 actions:
   - offsetTonicShift          # ← data-control="tonic-shift" | → stateScaleBuildParams(.tonic)
@@ -246,6 +254,7 @@ actions:
   - setIntervalStep           # ← data-control="interval-step" (popover select.change) | params: { degree, step } | → stateScaleBuildParams(.intervalPattern)
   - switchIntervalDisplayMode # ← data-control="interval-display-switch" | → stateIntervalDisplayMode
   - switchEnharmonicSimplify  # ← data-control="enharmonic-simplify" (change) | → stateIsEnharmonicSimplify
+  - offsetKeyboardAudioStartOctave # ← data-control="keyboard-audio-octave" + data-direction | → stateKeyboardAudioStartOctave
   - addFretboardString        # ← data-control="add-fretboard-string" (popover) | → stateFretboardStartNotes (append)
   - removeFretboardString     # ← data-control="remove-fretboard-string" (popover) | params: index | → stateFretboardStartNotes (filter)
   - applyScalePreset          # ← data-control="apply-preset-scale" | params: presetScaleId | → stateScaleBuildParams + stateContextOffset + stateDegreeRotation + stateHiddenDegrees + stateActiveScalePresetId
@@ -275,6 +284,9 @@ render_targets:
   - elPresetFretboardModalButtonLabel # data-container="preset-fretboard-modal-button-label" | текст кнопки открытия модалки; ← stateActiveFretboardPresetId/stateLocale
   - elPresetFretboardModal    # data-container="preset-fretboard-modal" | корневой element Bootstrap modal для списка пресетов инструментов
   - elPresetFretboardList     # data-container="preset-fretboard-list" | target для replaceChildren списка карточек пресетов инструментов
+  - elKeyboardAudioStartOctaveContainer # data-container="keyboard-audio-start-octave" | диапазон октав для звучания клавиатуры
+  - elKeyboardAudioStartOctaveName      # data-container="keyboard-audio-start-octave-name" | название диапазона октав для звучания клавиатуры
+  - elKeyboardKeys            # data-instrument="keyboard-key" (td-клавиши) | aria-label + AudioService.play(...)
   - elKeyboardNotes           # data-instrument="keyboard-note" (td-ячейки) | ← stateResolvedScaleParams(.scale)
   - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard
   - elFretboardStrings        # data-instrument="fretboard-string" (per-string tr) | строится в initFretboard из stateFretboardStartNotes
@@ -328,6 +340,8 @@ key_constants:
   - MIN_FRETBOARD_STRINGS    # 4 — минимальное количество струн фретборда
   - MAX_FRETBOARD_STRINGS    # 12 — максимальное количество струн фретборда
   - FRETBOARD_STRING_INTERVAL # 5 — интервал между струнами по умолчанию (кварта = 5 полутонов)
-  - ENHARMONIC_SIMPLE_NAMES  # noteName[12] — канонические имена нот по pitchClass (C C♯ D E♭ … B)
+  - NATURAL_PITCH_CLASS_SET  # Set<number> — pitchClass натуральных нот
+  - allPitchClasses          # number[12] — полный список pitchClass в октаве
+  - allKeyboardAudioSemitoneIndexes # number[24] — индексы двух октав клавиатурного audio-layout
   - DEFAULT_SCALE_PRESET_ID     # 1 — Ионийский лад (C major), дефолтный id при первом запуске
   - DEFAULT_FRETBOARD_PRESET_ID # 6 — Гитара 6 струн стандарт, дефолтный id при первом запуске

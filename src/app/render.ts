@@ -19,7 +19,8 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     if (!isEnharmonicSimplify) {
       return new Map();
     }
-    return new Map(scale.map(({ note, pitchClass }) => [note, c.ENHARMONIC_SIMPLE_NAMES[pitchClass]]));
+    const chromaticScale = store.stateChromaticScale.get();
+    return new Map(scale.map(({ note, pitchClass }) => [note, chromaticScale[pitchClass].note]));
   };
 
   const reduceAlt = (note: t.noteName, altReduceMap: t.altReduceMap): t.noteName =>

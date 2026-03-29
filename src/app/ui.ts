@@ -4,10 +4,16 @@ import * as c from '../constants';
 import * as cu from '../commonUtils';
 import * as d from '../constants/defaults';
 import type * as t from '../types';
+import { AudioService } from './AudioService';
 import { StorageService } from './StorageService';
 import { getDomRefs } from './domRefs';
 
-export const createUiStore = (theme: t.uiTheme, isEnharmonicSimplify: boolean, intervalDisplayMode: t.intervalDisplayMode, storageService: StorageService): t.uiStore => {
+export const createUiStore = (
+  theme: t.uiTheme,
+  isEnharmonicSimplify: boolean,
+  intervalDisplayMode: t.intervalDisplayMode,
+  storageService: StorageService,
+): t.uiStore => {
   const themeStore = n.atom<t.uiTheme>(theme);
 
   themeStore.listen(v => storageService.insert('theme', v));
@@ -595,6 +601,71 @@ const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
+const initKeyboardAudio = (refs: t.domRefs, appStore: t.appStore): void => {
+  const audioService = new AudioService();
+  const getKeyboardAudioStartOctaveRange = (): string => {
+    const keyboardAudioStartOctave = appStore.stateKeyboardAudioStartOctave.get();
+    return `${keyboardAudioStartOctave} - ${keyboardAudioStartOctave + 1}`;
+  };
+
+  const getKeyboardAudioStartOctaveNameRange = (): string => {
+    const keyboardAudioStartOctave = appStore.stateKeyboardAudioStartOctave.get();
+    const nextKeyboardAudioStartOctave = keyboardAudioStartOctave + 1;
+    const fretboardTexts = appStore.textFretboard.get();
+    const octaveNameKey = <keyof ReturnType<typeof appStore.textFretboard.get>>`octaveName${keyboardAudioStartOctave}`;
+    const nextOctaveNameKey = <keyof ReturnType<typeof appStore.textFretboard.get>>`octaveName${nextKeyboardAudioStartOctave}`;
+    return `${fretboardTexts[octaveNameKey]} - ${fretboardTexts[nextOctaveNameKey]}`;
+  };
+
+  const renderKeyboardAudioStartOctaveName = (): void => {
+    refs.elKeyboardAudioStartOctaveName.textContent = getKeyboardAudioStartOctaveNameRange();
+  };
+  const renderKeyboardAudioStartOctave = (): void => {
+    refs.elKeyboardAudioStartOctaveContainer.textContent = getKeyboardAudioStartOctaveRange();
+  };
+
+  const playKeyboardNote = (index: number): void => {
+    const keyboardAudioLayout = appStore.stateKeyboardAudioLayout.get();
+    const noteParams = keyboardAudioLayout[index];
+    if (!noteParams) {
+      return;
+    }
+    audioService.play({ pitchClass: noteParams.pitchClass, octave: noteParams.octave });
+  };
+
+  const renderKeyboardKeyLabels = (): void => {
+    const keyboardAudioLayout = appStore.stateKeyboardAudioLayout.get();
+    refs.elKeyboardKeys.forEach((elKeyboardKey, index) => {
+      const noteParams = keyboardAudioLayout[index];
+      if (!noteParams) {
+        elKeyboardKey.removeAttribute('aria-label');
+        return;
+      }
+      elKeyboardKey.setAttribute('aria-label', `${noteParams.note}${noteParams.octave}`);
+    });
+  };
+
+  refs.elKeyboardKeys.forEach((elKeyboardKey, index) => {
+    elKeyboardKey.setAttribute('role', 'button');
+    elKeyboardKey.tabIndex = 0;
+    elKeyboardKey.addEventListener('pointerdown', () => {
+      playKeyboardNote(index);
+    });
+    elKeyboardKey.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+      event.preventDefault();
+      playKeyboardNote(index);
+    });
+  });
+
+  appStore.stateKeyboardAudioStartOctave.subscribe(renderKeyboardAudioStartOctave);
+  appStore.stateKeyboardAudioStartOctave.subscribe(renderKeyboardAudioStartOctaveName);
+  appStore.stateKeyboardAudioLayout.subscribe(renderKeyboardKeyLabels);
+  appStore.textFretboard.subscribe(renderKeyboardAudioStartOctaveName);
+};
+
 const initStaticText = (refs: t.domRefs, appStore: t.appStore): void => {
   const kebabToCamel = (s: string): string =>
     s.replace(/[-_]+([a-z])/g, (_, c: string) => c.toUpperCase());
@@ -633,6 +704,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
   initPresetScaleModal(refs, appStore);
   initPresetFretboardModal(refs, appStore);
   initTooltips(refs, appStore);
+  initKeyboardAudio(refs, appStore);
   initStaticText(refs, appStore);
 
   // Locale switch
@@ -653,6 +725,7 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
     'context-shift': appStore.offsetContext,
     'scale-preset-shift': appStore.offsetScalePreset,
     'fretboard-preset-shift': appStore.offsetFretboardPreset,
+    'keyboard-audio-octave': appStore.offsetKeyboardAudioStartOctave,
   };
 
   refs.elDirectionControllers.forEach((el) => {

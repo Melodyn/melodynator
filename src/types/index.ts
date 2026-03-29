@@ -24,6 +24,8 @@ export type noteParams = {
   pitchClass: number
 };
 
+export type chromaticScaleNoteParams = Pick<noteParams, 'note' | 'pitchClass'>;
+
 export type intervalSize = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12; // количество полутонов для построения интервала
 export type intervalDisplayMode = 'digit' | 'letter';
 export type contextOffset = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
@@ -38,6 +40,7 @@ export type scaleBuildParams = {
 };
 
 export type scale = noteParams[];
+export type chromaticScale = chromaticScaleNoteParams[];
 export type scaleMap = Map<noteParams['pitchClass'], noteParams>;
 export type altReduceMap = Map<noteName, noteName>;
 export type scaleToMap = (scale: scale) => scaleMap;
@@ -53,6 +56,7 @@ export type resolvedScaleParams = {
 export type resolveScale = (scaleBuildParams: scaleBuildParams) => resolvedScaleParams;
 
 export type buildDiatonicScale = (scaleBuildParams: Pick<scaleBuildParams, 'tonic' | 'intervalPattern'>) => scale;
+export type buildChromaticScale = (accidental: flatSymbol | sharpSymbol) => chromaticScale;
 
 export type applyModalShift = (intervalPattern: intervalPattern, modalShift: scaleBuildParams['modalShift']) => intervalPattern;
 
@@ -65,8 +69,15 @@ export type fretboardStartNoteParams = {
   octave: number
 };
 
+export type chromaticNoteParams = {
+  note: noteName
+  pitchClass: number
+  octave: number
+};
+
 export type fretboardNoteParams = {
   note: noteName | ''
+  pitchClass: number
   octave: number
   degree: degree
 };
@@ -184,7 +195,7 @@ export type mapScaleToLayout = (layoutParams: { scaleMap: scaleMap, startNotes: 
 
 // UI level (user intention)
 export type setIntervalStep = (params: { degree: degree, step: intervalSize }) => void;
-export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'context-shift' | 'scale-preset-shift' | 'fretboard-preset-shift';
+export type control = 'tonic-shift' | 'modal-shift' | 'degree-rotation' | 'context-shift' | 'scale-preset-shift' | 'fretboard-preset-shift' | 'keyboard-audio-octave';
 
 export type controlDirection = 'up' | 'down';
 
@@ -210,7 +221,11 @@ export type store = {
   stateDegreeRotation: Atom<number>
   stateHiddenDegrees: Atom<Set<degree>>
   stateFretboardStartNotes: Atom<fretboardStartNoteParams[]>
+  stateChromaticScale: ReadableAtom<chromaticScale>
   stateFretboardLayout: Atom<scaleLayouts>
+  stateKeyboardAudioStartOctave: Atom<number>
+  offsetKeyboardAudioStartOctave: (offset: number) => void
+  stateKeyboardAudioLayout: ReadableAtom<chromaticNoteParams[]>
   offsetTonicShift: offsetScaleParam
   offsetModalShift: offsetScaleParam
   offsetDegreeRotation: offsetScaleParam
@@ -253,6 +268,9 @@ export type domRefs = {
   elScaleToneContainers: NodeListOf<HTMLTableCellElement>
   elDegreeSwitchContainers: NodeListOf<HTMLInputElement>
   elDegreeSwitchLabels: HTMLLabelElement[]
+  elKeyboardAudioStartOctaveContainer: HTMLSpanElement
+  elKeyboardAudioStartOctaveName: HTMLSpanElement
+  elKeyboardKeys: NodeListOf<HTMLTableCellElement>
   elKeyboardNotes: NodeListOf<HTMLTableCellElement>
   elFretboard: HTMLTableSectionElement
   elFretboardStrings: HTMLTableRowElement[]
@@ -300,6 +318,7 @@ export type savedValues = {
   activeFretboardPresetId: number
   isEnharmonicSimplify: boolean
   intervalDisplayMode: intervalDisplayMode
+  keyboardAudioStartOctave: number
 };
 
 export type savedKeys = keyof savedValues;

@@ -12,6 +12,8 @@ export const MIN_FRETBOARD_STRINGS = 3;
 export const MAX_FRETBOARD_STRINGS = 12;
 export const FRETBOARD_STRING_INTERVAL = 5; // кварта вниз = 5 полутонов
 export const NO_ACTIVE_PRESET_ID = 0;
+export const MIN_KEYBOARD_AUDIO_START_OCTAVE = 0;
+export const MAX_KEYBOARD_AUDIO_START_OCTAVE = 7;
 
 export const naturalNotesParams: t.naturalNoteParams[] = [
   { note: 'C', degree: 1, naturalPitchClass: 0 },
@@ -28,13 +30,11 @@ export const allNotesNames: t.noteName[] = naturalNotesParams.flatMap<t.noteName
 export const NATURAL_PITCH_CLASSES = <Record<t.naturalNoteName, number>>Object.fromEntries(
   naturalNotesParams.map(({ note, naturalPitchClass }) => [note, naturalPitchClass]),
 );
+export const NATURAL_PITCH_CLASS_SET = new Set(Object.values(NATURAL_PITCH_CLASSES));
 
 export const allIntervalSizes: t.intervalSize[] = <t.intervalSize[]>Array.from({ length: OCTAVE_SIZE + 1 }, (_, i) => i);
-
-// Простейшее имя ноты по pitchClass (смешанная классическая конвенция: C♯ D E♭ F♯ A♭ B♭)
-export const ENHARMONIC_SIMPLE_NAMES: t.noteName[] = [
-  'C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B',
-];
+export const allPitchClasses: t.contextOffset[] = <t.contextOffset[]>allIntervalSizes.filter((intervalSize) => intervalSize < OCTAVE_SIZE);
+export const allKeyboardAudioSemitoneIndexes: number[] = Array.from({ length: OCTAVE_SIZE * 2 }, (_, i) => i);
 
 export const PRESET_SCALE_CARD_CONTAINERS: Record<keyof t.presetScaleCardTexts, string> = {
   presetScaleName: 'preset-scale-name',

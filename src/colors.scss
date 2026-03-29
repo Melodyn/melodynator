@@ -95,3 +95,18 @@ $theme-colors: map-merge($theme-colors,
     content: ' • ';
   }
 }
+
+.keyboard-key {
+  cursor: pointer;
+
+  &.bg-light:hover,
+  &.bg-light:focus-visible {
+    box-shadow: inset 0 -6px 0 rgba(var(--bs-dark-rgb), 0.3);
+    opacity: 0.9;
+  }
+
+  &.bg-dark:hover,
+  &.bg-dark:focus-visible {
+    box-shadow: inset 0 -6px 0 rgba(var(--bs-light-rgb), 0.6);
+  }
+}
