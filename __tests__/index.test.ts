@@ -1,6 +1,6 @@
 import { expect, test, describe } from 'vitest';
 import * as t from '../src/types';
-import { resolveScale, scaleToMap, mapScaleToLayout, applyContextTransform, applyDegreeRotation } from '../src/core';
+import { resolveScale, scaleToMap, mapScaleToLayout, applyContextTransform, applyDegreeRotation, buildChromaticScale } from '../src/core';
 
 
 const major = [
@@ -135,6 +135,46 @@ describe('applyDegreeRotation', () => {
   });
 });
 
+describe('buildChromaticScale', () => {
+  test('с диезами', () => {
+    const result = buildChromaticScale('♯');
+
+    expect(result).toEqual([
+      { note: 'C', pitchClass: 0 },
+      { note: 'C♯', pitchClass: 1 },
+      { note: 'D', pitchClass: 2 },
+      { note: 'D♯', pitchClass: 3 },
+      { note: 'E', pitchClass: 4 },
+      { note: 'F', pitchClass: 5 },
+      { note: 'F♯', pitchClass: 6 },
+      { note: 'G', pitchClass: 7 },
+      { note: 'G♯', pitchClass: 8 },
+      { note: 'A', pitchClass: 9 },
+      { note: 'A♯', pitchClass: 10 },
+      { note: 'B', pitchClass: 11 },
+    ]);
+  });
+
+  test('с бемолями', () => {
+    const result = buildChromaticScale('♭');
+
+    expect(result).toEqual([
+      { note: 'C', pitchClass: 0 },
+      { note: 'D♭', pitchClass: 1 },
+      { note: 'D', pitchClass: 2 },
+      { note: 'E♭', pitchClass: 3 },
+      { note: 'E', pitchClass: 4 },
+      { note: 'F', pitchClass: 5 },
+      { note: 'G♭', pitchClass: 6 },
+      { note: 'G', pitchClass: 7 },
+      { note: 'A♭', pitchClass: 8 },
+      { note: 'A', pitchClass: 9 },
+      { note: 'B♭', pitchClass: 10 },
+      { note: 'B', pitchClass: 11 },
+    ]);
+  });
+});
+
 describe('scaleToMap', () => {
   test('создаёт map по уникальным pitchClass', () => {
     const scale: t.noteParams[] = [
@@ -178,12 +218,12 @@ describe('mapScaleToLayout', () => {
     expect(result).toHaveLength(1);
     expect(result[0]).toHaveLength(13);
     // C мажор: C D E F G A B C, между E(4) и F(5) нет ноты
-    expect(result[0][0]).toEqual({ note: 'C', octave: 4, degree: 1 });
-    expect(result[0][1]).toEqual({ note: '', octave: 4, degree: 0 }); // C# не входит в гамму
-    expect(result[0][2]).toEqual({ note: 'D', octave: 4, degree: 2 });
-    expect(result[0][4]).toEqual({ note: 'E', octave: 4, degree: 3 });
-    expect(result[0][5]).toEqual({ note: 'F', octave: 4, degree: 4 });
-    expect(result[0][6]).toEqual({ note: '', octave: 4, degree: 0 }); // F# не входит в гамму
+    expect(result[0][0]).toEqual({ note: 'C', pitchClass: 0, octave: 4, degree: 1 });
+    expect(result[0][1]).toEqual({ note: '', pitchClass: 1, octave: 4, degree: 0 }); // C# не входит в гамму
+    expect(result[0][2]).toEqual({ note: 'D', pitchClass: 2, octave: 4, degree: 2 });
+    expect(result[0][4]).toEqual({ note: 'E', pitchClass: 4, octave: 4, degree: 3 });
+    expect(result[0][5]).toEqual({ note: 'F', pitchClass: 5, octave: 4, degree: 4 });
+    expect(result[0][6]).toEqual({ note: '', pitchClass: 6, octave: 4, degree: 0 }); // F# не входит в гамму
   });
 
   test('возвращает строку нот без пустых значений', () => {

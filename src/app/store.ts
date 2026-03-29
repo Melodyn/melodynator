@@ -6,9 +6,23 @@ import * as mu from '../core';
 import * as d from '../constants/defaults';
 import { StorageService } from './StorageService';
 
+const CHROMATIC_SCALES_BY_ACCIDENTAL: Record<t.flatSymbol | t.sharpSymbol, t.chromaticScale> = {
+  [c.SHARP_SYMBOL]: mu.buildChromaticScale(c.SHARP_SYMBOL),
+  [c.FLAT_SYMBOL]: mu.buildChromaticScale(c.FLAT_SYMBOL),
+};
+
+const getScaleAccidental = (scale: t.scale): t.flatSymbol | t.sharpSymbol => {
+  const accidentalNoteParams = scale.find(({ note }) => note.length > 1);
+  if (!accidentalNoteParams) {
+    return c.SHARP_SYMBOL;
+  }
+  return accidentalNoteParams.note[1] === c.FLAT_SYMBOL ? c.FLAT_SYMBOL : c.SHARP_SYMBOL;
+};
+
 export const createStore = (saved: t.savedValues, storageService: StorageService, stateLocale: n.Atom<t.locale>): t.store => {
   const stateHiddenDegrees = n.atom<Set<t.degree>>(new Set(saved.hiddenDegrees));
   const stateFretboardStartNotes = n.atom<t.fretboardStartNoteParams[]>(saved.startNotes);
+  const stateKeyboardAudioStartOctave = n.atom<number>(saved.keyboardAudioStartOctave);
   const stateScaleBuildParams = n.map<t.scaleBuildParams>({ tonic: saved.tonic, intervalPattern: saved.intervalPattern, modalShift: saved.modalShift });
   const stateDegreeRotation = n.atom<t.degreeRotation>(saved.degreeRotation);
   const stateContextOffset = n.atom<t.contextOffset>(saved.contextOffset);
@@ -34,6 +48,13 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
       return resolvedDegreeRotatedScaleParams;
     },
   );
+  const stateChromaticScale = n.computed(
+    stateResolvedScaleParams,
+    (resolvedScaleParams) => {
+      const accidental = getScaleAccidental(resolvedScaleParams.scale);
+      return CHROMATIC_SCALES_BY_ACCIDENTAL[accidental];
+    },
+  );
   const stateFretboardLayout = n.computed(
     [stateResolvedScaleParams, stateFretboardStartNotes],
     (resolvedScaleParams, startNotes) => {
@@ -44,11 +65,31 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
       return mu.mapScaleToLayout({ scaleMap, startNotes });
     },
   );
+  const stateKeyboardAudioLayout = n.computed(
+    [stateKeyboardAudioStartOctave, stateChromaticScale],
+    (startOctave, chromaticScale): t.chromaticNoteParams[] => {
+      return c.allKeyboardAudioSemitoneIndexes.map((index) => {
+        const pitchClass = index % c.OCTAVE_SIZE;
+        const octaveOffset = Math.floor(index / c.OCTAVE_SIZE);
+        return {
+          note: chromaticScale[pitchClass].note,
+          pitchClass,
+          octave: startOctave + octaveOffset,
+        };
+      });
+    },
+  );
+
   const resetActiveScalePresetId = (): void => {
     stateActiveScalePresetId.set(c.NO_ACTIVE_PRESET_ID);
   };
   const resetActiveFretboardPresetId = (): void => {
     stateActiveFretboardPresetId.set(c.NO_ACTIVE_PRESET_ID);
+  };
+  const offsetKeyboardAudioStartOctave = (offset: number) => {
+    const currentOctave = stateKeyboardAudioStartOctave.get();
+    const nextOctave = Math.min(c.MAX_KEYBOARD_AUDIO_START_OCTAVE, Math.max(c.MIN_KEYBOARD_AUDIO_START_OCTAVE, currentOctave + offset));
+    stateKeyboardAudioStartOctave.set(nextOctave);
   };
 
   const offsetTonicShift: t.offsetScaleParam = (offset) => {
@@ -115,7 +156,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     const modifier = accidental === c.SHARP_SYMBOL ? 1 : accidental === c.FLAT_SYMBOL ? -1 : 0;
     const lastPitchClass = (c.NATURAL_PITCH_CLASSES[naturalNote] + modifier + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
     const newPitchClass = (lastPitchClass - c.FRETBOARD_STRING_INTERVAL + c.OCTAVE_SIZE) % c.OCTAVE_SIZE;
-    const newNote = c.ENHARMONIC_SIMPLE_NAMES[newPitchClass];
+    const newNote = stateChromaticScale.get()[newPitchClass].note;
     const newOctave = newPitchClass > lastPitchClass ? Math.max(0, lastStartNote.octave - 1) : lastStartNote.octave;
     stateFretboardStartNotes.set([...currentStartNotes, { note: newNote, octave: newOctave }]);
     resetActiveFretboardPresetId();
@@ -197,6 +238,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
   stateContextOffset.listen(v => storageService.insert('contextOffset', v));
   stateHiddenDegrees.listen(v => storageService.insert('hiddenDegrees', [...v]));
   stateFretboardStartNotes.listen(v => storageService.insert('startNotes', [...v]));
+  stateKeyboardAudioStartOctave.listen(v => storageService.insert('keyboardAudioStartOctave', v));
   stateActiveScalePresetId.listen(v => storageService.insert('activeScalePresetId', v));
   stateActiveFretboardPresetId.listen(v => storageService.insert('activeFretboardPresetId', v));
 
@@ -209,7 +251,11 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     stateDegreeRotation,
     stateHiddenDegrees,
     stateFretboardStartNotes,
+    stateChromaticScale,
     stateFretboardLayout,
+    stateKeyboardAudioStartOctave,
+    offsetKeyboardAudioStartOctave,
+    stateKeyboardAudioLayout,
     offsetTonicShift,
     offsetModalShift,
     offsetDegreeRotation,

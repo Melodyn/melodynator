@@ -87,6 +87,39 @@ export const buildDiatonicScale: t.buildDiatonicScale = ({ tonic, intervalPatter
   return scale;
 };
 
+export const buildChromaticScale: t.buildChromaticScale = (accidental) => {
+  const chromaticScaleMap = c.naturalNotesParams.reduce<Map<number, t.chromaticScaleNoteParams>>(
+    (scaleMap, { note, naturalPitchClass }) => {
+      scaleMap.set(naturalPitchClass, {
+        note,
+        pitchClass: naturalPitchClass,
+      });
+
+      const alteredPitchClass = accidental === c.SHARP_SYMBOL
+        ? (naturalPitchClass + 1) % c.OCTAVE_SIZE
+        : (naturalPitchClass + c.OCTAVE_SIZE - 1) % c.OCTAVE_SIZE;
+
+      if (!c.NATURAL_PITCH_CLASS_SET.has(alteredPitchClass)) {
+        scaleMap.set(alteredPitchClass, {
+          note: <t.noteName>`${note}${accidental}`,
+          pitchClass: alteredPitchClass,
+        });
+      }
+
+      return scaleMap;
+    },
+    new Map(),
+  );
+
+  return c.allPitchClasses.map((pitchClass) => {
+    const chromaticNoteParams = chromaticScaleMap.get(pitchClass);
+    if (!chromaticNoteParams) {
+      throw new Error(`Can not build chromatic scale note for pitchClass=${pitchClass}`);
+    }
+    return chromaticNoteParams;
+  });
+};
+
 export const resolveScale: t.resolveScale = ({ tonic, intervalPattern, modalShift }) => {
   const canModalShift = checkCanModeShift(intervalPattern);
   const shiftedIntervalPattern = (canModalShift && modalShift > 0)
@@ -222,7 +255,7 @@ export const mapScaleToLayout: t.mapScaleToLayout = ({ startNotes, scaleMap }) =
     currentOctave = currentOctave + Number(semitoneIndex > 0 && currentPC === 0);
     const degree = scaleNoteParams ? scaleNoteParams.degree : 0;
 
-    scaleLayout.push({ note: currentNote, octave: currentOctave, degree });
+    scaleLayout.push({ note: currentNote, pitchClass: currentPC, octave: currentOctave, degree });
   }
 
   return scaleLayout;

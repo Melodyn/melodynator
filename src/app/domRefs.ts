@@ -37,6 +37,9 @@ export const getDomRefs = (): t.domRefs => {
     throw new Error(`Missing label for degree switch "${elDegreeSwitchContainer.id}"`);
   });
 
+  const elKeyboardAudioStartOctaveContainer = qs<HTMLSpanElement>('[data-container="keyboard-audio-start-octave"]');
+  const elKeyboardAudioStartOctaveName = qs<HTMLSpanElement>('[data-container="keyboard-audio-start-octave-name"]');
+  const elKeyboardKeys = qsa<HTMLTableCellElement>('[data-instrument="keyboard-key"]');
   const elKeyboardNotes = qsa<HTMLTableCellElement>('[data-instrument="keyboard-note"]');
 
   const elFretboard = qs<HTMLTableSectionElement>('[data-instrument="fretboard"]');
@@ -155,6 +158,9 @@ export const getDomRefs = (): t.domRefs => {
     elScaleToneContainers,
     elDegreeSwitchContainers,
     elDegreeSwitchLabels,
+    elKeyboardAudioStartOctaveContainer,
+    elKeyboardAudioStartOctaveName,
+    elKeyboardKeys,
     elKeyboardNotes,
     elFretboard,
     elFretboardStrings,

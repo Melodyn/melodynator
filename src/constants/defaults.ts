@@ -6,6 +6,7 @@ export const DEFAULT_LOCALE: t.locale = 'ru';
 export const DEFAULT_THEME: t.uiTheme = 'light';
 export const DEFAULT_IS_ENHARMONIC_SIMPLIFY: boolean = false;
 export const DEFAULT_INTERVAL_DISPLAY_MODE: t.intervalDisplayMode = 'digit';
+export const DEFAULT_KEYBOARD_AUDIO_START_OCTAVE = 4;
 
 export const SCALE_PRESETS: t.i18nData<t.presetScales> = {
   ru: [

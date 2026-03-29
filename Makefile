@@ -12,7 +12,7 @@ install-dependencies:
 
 # local run
 dev:
-	npm run start
+	npm run start -- --host
 lint:
 	npm run lint
 tsc:

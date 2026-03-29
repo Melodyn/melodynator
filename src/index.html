@@ -68,7 +68,7 @@
 </head>
 
 <body data-bs-theme="light">
-  <div class="root container py-3 px-1">
+  <div class="root container-md py-3 px-1">
     <!-- Visible SEO content -->
     <header>
       <div class="d-flex align-items-center">
@@ -382,66 +382,84 @@
         </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table aria-label="Клавиатура" data-instrument="keyboard"
-          class="table table-borderless text-center w-auto mx-auto p-0">
-          <tbody>
-            <tr class="height-60px">
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
+      <div class="text-center">
+        <div class="overflow-x-auto">
+          <div class="d-inline-flex flex-column gap-1 mx-auto">
+            <div class="d-flex align-items-center gap-1">
+              <span class="fw-bold" data-static-content="keyboard-octave"></span>
+              <button type="button" data-control="keyboard-audio-octave" data-direction="down" aria-label="Октава ниже"
+                class="btn btn-sm btn-outline-secondary rounded-0 rounded-start fw-bold">
+                &#8592;
+              </button>
+              <span class="text-center" data-container="keyboard-audio-start-octave"></span>
+              <button type="button" data-control="keyboard-audio-octave" data-direction="up" aria-label="Октава выше"
+                class="btn btn-sm btn-outline-secondary rounded-0 rounded-end fw-bold">
+                &#8594;
+              </button>
+            </div>
+            <span class="small text-secondary text-start" data-container="keyboard-audio-start-octave-name"></span>
 
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-              <td class="bg-dark border width-30px"></td>
-              <td class="bg-light border width-30px"></td>
-            </tr>
+            <table aria-label="Клавиатура" data-instrument="keyboard"
+              class="table table-borderless text-center w-auto mx-auto p-0">
+              <tbody>
+                <tr class="height-60px">
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
 
-            <tr data-instrument="keyboard-notes">
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-              <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
-            </tr>
-          </tbody>
-        </table>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-dark border width-30px" data-instrument="keyboard-key"></td>
+                  <td class="keyboard-key bg-light border width-30px" data-instrument="keyboard-key"></td>
+                </tr>
+
+                <tr data-instrument="keyboard-notes">
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                  <td class="p-0 width-30px" data-instrument="keyboard-note"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <span class="small d-block text-center">
