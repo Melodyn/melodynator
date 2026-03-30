@@ -29,6 +29,9 @@ const DEFAULT_MAX_LOW_OCTAVE_BRIGHTNESS_GAIN = 0.4;
 const DEFAULT_BRIGHTNESS_OVERTONE_MULTIPLIER = 2;
 // Тип волны дополнительного яркого голоса. Более "острая" волна сильнее подчёркивает низкие октавы.
 const DEFAULT_BRIGHTNESS_OVERTONE_WAVE_TYPE: OscillatorType = 'triangle';
+// На Android Chrome `resume()` у первого AudioContext может подвисать, хотя запуск источника
+// звука по пользовательскому жесту уже разрешён. Поэтому ждём совсем немного и продолжаем `play()`.
+const RESUME_WAIT_TIMEOUT_MS = 150;
 
 export type audioPlayParams = {
   pitchClass: number
@@ -84,6 +87,8 @@ export class AudioService {
     }
 
     if (!this.audioContext) {
+      // Создаём AudioContext лениво, только в ответ на реальное воспроизведение.
+      // Это лучше согласуется с autoplay-ограничениями мобильных браузеров.
       this.audioContext = new AudioContextConstructor();
     }
 
@@ -107,7 +112,15 @@ export class AudioService {
       });
     }
 
-    await this.resumePromise;
+    // Не ждём `resume()` бесконечно: на некоторых мобильных браузерах promise может
+    // завершиться заметно позже, но `oscillator.start()` после пользовательского жеста
+    // уже успешно разблокирует звук.
+    await Promise.race([
+      this.resumePromise,
+      new Promise<void>((resolve) => {
+        window.setTimeout(resolve, RESUME_WAIT_TIMEOUT_MS);
+      }),
+    ]);
     return audioContext;
   }
 

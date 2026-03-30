@@ -65,6 +65,21 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
       return mu.mapScaleToLayout({ scaleMap, startNotes });
     },
   );
+  const stateFretboardAudioLayout = n.computed(
+    [stateFretboardStartNotes, stateChromaticScale],
+    (startNotes, chromaticScale): t.fretboardAudioLayout => {
+      const chromaticScaleMap = new Map(chromaticScale.map((noteParams) => [
+        noteParams.pitchClass,
+        { ...noteParams, degree: 0 },
+      ]));
+      return mu.mapScaleToLayout({ scaleMap: chromaticScaleMap, startNotes })
+        .map((layout) => layout.map(({ note, pitchClass, octave }) => ({
+          note: <t.noteName>note,
+          pitchClass,
+          octave,
+        })));
+    },
+  );
   const stateKeyboardAudioLayout = n.computed(
     [stateKeyboardAudioStartOctave, stateChromaticScale],
     (startOctave, chromaticScale): t.chromaticNoteParams[] => {
@@ -253,6 +268,7 @@ export const createStore = (saved: t.savedValues, storageService: StorageService
     stateFretboardStartNotes,
     stateChromaticScale,
     stateFretboardLayout,
+    stateFretboardAudioLayout,
     stateKeyboardAudioStartOctave,
     offsetKeyboardAudioStartOctave,
     stateKeyboardAudioLayout,

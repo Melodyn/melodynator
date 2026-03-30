@@ -198,6 +198,7 @@ key_types:
   - resolvedScaleParams  # store: stateResolvedScaleParams, stateUnshiftResolvedScaleParams | var: resolvedScaleParams
   - fretboardStartNoteParams  # store: stateFretboardStartNotes (элемент) | action: setFretboardStartNote | var: startNote, не openNote и не fret0
   - scaleLayouts              # type: scaleLayout[] | store: stateFretboardLayout | результат mapScaleToLayout всех струн
+  - fretboardAudioLayout      # type: chromaticNoteParams[][] | store: stateFretboardAudioLayout | полный хроматический layout грифа для audio/aria
   - fretboardNoteParams       # нота на конкретном ладу | var: noteParams | элемент scaleLayout[fretIndex]
   - scaleLayout          # type: fretboardNoteParams[] | var: layout | результат mapScaleToLayout одной струны
   - locale               # type: 'ru' | 'en' | store: stateLocale | action: switchLocale | data-control="locale-switch"
@@ -235,6 +236,7 @@ stores:
   - stateFretboardStartNotes        # type: Atom<fretboardStartNoteParams[]> | ← setFretboardStartNote/removeFretboardString/addFretboardString из popover настроек струны | → stateFretboardLayout
   - stateChromaticScale             # computed: stateResolvedScaleParams(.scale) → chromaticScale текущей альтерации | → render.ts, stateKeyboardAudioLayout, addFretboardString
   - stateFretboardLayout            # computed: [stateResolvedScaleParams, stateFretboardStartNotes] → scaleLayouts (пустой массив если !canApplyContext) | → renderFretboard
+  - stateFretboardAudioLayout       # computed: [stateFretboardStartNotes, stateChromaticScale] → fretboardAudioLayout | → aria-label и AudioService wiring грифа
   - stateKeyboardAudioStartOctave   # type: Atom<number> | ← keyboard-audio-octave | → stateKeyboardAudioLayout
   - stateKeyboardAudioLayout        # computed: [stateKeyboardAudioStartOctave, stateChromaticScale] → chromaticNoteParams[] | → aria-label клавиш и AudioService wiring
   - stateActiveScalePresetId        # type: Atom<number> | инициализируется из storageService.selectAll() | персистентен через storageService.insert
@@ -289,8 +291,8 @@ render_targets:
   - elKeyboardNotes           # data-instrument="keyboard-note" (td-ячейки) | ← stateResolvedScaleParams(.scale)
   - elFretboard               # data-instrument="fretboard" (tbody) | target для appendChild в initFretboard
   - elFretboardStrings        # data-instrument="fretboard-string" (per-string tr) | строится в initFretboard из stateFretboardStartNotes
-  - elFretboardStringNoteContainers  # data-instrument="fretboard-string-note" | ← stateFretboardLayout
-  - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams
+  - elFretboardStringNoteContainers  # data-instrument="fretboard-string-note" | ← stateFretboardLayout + aria-label/AudioService wiring грифа
+  - elFretboardStringFrets          # td ладов 1–12, per-string | ← stateResolvedScaleParams + aria-label/AudioService wiring грифа
   - elFretboardString               # data-template="fretboard-string" → клонируется в initFretboard
   - elPresetScaleCard               # data-template="preset-scale-card" → клонируется в initPresetScaleModal
   - elPresetFretboardCard           # data-template="preset-fretboard-card" → клонируется в initPresetFretboardModal

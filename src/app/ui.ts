@@ -582,8 +582,99 @@ const initTooltips = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
-const initKeyboardAudio = (refs: t.domRefs, appStore: t.appStore): void => {
-  const audioService = new AudioService();
+const initFretboardAudio = (
+  refs: t.domRefs,
+  appStore: t.appStore,
+  audioService: AudioService,
+): void => {
+  const initializedPlayableElements = new WeakSet<HTMLElement>();
+
+  const forEachFretboardPlayableCell = (
+    cb: (elPlayableFretboardNote: HTMLElement, stringIndex: number, fretIndex: number) => void,
+  ): void => {
+    refs.elFretboardStringNoteContainers.forEach((elFretboardStringNoteContainer, stringIndex) => {
+      cb(elFretboardStringNoteContainer, stringIndex, 0);
+    });
+    refs.elFretboardStringFrets.forEach((elFretboardStringFrets, stringIndex) => {
+      elFretboardStringFrets.forEach((elFretboardStringFret, fretIndex) => {
+        cb(elFretboardStringFret, stringIndex, fretIndex + 1);
+      });
+    });
+  };
+
+  const initFretboardAudioElements = (): void => {
+    forEachFretboardPlayableCell((elPlayableFretboardNote, stringIndex, fretIndex) => {
+      if (initializedPlayableElements.has(elPlayableFretboardNote)) {
+        return;
+      }
+
+      initializedPlayableElements.add(elPlayableFretboardNote);
+      elPlayableFretboardNote.setAttribute('role', 'button');
+      elPlayableFretboardNote.tabIndex = 0;
+      elPlayableFretboardNote.addEventListener('pointerdown', () => {
+        const stringAudioLayout = appStore.stateFretboardAudioLayout.get()[stringIndex];
+        const noteParams = stringAudioLayout && stringAudioLayout[fretIndex];
+        if (!noteParams) {
+          return;
+        }
+        audioService.play({ pitchClass: noteParams.pitchClass, octave: noteParams.octave });
+      });
+      elPlayableFretboardNote.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+          return;
+        }
+        event.preventDefault();
+        const stringAudioLayout = appStore.stateFretboardAudioLayout.get()[stringIndex];
+        const noteParams = stringAudioLayout && stringAudioLayout[fretIndex];
+        if (!noteParams) {
+          return;
+        }
+        audioService.play({ pitchClass: noteParams.pitchClass, octave: noteParams.octave });
+      });
+    });
+  };
+
+  const renderFretboardAudioLabels = (): void => {
+    const fretboardAudioLayout = appStore.stateFretboardAudioLayout.get();
+    const fretboardLayout = appStore.stateFretboardLayout.get();
+    const altReduceMap: t.altReduceMap = appStore.stateIsEnharmonicSimplify.get()
+      ? new Map(appStore.stateResolvedScaleParams.get().scale.map(({ note, pitchClass }) => [note, appStore.stateChromaticScale.get()[pitchClass].note]))
+      : new Map();
+
+    forEachFretboardPlayableCell((elPlayableFretboardNote, stringIndex, fretIndex) => {
+      const stringAudioLayout = fretboardAudioLayout[stringIndex];
+      const stringLayout = fretboardLayout[stringIndex];
+      const audioNoteParams = stringAudioLayout && stringAudioLayout[fretIndex];
+      const visibleNoteParams = stringLayout && stringLayout[fretIndex];
+
+      if (!audioNoteParams) {
+        elPlayableFretboardNote.removeAttribute('aria-label');
+        return;
+      }
+
+      let labelNote = audioNoteParams.note;
+      if (visibleNoteParams && visibleNoteParams.note.length > 0) {
+        const visibleNoteName = <t.noteName>visibleNoteParams.note;
+        labelNote = altReduceMap.get(visibleNoteName) || visibleNoteName;
+      }
+
+      elPlayableFretboardNote.setAttribute('aria-label', `${labelNote}${audioNoteParams.octave}`);
+    });
+  };
+
+  appStore.stateFretboardAudioLayout.subscribe(() => {
+    initFretboardAudioElements();
+    renderFretboardAudioLabels();
+  });
+  appStore.stateFretboardLayout.subscribe(renderFretboardAudioLabels);
+  appStore.stateIsEnharmonicSimplify.subscribe(renderFretboardAudioLabels);
+};
+
+const initKeyboardAudio = (
+  refs: t.domRefs,
+  appStore: t.appStore,
+  audioService: AudioService,
+): void => {
   const getKeyboardAudioStartOctaveRange = (): string => {
     const keyboardAudioStartOctave = appStore.stateKeyboardAudioStartOctave.get();
     return `${keyboardAudioStartOctave} - ${keyboardAudioStartOctave + 1}`;
@@ -676,7 +767,7 @@ const initStaticText = (refs: t.domRefs, appStore: t.appStore): void => {
   });
 };
 
-export const initUI = (appStore: t.appStore): t.domRefs => {
+export const initUI = (appStore: t.appStore, audioService: AudioService): t.domRefs => {
   const refs = getDomRefs();
 
   initIntervalSteps(refs, appStore);
@@ -685,7 +776,8 @@ export const initUI = (appStore: t.appStore): t.domRefs => {
   initPresetScaleModal(refs, appStore);
   initPresetFretboardModal(refs, appStore);
   initTooltips(refs, appStore);
-  initKeyboardAudio(refs, appStore);
+  initFretboardAudio(refs, appStore, audioService);
+  initKeyboardAudio(refs, appStore, audioService);
   initStaticText(refs, appStore);
 
   // Locale switch

@@ -5,8 +5,12 @@ import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
+import { AudioService } from '../src/app/AudioService';
+import { bindRenderers } from '../src/app/render';
 import { initI18n } from '../src/app/i18n';
 import { StorageService } from '../src/app/StorageService';
+import { createStore } from '../src/app/store';
+import { createUiStore, initUI } from '../src/app/ui';
 import { run } from '../src/index.js';
 import enJson from '../src/translations/en.json';
 
@@ -56,6 +60,48 @@ vi.mock('bootstrap', () => {
 const html = readFileSync(resolve(process.cwd(), 'src/index.html'), 'utf-8');
 const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
 const bodyHtml = bodyMatch ? bodyMatch[1] : html;
+
+const createTestApp = () => {
+  const storageService = new StorageService({
+    theme: 'light',
+    locale: 'ru',
+    tonic: 'C',
+    intervalPattern: [2, 2, 1, 2, 2, 2, 1],
+    modalShift: 0,
+    contextOffset: 0,
+    degreeRotation: 0,
+    hiddenDegrees: [],
+    startNotes: [
+      { note: 'E', octave: 4 },
+      { note: 'B', octave: 3 },
+      { note: 'G', octave: 3 },
+      { note: 'D', octave: 3 },
+      { note: 'A', octave: 2 },
+      { note: 'E', octave: 2 },
+    ],
+    activeScalePresetId: 1,
+    activeFretboardPresetId: 6,
+    isEnharmonicSimplify: false,
+    intervalDisplayMode: 'digit',
+    keyboardAudioStartOctave: 4,
+  });
+  const saved = storageService.selectAll();
+  const i18nStore = initI18n(saved.locale, storageService);
+  const uiStore = createUiStore(
+    saved.theme,
+    saved.isEnharmonicSimplify,
+    saved.intervalDisplayMode,
+    storageService,
+  );
+  const store = createStore(saved, storageService, i18nStore.stateLocale);
+  const appStore = { ...store, ...uiStore, ...i18nStore };
+  const audioService = new AudioService();
+  const refs = initUI(appStore, audioService);
+
+  bindRenderers(appStore, refs);
+
+  return { appStore, refs };
+};
 
 describe('приложение запустилось', () => {
   beforeEach(() => {
@@ -217,6 +263,128 @@ describe('клавиатура', () => {
 
     expect(playMock).toHaveBeenCalledTimes(1);
     expect(playMock).toHaveBeenCalledWith({ pitchClass: 0, octave: 5 });
+  });
+});
+
+describe('гриф', () => {
+  beforeEach(() => {
+    playMock.mockClear();
+    localStorage.clear();
+    document.body.innerHTML = bodyHtml;
+  });
+
+  afterEach(() => {
+    playMock.mockClear();
+    document.body.innerHTML = '';
+    localStorage.clear();
+  });
+
+  test('открытая струна отрисована как интерактивная', async () => {
+    run();
+
+    const elFretboard = await screen.findByRole('table', { name: 'Гриф' });
+    const elFirstString = <HTMLTableRowElement>elFretboard.querySelector('tbody tr');
+    const elOpenString = within(elFirstString).getByRole('button', { name: 'E4' });
+
+    expect(elOpenString).toBeTruthy();
+  });
+
+  test('нажатие открытой струны вызывает воспроизведение', async () => {
+    const user = userEvent.setup();
+
+    run();
+
+    const elFretboard = await screen.findByRole('table', { name: 'Гриф' });
+    const elFirstString = <HTMLTableRowElement>elFretboard.querySelector('tbody tr');
+    const elOpenString = within(elFirstString).getByRole('button', { name: 'E4' });
+
+    await user.click(elOpenString);
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 4, octave: 4 });
+  });
+
+  test('пустой лад тоже вызывает воспроизведение', async () => {
+    const user = userEvent.setup();
+
+    run();
+
+    const elFretboard = await screen.findByRole('table', { name: 'Гриф' });
+    const elFirstString = <HTMLTableRowElement>elFretboard.querySelector('tbody tr');
+    const elEmptyFret = within(elFirstString).getByRole('button', { name: 'F♯4' });
+
+    await user.click(elEmptyFret);
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 6, octave: 4 });
+  });
+
+  test('Enter на ячейке грифа вызывает воспроизведение', async () => {
+    const user = userEvent.setup();
+
+    run();
+
+    const elFretboard = await screen.findByRole('table', { name: 'Гриф' });
+    const elFirstString = <HTMLTableRowElement>elFretboard.querySelector('tbody tr');
+    const elOpenString = within(elFirstString).getByRole('button', { name: 'E4' });
+
+    elOpenString.focus();
+    await user.keyboard('{Enter}');
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 4, octave: 4 });
+  });
+
+  test('Space на ячейке грифа вызывает воспроизведение', async () => {
+    const user = userEvent.setup();
+
+    run();
+
+    const elFretboard = await screen.findByRole('table', { name: 'Гриф' });
+    const elFirstString = <HTMLTableRowElement>elFretboard.querySelector('tbody tr');
+    const elOpenString = within(elFirstString).getByRole('button', { name: 'E4' });
+
+    elOpenString.focus();
+    await user.keyboard(' ');
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 4, octave: 4 });
+  });
+
+  test('после добавления струны новые ячейки интерактивны и звучат', async () => {
+    const user = userEvent.setup();
+
+    const { appStore } = createTestApp();
+
+    appStore.addFretboardString();
+
+    const elFretboard = await screen.findByRole('table', { name: 'Гриф' });
+    const elStrings = elFretboard.querySelectorAll('tbody tr');
+    const elLastString = <HTMLTableRowElement>elStrings[elStrings.length - 1];
+    const elOpenString = within(elLastString).getByRole('button', { name: 'B1' });
+
+    await user.click(elOpenString);
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 11, octave: 1 });
+  });
+
+  test('после удаления струны оставшиеся ячейки сохраняют правильные индексы', async () => {
+    const user = userEvent.setup();
+
+    const { appStore } = createTestApp();
+
+    appStore.removeFretboardString(3);
+
+    const elFretboard = await screen.findByRole('table', { name: 'Гриф' });
+    const elStrings = elFretboard.querySelectorAll('tbody tr');
+    const elFourthString = <HTMLTableRowElement>elStrings[3];
+    const elOpenString = within(elFourthString).getByRole('button', { name: 'A2' });
+
+    await user.click(elOpenString);
+
+    expect(playMock).toHaveBeenCalledTimes(1);
+    expect(playMock).toHaveBeenCalledWith({ pitchClass: 9, octave: 2 });
   });
 });
 

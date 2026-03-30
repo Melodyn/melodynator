@@ -1,3 +1,4 @@
+import { AudioService } from './app/AudioService';
 import HawkCatcher from '@hawk.so/javascript';
 import { initI18n } from './app/i18n';
 import { bindRenderers } from './app/render';
@@ -50,7 +51,8 @@ export const run = () => {
   );
   const store = createStore(saved, storageService, i18nStore.stateLocale);
   const appStore = { ...store, ...uiStore, ...i18nStore };
-  const refs = initUI(appStore);
+  const audioService = new AudioService();
+  const refs = initUI(appStore, audioService);
 
   bindRenderers(appStore, refs);
 };

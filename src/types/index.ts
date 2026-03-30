@@ -191,6 +191,8 @@ export type scaleLayout = fretboardNoteParams[];
 
 export type scaleLayouts = scaleLayout[];
 
+export type fretboardAudioLayout = chromaticNoteParams[][];
+
 export type mapScaleToLayout = (layoutParams: { scaleMap: scaleMap, startNotes: fretboardStartNoteParams[] }) => scaleLayouts;
 
 // UI level (user intention)
@@ -223,6 +225,7 @@ export type store = {
   stateFretboardStartNotes: Atom<fretboardStartNoteParams[]>
   stateChromaticScale: ReadableAtom<chromaticScale>
   stateFretboardLayout: Atom<scaleLayouts>
+  stateFretboardAudioLayout: ReadableAtom<fretboardAudioLayout>
   stateKeyboardAudioStartOctave: Atom<number>
   offsetKeyboardAudioStartOctave: (offset: number) => void
   stateKeyboardAudioLayout: ReadableAtom<chromaticNoteParams[]>
