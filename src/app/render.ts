@@ -80,8 +80,8 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     const resolvedScaleParams = store.stateResolvedScaleParams.get();
     const altReduceMap = getAltReduceMap(resolvedScaleParams.scale);
 
-    refs.elFretboardStartNoteContainers.forEach((elFretboardStartNoteContainer) => {
-      elFretboardStartNoteContainer.textContent = c.EMPTY_VALUE;
+    refs.elFretboardStringNoteContainers.forEach((elFretboardStringNoteContainer) => {
+      elFretboardStringNoteContainer.textContent = c.EMPTY_VALUE;
     });
     refs.elFretboardStringFrets.forEach((elFretboardStringFrets) => {
       elFretboardStringFrets.forEach((elFretNote) => {
@@ -91,11 +91,11 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     });
 
     scaleLayouts.forEach((layout, stringIndex) => {
-      const elFretboardStartNoteContainer = refs.elFretboardStartNoteContainers[stringIndex];
+      const elFretboardStringNoteContainer = refs.elFretboardStringNoteContainers[stringIndex];
       const startNote = layout[0];
       const { note, degree } = startNote;
       const isVisible = note && !hiddenDegrees.has(degree);
-      elFretboardStartNoteContainer.textContent = isVisible
+      elFretboardStringNoteContainer.textContent = isVisible
         ? reduceAlt(note, altReduceMap)
         : c.EMPTY_VALUE;
 

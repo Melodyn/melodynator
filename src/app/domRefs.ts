@@ -44,13 +44,13 @@ export const getDomRefs = (): t.domRefs => {
 
   const elFretboard = qs<HTMLTableSectionElement>('[data-instrument="fretboard"]');
   const elFretboardStrings: HTMLTableRowElement[] = [];
-  const elFretboardStartNoteContainers: HTMLButtonElement[] = [];
+  const elFretboardStringNoteContainers: HTMLTableCellElement[] = [];
   const elFretboardStringFrets: HTMLTableCellElement[][] = [];
   const elFretboardString = <HTMLTableRowElement>qs<HTMLTemplateElement>('[data-template="fretboard-string"]').content.firstElementChild;
   const elPresetScaleCard = <HTMLDivElement>qs<HTMLTemplateElement>('[data-template="preset-scale-card"]').content.firstElementChild;
   const elPresetFretboardCard = <HTMLDivElement>qs<HTMLTemplateElement>('[data-template="preset-fretboard-card"]').content.firstElementChild;
-  const elFretboardNewStringNoteParams = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="fretboard-set-string-params"]').content.firstElementChild;
-  const elNoteList = qs<HTMLSelectElement>('[data-select="fretboard-string-note"]', elFretboardNewStringNoteParams);
+  const elFretboardStringSettings = <HTMLFormElement>qs<HTMLTemplateElement>('[data-template="fretboard-set-string-params"]').content.firstElementChild;
+  const elNoteList = qs<HTMLSelectElement>('[data-select="fretboard-string-note"]', elFretboardStringSettings);
   const elNoteListItemTemplate = <HTMLOptionElement>elNoteList.firstElementChild;
   elNoteList.innerHTML = '';
   c.allNotesNames.forEach((name) => {
@@ -62,12 +62,11 @@ export const getDomRefs = (): t.domRefs => {
 
   const elAddFretboardString = qs<HTMLButtonElement>('[data-control="add-fretboard-string"]');
   const elAddFretboardStringConfirm = <HTMLButtonElement>qs<HTMLTemplateElement>('[data-template="add-fretboard-string-confirm"]').content.firstElementChild;
-  const elRemoveFretboardStringConfirm = <HTMLButtonElement>qs<HTMLTemplateElement>('[data-template="remove-fretboard-string-confirm"]').content.firstElementChild;
 
-  const getElFretboardStringNumberButton = (el: HTMLTableRowElement) =>
-    qs<HTMLButtonElement>('[data-control="remove-fretboard-string"]', el);
-  const getElFretboardStartNoteContainer = (el: HTMLTableRowElement) =>
-    qs<HTMLButtonElement>('[data-control="start-note"]', el);
+  const getElFretboardStringSettingsButton = (el: HTMLTableRowElement) =>
+    qs<HTMLButtonElement>('[data-control="fretboard-string-settings"]', el);
+  const getElFretboardStringNoteContainer = (el: HTMLTableRowElement) =>
+    qs<HTMLTableCellElement>('[data-instrument="fretboard-string-note"]', el);
   const getElFretboardStringFrets = (el: HTMLTableRowElement): HTMLTableCellElement[] =>
     Array.from(qsa<HTMLTableCellElement>('[data-instrument="fretboard-string-fret"]', el));
   const getElPresetScaleCardTextElements = (el: HTMLDivElement): t.presetScaleCardTextElements => ({
@@ -130,6 +129,10 @@ export const getDomRefs = (): t.domRefs => {
     qs<HTMLSelectElement>('[data-select="fretboard-string-note"]', form);
   const getElFretboardNoteOctaveSelect = (form: HTMLFormElement) =>
     qs<HTMLSelectElement>('[data-select="fretboard-note-octave"]', form);
+  const getElRemoveFretboardStringButton = (form: HTMLFormElement) =>
+    qs<HTMLButtonElement>('[data-control="remove-fretboard-string"]', form);
+  const getElApplyFretboardStringButton = (form: HTMLFormElement) =>
+    qs<HTMLButtonElement>('[type="submit"]', form);
 
   const elBody = document.body;
 
@@ -164,17 +167,16 @@ export const getDomRefs = (): t.domRefs => {
     elKeyboardNotes,
     elFretboard,
     elFretboardStrings,
-    elFretboardStartNoteContainers,
+    elFretboardStringNoteContainers,
     elFretboardStringFrets,
     elFretboardString,
     elPresetScaleCard,
     elPresetFretboardCard,
-    elFretboardNewStringNoteParams,
+    elFretboardStringSettings,
     elAddFretboardString,
     elAddFretboardStringConfirm,
-    elRemoveFretboardStringConfirm,
-    getElFretboardStringNumberButton,
-    getElFretboardStartNoteContainer,
+    getElFretboardStringSettingsButton,
+    getElFretboardStringNoteContainer,
     getElFretboardStringFrets,
     getElPresetScaleCardTextElements,
     getElPresetScaleCardLabelElements,
@@ -188,5 +190,7 @@ export const getDomRefs = (): t.domRefs => {
     getElIntervalStepSelect,
     getElFretboardStringNoteSelect,
     getElFretboardNoteOctaveSelect,
+    getElRemoveFretboardStringButton,
+    getElApplyFretboardStringButton,
   };
 };

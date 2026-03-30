@@ -152,85 +152,46 @@ const initScaleConfigSettingsPopover = (refs: t.domRefs, appStore: t.appStore): 
 
 const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
   const updateStringNumbers = (): void => {
-    refs.elFretboardStrings.slice(c.MIN_FRETBOARD_STRINGS).forEach((elString, i) => {
-      const btn = refs.getElFretboardStringNumberButton(elString);
-      btn.textContent = `${c.MIN_FRETBOARD_STRINGS + i + 1}`;
+    refs.elFretboardStrings.forEach((elString, index) => {
+      const elFretboardStringSettingsButton = refs.getElFretboardStringSettingsButton(elString);
+      elFretboardStringSettingsButton.textContent = `${index + 1}`;
     });
   };
 
   const removeStringRow = (index: number): void => {
     const elFretboardString = refs.elFretboardStrings[index];
-    const elStartNoteButton = refs.elFretboardStartNoteContainers[index];
-    const startNotePopover = Popover.getInstance(elStartNoteButton);
-    if (startNotePopover) {
-      startNotePopover.dispose();
-    }
-    if (index >= c.MIN_FRETBOARD_STRINGS) {
-      const elNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
-      const numberPopover = Popover.getInstance(elNumberButton);
-      if (numberPopover) {
-        numberPopover.dispose();
-      }
+    const elFretboardStringSettingsButton = refs.getElFretboardStringSettingsButton(elFretboardString);
+    const stringSettingsPopover = Popover.getInstance(elFretboardStringSettingsButton);
+    if (stringSettingsPopover) {
+      stringSettingsPopover.dispose();
     }
     elFretboardString.remove();
     refs.elFretboardStrings.splice(index, 1);
-    refs.elFretboardStartNoteContainers.splice(index, 1);
+    refs.elFretboardStringNoteContainers.splice(index, 1);
     refs.elFretboardStringFrets.splice(index, 1);
     updateStringNumbers();
   };
 
   const addStringRow = (): void => {
     const elFretboardString = <HTMLTableRowElement>refs.elFretboardString.cloneNode(true);
-    const elFretboardStartNoteContainer = refs.getElFretboardStartNoteContainer(elFretboardString);
-    const stringIndex = refs.elFretboardStrings.length;
+    const elFretboardStringSettingsButton = refs.getElFretboardStringSettingsButton(elFretboardString);
+    const elFretboardStringNoteContainer = refs.getElFretboardStringNoteContainer(elFretboardString);
 
-    if (stringIndex < c.MIN_FRETBOARD_STRINGS) {
-      const elNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
-      const elFretboardStringNumberContainer = <HTMLTableCellElement>elNumberButton.parentElement;
-      elNumberButton.remove();
-      elFretboardStringNumberContainer.textContent = `${stringIndex + 1}`;
-    } else {
-      const elFretboardStringNumberButton = refs.getElFretboardStringNumberButton(elFretboardString);
-      elFretboardStringNumberButton.textContent = `${stringIndex + 1}`;
-
-      const makeRemovePopover = () => new Popover(elFretboardStringNumberButton, {
-        html: true,
-        sanitize: false,
-        content: () => {
-          const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
-          const elRemoveFretboardStringConfirm = <HTMLButtonElement>refs.elRemoveFretboardStringConfirm.cloneNode(true);
-          elRemoveFretboardStringConfirm.textContent = appStore.textFretboard.get().removeStringLabel;
-          elRemoveFretboardStringConfirm.addEventListener('click', () => {
-            appStore.removeFretboardString(currentIndex);
-            const popover = Popover.getInstance(elFretboardStringNumberButton);
-            if (popover) {
-              popover.hide();
-            }
-          });
-          return elRemoveFretboardStringConfirm;
-        },
-      });
-
-      appStore.textFretboard.subscribe(() => {
-        const existingRemove = Popover.getInstance(elFretboardStringNumberButton);
-        if (existingRemove) {
-          existingRemove.dispose();
-        }
-        makeRemovePopover();
-      });
-    }
-
-    const makeStartNotePopover = () => new Popover(elFretboardStartNoteContainer, {
+    const makeStringSettingsPopover = () => new Popover(elFretboardStringSettingsButton, {
       html: true,
       sanitize: false,
       content: () => {
-        const elFretboardNewStringNoteParams = <HTMLFormElement>refs.elFretboardNewStringNoteParams.cloneNode(true);
-        const elFretboardStringNoteSelect = refs.getElFretboardStringNoteSelect(elFretboardNewStringNoteParams);
-        const elFretboardNoteOctaveSelect = refs.getElFretboardNoteOctaveSelect(elFretboardNewStringNoteParams);
+        const elFretboardStringSettings = <HTMLFormElement>refs.elFretboardStringSettings.cloneNode(true);
+        const elFretboardStringNoteSelect = refs.getElFretboardStringNoteSelect(elFretboardStringSettings);
+        const elFretboardNoteOctaveSelect = refs.getElFretboardNoteOctaveSelect(elFretboardStringSettings);
+        const elRemoveFretboardStringButton = refs.getElRemoveFretboardStringButton(elFretboardStringSettings);
+        const elApplyFretboardStringButton = refs.getElApplyFretboardStringButton(elFretboardStringSettings);
 
         const fretboardTexts = appStore.textFretboard.get();
         elFretboardStringNoteSelect.ariaLabel = fretboardTexts.openNoteLabel;
         elFretboardNoteOctaveSelect.ariaLabel = fretboardTexts.octaveLabel;
+        elRemoveFretboardStringButton.ariaLabel = fretboardTexts.removeStringLabel;
+        elApplyFretboardStringButton.textContent = fretboardTexts.confirmButton;
         const octaveNames = [
           fretboardTexts.octaveName0, fretboardTexts.octaveName1, fretboardTexts.octaveName2,
           fretboardTexts.octaveName3, fretboardTexts.octaveName4, fretboardTexts.octaveName5,
@@ -244,32 +205,52 @@ const initFretboard = (refs: t.domRefs, appStore: t.appStore): void => {
         const currentStartNote = appStore.stateFretboardStartNotes.get()[currentIndex];
         elFretboardStringNoteSelect.value = currentStartNote.note;
         elFretboardNoteOctaveSelect.value = `${currentStartNote.octave}`;
+        const isRemoveDisabled = currentIndex < c.MIN_FRETBOARD_STRINGS;
+        elRemoveFretboardStringButton.disabled = isRemoveDisabled;
+        elRemoveFretboardStringButton.classList.toggle('btn-outline-danger', !isRemoveDisabled);
+        elRemoveFretboardStringButton.classList.toggle('btn-outline-secondary', isRemoveDisabled);
 
-        elFretboardNewStringNoteParams.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const currentIndex = refs.elFretboardStrings.indexOf(elFretboardString);
-          appStore.setFretboardStartNote({ note: <t.noteName>elFretboardStringNoteSelect.value, octave: Number(elFretboardNoteOctaveSelect.value), index: currentIndex });
-          const popover = Popover.getInstance(elFretboardStartNoteContainer);
+        elRemoveFretboardStringButton.addEventListener('click', () => {
+          const stringIndex = refs.elFretboardStrings.indexOf(elFretboardString);
+          if (stringIndex < c.MIN_FRETBOARD_STRINGS) {
+            return;
+          }
+          appStore.removeFretboardString(stringIndex);
+          const popover = Popover.getInstance(elFretboardStringSettingsButton);
           if (popover) {
             popover.hide();
           }
         });
 
-        return elFretboardNewStringNoteParams;
+        elFretboardStringSettings.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const stringIndex = refs.elFretboardStrings.indexOf(elFretboardString);
+          appStore.setFretboardStartNote({
+            note: <t.noteName>elFretboardStringNoteSelect.value,
+            octave: Number(elFretboardNoteOctaveSelect.value),
+            index: stringIndex,
+          });
+          const popover = Popover.getInstance(elFretboardStringSettingsButton);
+          if (popover) {
+            popover.hide();
+          }
+        });
+
+        return elFretboardStringSettings;
       },
     });
 
     appStore.textFretboard.subscribe(() => {
-      const existingStartNote = Popover.getInstance(elFretboardStartNoteContainer);
-      if (existingStartNote) {
-        existingStartNote.dispose();
+      const existingStringSettings = Popover.getInstance(elFretboardStringSettingsButton);
+      if (existingStringSettings) {
+        existingStringSettings.dispose();
       }
-      makeStartNotePopover();
+      makeStringSettingsPopover();
     });
 
     refs.elFretboard.appendChild(elFretboardString);
     refs.elFretboardStrings.push(elFretboardString);
-    refs.elFretboardStartNoteContainers.push(elFretboardStartNoteContainer);
+    refs.elFretboardStringNoteContainers.push(elFretboardStringNoteContainer);
     refs.elFretboardStringFrets.push(refs.getElFretboardStringFrets(elFretboardString));
     updateStringNumbers();
   };

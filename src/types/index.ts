@@ -274,17 +274,16 @@ export type domRefs = {
   elKeyboardNotes: NodeListOf<HTMLTableCellElement>
   elFretboard: HTMLTableSectionElement
   elFretboardStrings: HTMLTableRowElement[]
-  elFretboardStartNoteContainers: HTMLButtonElement[]
+  elFretboardStringNoteContainers: HTMLTableCellElement[]
   elFretboardStringFrets: HTMLTableCellElement[][]
   elFretboardString: HTMLTableRowElement
   elPresetScaleCard: HTMLDivElement
   elPresetFretboardCard: HTMLDivElement
-  elFretboardNewStringNoteParams: HTMLFormElement
+  elFretboardStringSettings: HTMLFormElement
   elAddFretboardString: HTMLButtonElement
   elAddFretboardStringConfirm: HTMLButtonElement
-  elRemoveFretboardStringConfirm: HTMLButtonElement
-  getElFretboardStringNumberButton: (el: HTMLTableRowElement) => HTMLButtonElement
-  getElFretboardStartNoteContainer: (el: HTMLTableRowElement) => HTMLButtonElement
+  getElFretboardStringSettingsButton: (el: HTMLTableRowElement) => HTMLButtonElement
+  getElFretboardStringNoteContainer: (el: HTMLTableRowElement) => HTMLTableCellElement
   getElFretboardStringFrets: (el: HTMLTableRowElement) => HTMLTableCellElement[]
   getElPresetScaleCardTextElements: (el: HTMLDivElement) => presetScaleCardTextElements
   getElPresetScaleCardLabelElements: (el: HTMLDivElement) => presetScaleCardLabelElements
@@ -298,6 +297,8 @@ export type domRefs = {
   getElIntervalStepSelect: (form: HTMLFormElement) => HTMLSelectElement
   getElFretboardStringNoteSelect: (form: HTMLFormElement) => HTMLSelectElement
   getElFretboardNoteOctaveSelect: (form: HTMLFormElement) => HTMLSelectElement
+  getElRemoveFretboardStringButton: (form: HTMLFormElement) => HTMLButtonElement
+  getElApplyFretboardStringButton: (form: HTMLFormElement) => HTMLButtonElement
 };
 
 export type uiTheme = 'light' | 'dark';

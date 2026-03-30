@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "start": "vite",
     "build": "vite build",
     "lint": "eslint src/ __tests__/"

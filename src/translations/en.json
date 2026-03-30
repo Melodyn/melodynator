@@ -18,7 +18,7 @@
     "degrees": "Shifts the center within the scale. The mode changes without altering the notes, unlike modal shift",
     "center": "The center is the root note of the scale. It is always the first degree and the reference point for chords, regardless of context",
     "context": "Context builds the scale from a related key around the center. For example, F gives B♭ for C7",
-    "fretboard": "The first string is the thinnest. Click on the open fret to configure that string. This allows custom tuning for 3 to 12 strings."
+    "fretboard": "The first string is the thinnest. Click on the fret number to configure that string. This allows custom tuning for 3 to 12 strings."
   },
   "fretboard": {
     "openNoteLabel": "Open note",

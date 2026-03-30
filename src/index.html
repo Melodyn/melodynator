@@ -551,15 +551,10 @@
           <button type="button"
             class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
             data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right"
-            data-control="remove-fretboard-string">
+            data-bs-custom-class="popover-fretboard-string-settings" data-control="fretboard-string-settings">
           </button>
         </td>
-        <td class="p-0 text-secondary width-30px position-relative" data-instrument="fretboard-string-note">
-          <button type="button"
-            class="btn btn-outline-secondary p-0 w-100 h-100 border-0 rounded-0 position-absolute top-0 bottom-0 start-0 end-0"
-            data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-control="start-note">
-          </button>
-        </td>
+        <td class="p-0 text-secondary width-30px" data-instrument="fretboard-string-note"></td>
         <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
         <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
         <td class="p-0 width-30px" data-instrument="fretboard-string-fret"></td>
@@ -578,17 +573,13 @@
     <template id="template-add-fretboard-string-confirm" data-template="add-fretboard-string-confirm">
       <button type="button" class="btn btn-sm btn-outline-primary"></button>
     </template>
-    <template id="template-remove-fretboard-string-confirm" data-template="remove-fretboard-string-confirm">
-      <button type="button" class="btn btn-sm btn-outline-danger"></button>
-    </template>
-
     <template id="template-fretboard-set-string-params" data-template="fretboard-set-string-params">
       <form id="fretboard-set-string-params">
-        <div class="input-group input-group-sm">
-          <select id="fretboard-set-string-note" data-select="fretboard-string-note" class="form-select">
+        <div class="input-group d-flex gap-1">
+          <select id="fretboard-set-string-note" data-select="fretboard-string-note" class="form-select w-auto">
             <option></option>
           </select>
-          <select id="fretboard-set-note-octave" data-select="fretboard-note-octave" class="form-select w-50 mx-1">
+          <select id="fretboard-set-note-octave" data-select="fretboard-note-octave" class="form-select w-50">
             <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
@@ -599,7 +590,9 @@
             <option value="7">7</option>
             <option value="8">8</option>
           </select>
-          <button type="submit" class="btn btn-outline-primary btn-sm width-30px">✓</button>
+          <button type="submit" class="btn btn-outline-primary btn-sm width-30px"></button>
+          <button type="button" class="btn btn-outline-danger btn-sm width-30px"
+            data-control="remove-fretboard-string">×</button>
         </div>
       </form>
     </template>

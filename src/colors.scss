@@ -46,6 +46,14 @@ $theme-colors: map-merge($theme-colors,
   --bs-tooltip-max-width: 300px;
 }
 
+.popover-fretboard-string-settings {
+  --bs-popover-max-width: 320px;
+
+  & .popover-body {
+    padding: 0.5rem;
+  }
+}
+
 .popover-settings .popover-body {
   padding: 0.25rem 0.5rem;
 }
