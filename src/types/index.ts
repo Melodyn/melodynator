@@ -288,6 +288,7 @@ export type domRefs = {
   getElFretboardStringSettingsButton: (el: HTMLTableRowElement) => HTMLButtonElement
   getElFretboardStringNoteContainer: (el: HTMLTableRowElement) => HTMLTableCellElement
   getElFretboardStringFrets: (el: HTMLTableRowElement) => HTMLTableCellElement[]
+  getElFretboardStringNotes: (stringIndex: number) => HTMLTableCellElement[]
   getElPresetScaleCardTextElements: (el: HTMLDivElement) => presetScaleCardTextElements
   getElPresetScaleCardLabelElements: (el: HTMLDivElement) => presetScaleCardLabelElements
   getElPresetScaleCardActionButtons: (el: HTMLDivElement) => presetScaleCardActionButtons

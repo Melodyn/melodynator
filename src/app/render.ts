@@ -80,40 +80,32 @@ export const bindRenderers = (store: t.appStore, refs: t.domRefs) => {
     const resolvedScaleParams = store.stateResolvedScaleParams.get();
     const altReduceMap = getAltReduceMap(resolvedScaleParams.scale);
 
-    refs.elFretboardStringNoteContainers.forEach((elFretboardStringNoteContainer) => {
-      elFretboardStringNoteContainer.textContent = c.EMPTY_VALUE;
-    });
-    refs.elFretboardStringFrets.forEach((elFretboardStringFrets) => {
-      elFretboardStringFrets.forEach((elFretNote) => {
-        elFretNote.textContent = c.EMPTY_VALUE;
-        removeOctaveClass(elFretNote);
-      });
-    });
+    refs.elFretboardStrings.forEach((_, stringIndex) => {
+      const layout = scaleLayouts[stringIndex];
+      const elFretboardStringNotes = refs.getElFretboardStringNotes(stringIndex);
 
-    scaleLayouts.forEach((layout, stringIndex) => {
-      const elFretboardStringNoteContainer = refs.elFretboardStringNoteContainers[stringIndex];
-      const startNote = layout[0];
-      const { note, degree } = startNote;
-      const isVisible = note && !hiddenDegrees.has(degree);
-      elFretboardStringNoteContainer.textContent = isVisible
-        ? reduceAlt(note, altReduceMap)
-        : c.EMPTY_VALUE;
+      elFretboardStringNotes.forEach((elFretboardStringNote, fretIndex) => {
+        elFretboardStringNote.textContent = c.EMPTY_VALUE;
 
-      const elFretboardStringFrets = refs.elFretboardStringFrets[stringIndex];
-      for (let fret = 1; fret <= c.OCTAVE_SIZE; fret += 1) {
-        const fretIndex = fret - 1;
-        const elFretNote = elFretboardStringFrets[fretIndex];
-        const noteParams = layout[fret];
-        elFretNote.classList.add('text-black');
-
-        if (noteParams) {
-          const { note, degree, octave } = noteParams;
-          if (note && !hiddenDegrees.has(degree)) {
-            elFretNote.textContent = reduceAlt(note, altReduceMap);
-            elFretNote.classList.add(`bg-octave-${octave}`);
-          }
+        if (fretIndex > 0) {
+          elFretboardStringNote.classList.add('text-black');
+          removeOctaveClass(elFretboardStringNote);
         }
-      }
+
+        if (!layout) {
+          return;
+        }
+
+        const noteParams = layout[fretIndex];
+        if (!noteParams || !noteParams.note || hiddenDegrees.has(noteParams.degree)) {
+          return;
+        }
+
+        elFretboardStringNote.textContent = reduceAlt(noteParams.note, altReduceMap);
+        if (fretIndex > 0) {
+          elFretboardStringNote.classList.add(`bg-octave-${noteParams.octave}`);
+        }
+      });
     });
   };
 

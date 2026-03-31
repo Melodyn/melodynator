@@ -589,47 +589,38 @@ const initFretboardAudio = (
 ): void => {
   const initializedPlayableElements = new WeakSet<HTMLElement>();
 
-  const forEachFretboardPlayableCell = (
-    cb: (elPlayableFretboardNote: HTMLElement, stringIndex: number, fretIndex: number) => void,
-  ): void => {
-    refs.elFretboardStringNoteContainers.forEach((elFretboardStringNoteContainer, stringIndex) => {
-      cb(elFretboardStringNoteContainer, stringIndex, 0);
-    });
-    refs.elFretboardStringFrets.forEach((elFretboardStringFrets, stringIndex) => {
-      elFretboardStringFrets.forEach((elFretboardStringFret, fretIndex) => {
-        cb(elFretboardStringFret, stringIndex, fretIndex + 1);
-      });
-    });
-  };
-
   const initFretboardAudioElements = (): void => {
-    forEachFretboardPlayableCell((elPlayableFretboardNote, stringIndex, fretIndex) => {
-      if (initializedPlayableElements.has(elPlayableFretboardNote)) {
-        return;
-      }
+    refs.elFretboardStrings.forEach((_, stringIndex) => {
+      const elFretboardStringNotes = refs.getElFretboardStringNotes(stringIndex);
 
-      initializedPlayableElements.add(elPlayableFretboardNote);
-      elPlayableFretboardNote.setAttribute('role', 'button');
-      elPlayableFretboardNote.tabIndex = 0;
-      elPlayableFretboardNote.addEventListener('pointerdown', () => {
-        const stringAudioLayout = appStore.stateFretboardAudioLayout.get()[stringIndex];
-        const noteParams = stringAudioLayout && stringAudioLayout[fretIndex];
-        if (!noteParams) {
+      elFretboardStringNotes.forEach((elFretboardStringNote, fretIndex) => {
+        if (initializedPlayableElements.has(elFretboardStringNote)) {
           return;
         }
-        audioService.play({ pitchClass: noteParams.pitchClass, octave: noteParams.octave });
-      });
-      elPlayableFretboardNote.addEventListener('keydown', (event) => {
-        if (event.key !== 'Enter' && event.key !== ' ') {
-          return;
-        }
-        event.preventDefault();
-        const stringAudioLayout = appStore.stateFretboardAudioLayout.get()[stringIndex];
-        const noteParams = stringAudioLayout && stringAudioLayout[fretIndex];
-        if (!noteParams) {
-          return;
-        }
-        audioService.play({ pitchClass: noteParams.pitchClass, octave: noteParams.octave });
+
+        initializedPlayableElements.add(elFretboardStringNote);
+        elFretboardStringNote.setAttribute('role', 'button');
+        elFretboardStringNote.tabIndex = 0;
+        elFretboardStringNote.addEventListener('pointerdown', () => {
+          const stringAudioLayout = appStore.stateFretboardAudioLayout.get()[stringIndex];
+          const noteParams = stringAudioLayout && stringAudioLayout[fretIndex];
+          if (!noteParams) {
+            return;
+          }
+          audioService.play({ pitchClass: noteParams.pitchClass, octave: noteParams.octave });
+        });
+        elFretboardStringNote.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+          }
+          event.preventDefault();
+          const stringAudioLayout = appStore.stateFretboardAudioLayout.get()[stringIndex];
+          const noteParams = stringAudioLayout && stringAudioLayout[fretIndex];
+          if (!noteParams) {
+            return;
+          }
+          audioService.play({ pitchClass: noteParams.pitchClass, octave: noteParams.octave });
+        });
       });
     });
   };
@@ -641,24 +632,28 @@ const initFretboardAudio = (
       ? new Map(appStore.stateResolvedScaleParams.get().scale.map(({ note, pitchClass }) => [note, appStore.stateChromaticScale.get()[pitchClass].note]))
       : new Map();
 
-    forEachFretboardPlayableCell((elPlayableFretboardNote, stringIndex, fretIndex) => {
+    refs.elFretboardStrings.forEach((_, stringIndex) => {
       const stringAudioLayout = fretboardAudioLayout[stringIndex];
       const stringLayout = fretboardLayout[stringIndex];
-      const audioNoteParams = stringAudioLayout && stringAudioLayout[fretIndex];
-      const visibleNoteParams = stringLayout && stringLayout[fretIndex];
+      const elFretboardStringNotes = refs.getElFretboardStringNotes(stringIndex);
 
-      if (!audioNoteParams) {
-        elPlayableFretboardNote.removeAttribute('aria-label');
-        return;
-      }
+      elFretboardStringNotes.forEach((elFretboardStringNote, fretIndex) => {
+        const audioNoteParams = stringAudioLayout && stringAudioLayout[fretIndex];
+        const visibleNoteParams = stringLayout && stringLayout[fretIndex];
 
-      let labelNote = audioNoteParams.note;
-      if (visibleNoteParams && visibleNoteParams.note.length > 0) {
-        const visibleNoteName = <t.noteName>visibleNoteParams.note;
-        labelNote = altReduceMap.get(visibleNoteName) || visibleNoteName;
-      }
+        if (!audioNoteParams) {
+          elFretboardStringNote.removeAttribute('aria-label');
+          return;
+        }
 
-      elPlayableFretboardNote.setAttribute('aria-label', `${labelNote}${audioNoteParams.octave}`);
+        let labelNote = audioNoteParams.note;
+        if (visibleNoteParams && visibleNoteParams.note.length > 0) {
+          const visibleNoteName = <t.noteName>visibleNoteParams.note;
+          labelNote = altReduceMap.get(visibleNoteName) || visibleNoteName;
+        }
+
+        elFretboardStringNote.setAttribute('aria-label', `${labelNote}${audioNoteParams.octave}`);
+      });
     });
   };
 

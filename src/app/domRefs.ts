@@ -69,6 +69,13 @@ export const getDomRefs = (): t.domRefs => {
     qs<HTMLTableCellElement>('[data-instrument="fretboard-string-note"]', el);
   const getElFretboardStringFrets = (el: HTMLTableRowElement): HTMLTableCellElement[] =>
     Array.from(qsa<HTMLTableCellElement>('[data-instrument="fretboard-string-fret"]', el));
+  const getElFretboardStringNotes = (stringIndex: number): HTMLTableCellElement[] => {
+    const elFretboardStringNoteContainer = elFretboardStringNoteContainers[stringIndex];
+    if (!elFretboardStringNoteContainer) {
+      throw new Error(`Missing fretboard string note container for stringIndex=${stringIndex}`);
+    }
+    return [elFretboardStringNoteContainer, ...elFretboardStringFrets[stringIndex]];
+  };
   const getElPresetScaleCardTextElements = (el: HTMLDivElement): t.presetScaleCardTextElements => ({
     presetScaleName: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleName}"]`, el),
     presetScaleFamilyMood: qs<HTMLSpanElement>(`[data-container="${c.PRESET_SCALE_CARD_CONTAINERS.presetScaleFamilyMood}"]`, el),
@@ -178,6 +185,7 @@ export const getDomRefs = (): t.domRefs => {
     getElFretboardStringSettingsButton,
     getElFretboardStringNoteContainer,
     getElFretboardStringFrets,
+    getElFretboardStringNotes,
     getElPresetScaleCardTextElements,
     getElPresetScaleCardLabelElements,
     getElPresetScaleCardActionButtons,
